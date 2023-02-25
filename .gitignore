@@ -10,4 +10,8 @@
 # rspec failure tracking
 .rspec_status
 
+# macOS
 .DS_Store
+
+# rbenv
+.ruby-version

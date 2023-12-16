@@ -5,7 +5,7 @@ module Rabarber
     extend ActiveSupport::Concern
 
     included do
-      before_action :check_permissions
+      before_action :verify_access
     end
 
     class_methods do
@@ -16,7 +16,7 @@ module Rabarber
 
     private
 
-    def check_permissions
+    def verify_access
       return if Permissions.access_granted?(
         send(::Rabarber::Configuration.instance.current_user_method).roles.names, self.class, action_name.to_sym, self
       )

@@ -11,6 +11,9 @@ Layout/LineLength:
 Metrics/BlockLength:
   Enabled: false
 
+Naming/PredicateName:
+  Enabled: false
+
 Rails/ApplicationController:
   Exclude:
     - spec/support/controllers.rb

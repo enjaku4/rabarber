@@ -8,7 +8,7 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
-  describe "#role?" do
+  describe "#has_role?" do
     let(:user) { User.create! }
 
     before { user.assign_roles(:admin, :manager) }
@@ -16,28 +16,18 @@ RSpec.describe Rabarber::HasRoles do
     context "when wrong argument types are given" do
       [nil, 1, ["admin"], Symbol].each do |wrong_argument|
         it "raises an error when '#{wrong_argument}' is given as a role name" do
-          expect { user.role?(wrong_argument) }
+          expect { user.has_role?(wrong_argument) }
             .to raise_error(ArgumentError, "Role names must be symbols or strings")
         end
       end
     end
 
     it "returns true if the user has the given role" do
-      expect(user.role?(:admin)).to be true
+      expect(user.has_role?(:admin)).to be true
     end
 
     it "returns false if the user does not have the given role" do
-      expect(user.role?(:accountant)).to be false
-    end
-  end
-
-  describe "#has_role?" do
-    let(:role_method) { User.new.method(:role?) }
-    let(:has_role_method) { User.new.method(:has_role?) }
-
-    it "is an alias for #role?" do
-      expect(role_method.original_name).to eq(has_role_method.original_name)
-      expect(role_method.source_location).to eq(has_role_method.source_location)
+      expect(user.has_role?(:accountant)).to be false
     end
   end
 

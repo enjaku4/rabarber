@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version.to_s %>]
+  def change
+    create_table :rabarber_roles do |t|
+      t.string :name, null: false, index: { unique: true }
+      t.timestamps
+    end
+
+    create_table :rabarber_roles_roleables, id: false do |t|
+      t.belongs_to :role, index: true
+      t.belongs_to :roleable, index: true
+    end
+
+    add_index :rabarber_roles_roleables, %i[role_id roleable_id], unique: true
+  end
+end

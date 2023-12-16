@@ -1,3 +1,8 @@
+## 0.1.4
+
+- Remove `role?` method as unnecessary
+- Update README
+
 ## 0.1.3
 
 - Revise and update README for clarity

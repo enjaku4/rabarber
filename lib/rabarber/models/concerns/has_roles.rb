@@ -12,11 +12,9 @@ module Rabarber
       has_and_belongs_to_many :roles, class_name: "Rabarber::Role",
                                       foreign_key: "roleable_id",
                                       join_table: "rabarber_roles_roleables"
-
-      alias_method :has_role?, :role?
     end
 
-    def role?(*role_names)
+    def has_role?(*role_names)
       unless role_names.all? { |arg| arg.is_a?(Symbol) || arg.is_a?(String) }
         raise(ArgumentError, "Role names must be symbols or strings")
       end

@@ -109,6 +109,14 @@ To view all the roles assigned to the user, use:
 ```rb
 user.roles
 ```
+This will return an array of `Rabarber::Role` objects.
+
+If you need the list of role names, use:
+
+```rb
+user.roles.names
+```
+
 If you need to list all the role names available in your application, use:
 
 ```rb

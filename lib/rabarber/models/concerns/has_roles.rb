@@ -5,9 +5,9 @@ module Rabarber
     extend ActiveSupport::Concern
 
     included do
-      raise Error, "Rabarber::HasRoles can only be included once" if defined?(@@included) && @@included
+      raise Error, "Rabarber::HasRoles can only be included once" if defined?(@@included) && @@included != name
 
-      @@included = true
+      @@included = name
 
       has_and_belongs_to_many :roles, class_name: "Rabarber::Role",
                                       foreign_key: "roleable_id",

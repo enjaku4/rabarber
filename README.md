@@ -1,12 +1,32 @@
 # Rabarber: Simplified Authorization for Rails
 
-Rabarber is an authorization library primarily designed for use in the web layer of your application, specifically in controllers and views.
+Rabarber is an authorization library for Ruby on Rails, primarily designed for use in the web layer of your application but not limited to that. It provides a set of useful tools for managing user roles and defining authorization rules.
 
-Rabarber takes a slightly different approach compared to some popular libraries. Rabarber focuses on the question: "Who can access this endpoint?". In Rabarber, authorization is expressed not as "A user with the role 'editor' can edit a post," but rather as "A user with the role 'editor' can access a post editing endpoint."
+---
 
 #### Example of Usage:
 
-Consider a CRM where users with different roles have distinct access levels. For instance, the role 'accountant' can interact with invoices and orders but cannot access marketing information, while the role 'marketer' has access to marketing-related data.
+Consider a CRM where users with different roles have distinct access levels. For instance, the role 'accountant' can interact with invoices but cannot access marketing information, while the role 'marketer' has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
+
+---
+
+And this is how your controller might look with Rabarber:
+
+```rb
+class TicketsController < ApplicationController
+  grant_access roles: :admin
+
+  grant_access action: :index, roles: :manager
+  def index
+    ...
+  end
+
+  def delete
+    ...
+  end
+end
+```
+This means that `admin` users can access everything in `TicketsController`, while `manager` role can access only `index` action.
 
 ## Installation
 
@@ -123,7 +143,7 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-Utilize these methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). Adapt them to fit the requirements of your application.
+Utilize these methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). You can also write custom authorization policies based on `#has_role?` method (e.g., to scope the data that the user can access). Adapt these methods to fit the requirements of your application.
 
 ---
 

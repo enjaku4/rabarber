@@ -21,7 +21,7 @@ module Rabarber
     end
 
     def current_user_method=(method_name)
-      unless method_name.is_a?(Symbol) || method_name.is_a?(String)
+      unless [Symbol, String].include?(method_name.class)
         raise ArgumentError, "Method name must be a symbol or a string"
       end
 

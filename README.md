@@ -51,6 +51,10 @@ Next, generate a migration to create tables for storing roles in the database:
 rails g rabarber:roles
 ```
 
+This will create a migration file in `db/migrate` directory.
+
+Replace `raise(Rabarber::Error, "Please specify your user model's table name")` in that file with the name of your user model's table.
+
 Finally, run the migration to apply the changes to the database:
 
 ```

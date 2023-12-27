@@ -1,3 +1,8 @@
+## 0.1.5
+
+- Add missing `foreign_key` option to `CreateRabarberRoles` migration
+- Allow only lowercase alphanumeric characters and underscores in role names
+
 ## 0.1.4
 
 - Remove `role?` method as unnecessary

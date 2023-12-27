@@ -33,8 +33,8 @@ RSpec.describe Rabarber::RolesGenerator do
           end
 
           create_table :rabarber_roles_roleables, id: false do |t|
-            t.belongs_to :role, index: true
-            t.belongs_to :roleable, index: true
+            t.belongs_to :role, index: true, foreign_key: { to_table: :rabarber_roles }
+            t.belongs_to :roleable, index: true, foreign_key: { to_table: raise(Rabarber::Error, "Please specify your user model's table name") }
           end
 
           add_index :rabarber_roles_roleables, %i[role_id roleable_id], unique: true

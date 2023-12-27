@@ -8,26 +8,37 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
+  shared_examples_for "role names are validated" do
+    [nil, 1, ["admin"], Symbol, "admin ", "simple-user", "Admin"].each do |wrong_argument|
+      let(:roles) { [wrong_argument] }
+
+      it "raises an error when '#{wrong_argument}' is given as a role name" do
+        expect { subject }.to raise_error(
+          ArgumentError, "Role names must be symbols or strings and may only contain lowercase letters and underscores"
+        )
+      end
+    end
+  end
+
   describe "#has_role?" do
+    subject { user.has_role?(*roles) }
+
     let(:user) { User.create! }
 
     before { user.assign_roles(:admin, :manager) }
 
-    context "when wrong argument types are given" do
-      [nil, 1, ["admin"], Symbol].each do |wrong_argument|
-        it "raises an error when '#{wrong_argument}' is given as a role name" do
-          expect { user.has_role?(wrong_argument) }
-            .to raise_error(ArgumentError, "Role names must be symbols or strings")
-        end
-      end
+    it_behaves_like "role names are validated"
+
+    context "when the user has at least one of the given roles" do
+      let(:roles) { [:admin, :accountant] }
+
+      it { is_expected.to be true }
     end
 
-    it "returns true if the user has the given role" do
-      expect(user.has_role?(:admin)).to be true
-    end
+    context "when the user does not have the given roles" do
+      let(:roles) { [:accountant] }
 
-    it "returns false if the user does not have the given role" do
-      expect(user.has_role?(:accountant)).to be false
+      it { is_expected.to be false }
     end
   end
 
@@ -36,18 +47,11 @@ RSpec.describe Rabarber::HasRoles do
 
     let(:user) { User.create! }
 
-    context "when wrong argument types are given" do
-      [nil, 1, ["admin"], Symbol].each do |wrong_argument|
-        it "raises an error when '#{wrong_argument}' is given as a role name" do
-          expect { user.assign_roles(wrong_argument) }
-            .to raise_error(ArgumentError, "Role names must be symbols or strings")
-        end
-      end
-    end
-
     context "when create_new is true" do
       let(:create_new) { true }
       let(:roles) { [:admin, :manager] }
+
+      it_behaves_like "role names are validated"
 
       context "when the given roles exist" do
         before do
@@ -94,6 +98,8 @@ RSpec.describe Rabarber::HasRoles do
     context "when create_new is false" do
       let(:create_new) { false }
       let(:roles) { [:admin, :manager] }
+
+      it_behaves_like "role names are validated"
 
       context "when the given roles exist" do
         before do
@@ -144,14 +150,7 @@ RSpec.describe Rabarber::HasRoles do
     let(:user) { User.create! }
     let(:roles) { [:admin, :manager] }
 
-    context "when wrong argument types are given" do
-      [nil, 1, ["admin"], Symbol].each do |wrong_argument|
-        it "raises an error when '#{wrong_argument}' is given as a role name" do
-          expect { user.revoke_roles(wrong_argument) }
-            .to raise_error(ArgumentError, "Role names must be symbols or strings")
-        end
-      end
-    end
+    it_behaves_like "role names are validated"
 
     context "when the user has the given roles" do
       before { user.assign_roles(*roles) }

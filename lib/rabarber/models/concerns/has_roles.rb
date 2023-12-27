@@ -37,14 +37,19 @@ module Rabarber
     private
 
     def validate_role_names(role_names)
-      return if role_names.all? { |arg| arg.is_a?(Symbol) || arg.is_a?(String) }
+      return if role_names.all? do |role_name|
+        [Symbol, String].include?(role_name.class) && role_name.match?(/\A[a-z0-9_]+\z/)
+      end
 
-      raise(ArgumentError, "Role names must be symbols or strings")
+      raise(
+        ArgumentError,
+        "Role names must be symbols or strings and may only contain lowercase letters and underscores"
+      )
     end
 
     def create_new_roles(role_names)
       new_roles = role_names - Role.names
-      new_roles.each { |role| Role.create!(name: role) }
+      new_roles.each { |role_name| Role.create!(name: role_name) }
     end
   end
 end

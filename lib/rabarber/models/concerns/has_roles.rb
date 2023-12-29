@@ -9,6 +9,7 @@ module Rabarber
 
       @@included = name
 
+      # TODO: try to make roles return role names instead of role objects
       has_and_belongs_to_many :roles, class_name: "Rabarber::Role",
                                       foreign_key: "roleable_id",
                                       join_table: "rabarber_roles_roleables"

@@ -1,3 +1,9 @@
+## 1.0.0
+
+- Drop support for Ruby 2.7
+- Add support for Ruby 3.3
+- Various minor improvements
+
 ## 0.1.5
 
 - Add missing `foreign_key` option to `CreateRabarberRoles` migration
@@ -6,11 +12,10 @@
 ## 0.1.4
 
 - Remove `role?` method as unnecessary
-- Update README
 
 ## 0.1.3
 
-- Revise and update README for clarity
+- Fully revise and update README for clarity
 
 ## 0.1.2
 

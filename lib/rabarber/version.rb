@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: bump version
-
 module Rabarber
-  VERSION = "0.1.5"
+  VERSION = "1.0.0"
 end

@@ -1,3 +1,7 @@
+## 1.0.1
+
+- Various improvements for gem development
+
 ## 1.0.0
 
 - Drop support for Ruby 2.7

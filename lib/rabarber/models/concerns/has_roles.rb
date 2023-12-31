@@ -9,6 +9,7 @@ module Rabarber
 
       @@included = name
 
+      # TODO: try has_many :through and dependent: :destroy in order to remove the foreign key
       has_and_belongs_to_many :rabarber_roles, class_name: "Rabarber::Role",
                                                foreign_key: "roleable_id",
                                                join_table: "rabarber_roles_roleables"

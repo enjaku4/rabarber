@@ -2,6 +2,10 @@
 
 class DummyApplication < Rails::Application; end
 
+Rails.application.configure do
+  config.eager_load = false
+end
+
 DummyApplication.initialize!
 
 DummyApplication.routes.draw do

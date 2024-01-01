@@ -20,6 +20,22 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
+  describe "#roles" do
+    subject { user.roles }
+
+    let(:user) { User.create! }
+
+    context "when the user has no roles" do
+      it { is_expected.to eq([]) }
+    end
+
+    context "when the user has some roles" do
+      before { user.assign_roles(:admin, :manager) }
+
+      it { is_expected.to contain_exactly(:admin, :manager) }
+    end
+  end
+
   describe "#has_role?" do
     subject { user.has_role?(*roles) }
 

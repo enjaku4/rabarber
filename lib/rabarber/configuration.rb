@@ -21,9 +21,7 @@ module Rabarber
     end
 
     def current_user_method=(method_name)
-      unless [Symbol, String].include?(method_name.class)
-        raise ConfigurationError, "current_user_method must be a symbol or string"
-      end
+      raise ConfigurationError, "current_user_method must be a symbol" unless method_name.is_a?(Symbol)
 
       @current_user_method = method_name.to_sym
     end

@@ -7,7 +7,7 @@ Rabarber is an authorization library for Ruby on Rails, primarily designed for u
 
 ---
 
-#### Example of Usage:
+**Example of Usage**:
 
 Consider a CRM where users with different roles have distinct access levels. For instance, the role 'accountant' can interact with invoices but cannot access marketing information, while the role 'marketer' has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
 
@@ -78,7 +78,7 @@ end
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
 - `when_unauthorized` must be a lambda where you can define your actions when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
 
-## Usage
+## Roles
 
 Include `Rabarber::HasRoles` module in your model representing users in your application:
 
@@ -89,9 +89,9 @@ class User < ApplicationRecord
 end
 ```
 
-### This adds the following methods:
+This adds the following methods:
 
-#### `#assign_roles`
+**`#assign_roles`**
 
 To assign roles to the user, use:
 
@@ -110,7 +110,7 @@ Rabarber::Role.create(name: "manager")
 ```
 The role names are unique.
 
-#### `#revoke_roles`
+**`#revoke_roles`**
 
 To revoke roles, use:
 
@@ -119,7 +119,7 @@ user.revoke_roles(:accountant, :marketer)
 ```
 If any of the specified roles doesn't exist or the user doesn't have the role you want to revoke, it will be ignored.
 
-#### `#has_role?`
+**`#has_role?`**
 
 To check whether the user has a role, use:
 
@@ -129,7 +129,7 @@ user.has_role?(:accountant, :marketer)
 
 It returns `true` if the user has at least one role and `false` otherwise.
 
-#### `#roles`
+**`#roles`**
 
 To view all the roles assigned to the user, use:
 
@@ -147,9 +147,7 @@ Rabarber::Role.names
 
 Utilize the aforementioned methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). You can also write custom authorization policies based on `#has_role?` method (e.g., to scope the data that the user can access). Adapt these methods to fit the requirements of your application.
 
----
-
-### Authorization Rules
+## Authorization Rules
 
 Include `Rabarber::Authorization` module into the controller that needs authorization rules to be applied (authorization rules will be applied to the controller and its children). Typically, it is `ApplicationController`, but it can be any controller.
 
@@ -159,7 +157,7 @@ class ApplicationController < ActionController::Base
   ...
 end
 ```
-This adds `.grant_access` method to the controller and its children. This method allows you to define the authorization rules.
+This adds `.grant_access` method which allows you to define the authorization rules.
 
 The most basic usage of the method is as follows:
 
@@ -260,9 +258,7 @@ end
 ```
 This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
 
----
-
-### View Helpers
+## View Helpers
 
 Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. The usage is straightforward:
 

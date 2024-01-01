@@ -21,21 +21,19 @@ module Rabarber
     end
 
     def current_user_method=(method_name)
-      unless [Symbol, String].include?(method_name.class)
-        raise ArgumentError, "Method name must be a symbol or a string"
-      end
+      raise ConfigurationError, "current_user_method must be a symbol" unless method_name.is_a?(Symbol)
 
       @current_user_method = method_name.to_sym
     end
 
     def must_have_roles=(value)
-      raise ArgumentError, "Value must be a boolean" unless [true, false].include?(value)
+      raise ConfigurationError, "must_have_roles must be a boolean" unless [true, false].include?(value)
 
       @must_have_roles = value
     end
 
     def when_unauthorized=(callable)
-      raise ArgumentError, "Proc is expected" unless callable.is_a?(Proc)
+      raise ConfigurationError, "when_unauthorized must be a proc" unless callable.is_a?(Proc)
 
       @when_unauthorized = callable
     end

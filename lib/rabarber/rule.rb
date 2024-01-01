@@ -5,9 +5,9 @@ module Rabarber
     attr_reader :action, :roles, :custom
 
     def initialize(action, roles, custom)
-      @action = action
-      @roles = Array(roles)
-      @custom = custom
+      @action = validate_action(action)
+      @roles = validate_roles(roles)
+      @custom = validate_custom_rule(custom)
     end
 
     def verify_access(user_roles, custom_rule_receiver, action_name = nil)
@@ -36,6 +36,31 @@ module Rabarber
       else
         custom_rule_receiver.send(custom)
       end
+    end
+
+    def validate_action(action)
+      return action if action.nil? || action.is_a?(Symbol)
+
+      raise InvalidArgumentError, "Action name must be a symbol"
+    end
+
+    def validate_roles(roles)
+      roles_array = Array(roles)
+
+      return roles_array if roles_array.empty? || roles_array.all? do |role|
+        role.is_a?(Symbol) && role.match?(Role::NAME_REGEX)
+      end
+
+      raise(
+        InvalidArgumentError,
+        "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+      )
+    end
+
+    def validate_custom_rule(custom)
+      return custom if custom.nil? || custom.is_a?(Symbol) || custom.is_a?(Proc)
+
+      raise InvalidArgumentError, "Custom rule must be a symbol or a proc"
     end
   end
 end

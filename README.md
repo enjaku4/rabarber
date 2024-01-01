@@ -88,9 +88,10 @@ class User < ApplicationRecord
   ...
 end
 ```
+
 This adds the following methods:
 
-#### `#assign_roles`
+**`#assign_roles`**
 
 To assign roles to the user, use:
 
@@ -109,7 +110,7 @@ Rabarber::Role.create(name: "manager")
 ```
 The role names are unique.
 
-#### `#revoke_roles`
+**`#revoke_roles`**
 
 To revoke roles, use:
 
@@ -118,7 +119,7 @@ user.revoke_roles(:accountant, :marketer)
 ```
 If any of the specified roles doesn't exist or the user doesn't have the role you want to revoke, it will be ignored.
 
-#### `#has_role?`
+**`#has_role?`**
 
 To check whether the user has a role, use:
 
@@ -128,7 +129,7 @@ user.has_role?(:accountant, :marketer)
 
 It returns `true` if the user has at least one role and `false` otherwise.
 
-#### `#roles`
+**`#roles`**
 
 To view all the roles assigned to the user, use:
 

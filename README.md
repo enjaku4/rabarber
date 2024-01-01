@@ -136,13 +136,6 @@ To view all the roles assigned to the user, use:
 ```rb
 user.roles
 ```
-This will return an array of `Rabarber::Role` objects.
-
-If you need the list of role names, use:
-
-```rb
-user.roles.names
-```
 
 If you need to list all the role names available in your application, use:
 
@@ -150,7 +143,9 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-Utilize these methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). You can also write custom authorization policies based on `#has_role?` method (e.g., to scope the data that the user can access). Adapt these methods to fit the requirements of your application.
+`Rabarber::Role` is a model that represents roles within your application. It has a single attribute, `name`, which is validated for both uniqueness and presence. You can treat `Rabarber::Role` as a regular Rails model and use Active Record methods on it if necessary.
+
+Utilize the aforementioned methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). You can also write custom authorization policies based on `#has_role?` method (e.g., to scope the data that the user can access). Adapt these methods to fit the requirements of your application.
 
 ---
 

@@ -1,6 +1,11 @@
+## 1.0.2
+
+- Various enhancements for gem development and release
+- Modify `HasRoles#roles` method to return an array of role names instead of `Rabarber::Role` objects
+
 ## 1.0.1
 
-- Various improvements for gem development
+- Various enhancements for gem development
 
 ## 1.0.0
 
@@ -15,7 +20,7 @@
 
 ## 0.1.4
 
-- Remove `role?` method as unnecessary
+- Remove `HasRoles#role?` method as unnecessary
 
 ## 0.1.3
 

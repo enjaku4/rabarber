@@ -20,6 +20,22 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
+  describe "#roles" do
+    subject { user.roles }
+
+    let(:user) { User.create! }
+
+    context "when the user has no roles" do
+      it { is_expected.to eq([]) }
+    end
+
+    context "when the user has some roles" do
+      before { user.assign_roles(:admin, :manager) }
+
+      it { is_expected.to contain_exactly(:admin, :manager) }
+    end
+  end
+
   describe "#has_role?" do
     subject { user.has_role?(*roles) }
 
@@ -62,7 +78,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles.names).to match_array(roles)
+          expect(user.roles).to match_array(roles)
         end
 
         it "does not create new roles" do
@@ -73,7 +89,7 @@ RSpec.describe Rabarber::HasRoles do
       context "when the given roles do not exist" do
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles.names).to match_array(roles)
+          expect(user.roles).to match_array(roles)
         end
 
         it "creates new roles" do
@@ -86,7 +102,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles.names).to match_array(roles)
+          expect(user.roles).to match_array(roles)
         end
 
         it "creates new roles" do
@@ -110,7 +126,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles.names).to match_array(roles)
+          expect(user.roles).to match_array(roles)
         end
 
         it "does not create new roles" do
@@ -134,7 +150,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles.names).to eq([roles.first])
+          expect(user.roles).to eq([roles.first])
         end
 
         it "does not create new roles" do
@@ -166,7 +182,7 @@ RSpec.describe Rabarber::HasRoles do
 
       it "does not revoke any roles from the user" do
         subject
-        expect(user.roles.names).to eq([:accountant])
+        expect(user.roles).to eq([:accountant])
       end
     end
 

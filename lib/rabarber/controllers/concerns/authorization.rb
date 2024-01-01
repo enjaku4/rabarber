@@ -18,7 +18,7 @@ module Rabarber
 
     def verify_access
       return if Permissions.access_granted?(
-        send(::Rabarber::Configuration.instance.current_user_method).roles.names, self.class, action_name.to_sym, self
+        send(::Rabarber::Configuration.instance.current_user_method).roles, self.class, action_name.to_sym, self
       )
 
       ::Rabarber::Configuration.instance.when_unauthorized.call(self)

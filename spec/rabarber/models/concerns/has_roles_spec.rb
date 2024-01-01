@@ -15,7 +15,7 @@ RSpec.describe Rabarber::HasRoles do
       it "raises an error when '#{wrong_argument}' is given as a role name" do
         expect { subject }.to raise_error(
           Rabarber::InvalidArgumentError,
-          "Role names must be symbols and may only contain lowercase letters and underscores"
+          "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
         )
       end
     end

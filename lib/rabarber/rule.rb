@@ -51,7 +51,10 @@ module Rabarber
         role.is_a?(Symbol) && role.match?(Role::NAME_REGEX)
       end
 
-      raise InvalidArgumentError, "Role names must be symbols and may only contain lowercase letters and underscores"
+      raise(
+        InvalidArgumentError,
+        "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+      )
     end
 
     def validate_custom_rule(custom)

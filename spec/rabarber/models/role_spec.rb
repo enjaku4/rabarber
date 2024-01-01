@@ -25,6 +25,20 @@ RSpec.describe Rabarber::Role do
         expect(role.errors.added?(:name, :taken, value: "admin")).to be true
       end
     end
+
+    describe "format of name" do
+      ["admin 1", "admin!", "super-admin", "Admin"].each do |role_name|
+        context "when role name is '#{role_name}'" do
+          let(:role) { described_class.create(name: role_name) }
+
+          it { is_expected.to be_invalid }
+
+          it "has the 'name is invalid' error" do
+            expect(role.errors.added?(:name, :invalid, value: role_name)).to be true
+          end
+        end
+      end
+    end
   end
 
   describe ".names" do

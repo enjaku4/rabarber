@@ -43,7 +43,10 @@ module Rabarber
     def validate_role_names(role_names)
       return if role_names.all? { |role_name| role_name.is_a?(Symbol) && role_name.to_s.match?(Role::NAME_REGEX) }
 
-      raise(InvalidArgumentError, "Role names must be symbols and may only contain lowercase letters and underscores")
+      raise(
+        InvalidArgumentError,
+        "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+      )
     end
 
     def create_new_roles(role_names)

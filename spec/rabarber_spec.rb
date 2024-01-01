@@ -36,7 +36,7 @@ RSpec.describe Rabarber do
         [nil, 1, [], {}, User].each do |value|
           it "raises an ArgumentError when '#{value}' is given" do
             expect { described_class.configure { |config| config.current_user_method = value } }
-              .to raise_error(ArgumentError, "Method name must be a symbol or a string")
+              .to raise_error(Rabarber::ConfigurationError, "current_user_method must be a symbol or string")
           end
         end
       end
@@ -45,7 +45,7 @@ RSpec.describe Rabarber do
         [nil, 1, "foo", :foo, [], {}, User].each do |value|
           it "raises an ArgumentError when '#{value}' is given" do
             expect { described_class.configure { |config| config.must_have_roles = value } }
-              .to raise_error(ArgumentError, "Value must be a boolean")
+              .to raise_error(Rabarber::ConfigurationError, "must_have_roles must be a boolean")
           end
         end
       end
@@ -54,7 +54,7 @@ RSpec.describe Rabarber do
         [nil, 1, "foo", :foo, [], {}, User].each do |value|
           it "raises an ArgumentError when '#{value}' is given" do
             expect { described_class.configure { |config| config.when_unauthorized = value } }
-              .to raise_error(ArgumentError, "Proc is expected")
+              .to raise_error(Rabarber::ConfigurationError, "when_unauthorized must be a proc")
           end
         end
       end

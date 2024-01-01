@@ -46,7 +46,7 @@ module Rabarber
       end
 
       raise(
-        ArgumentError,
+        InvalidRoleNameError,
         "Role names must be symbols or strings and may only contain lowercase letters and underscores"
       )
     end

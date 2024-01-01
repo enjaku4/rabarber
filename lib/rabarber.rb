@@ -23,4 +23,6 @@ module Rabarber
   end
 
   class Error < StandardError; end
+  class ConfigurationError < Error; end
+  class InvalidRoleNameError < Error; end
 end

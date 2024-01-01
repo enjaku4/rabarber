@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Enhance clarity by improving error types and messages
+- Resolve inconsistency in types of role names
+
 ## 1.0.2
 
 - Various enhancements for gem development and release

@@ -6,7 +6,7 @@ RSpec.describe Rabarber::Rule do
       [1, ["index"], Symbol, "index"].each do |wrong_action_name|
         it "raises an error when '#{wrong_action_name}' is given as an action name" do
           expect { described_class.new(wrong_action_name, nil, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError, "Action name must be a symbol"
+            Rabarber::InvalidArgumentError, "Action name must be a Symbol"
           )
         end
       end
@@ -17,7 +17,7 @@ RSpec.describe Rabarber::Rule do
         it "raises an error when '#{wrong_roles}' are given as roles" do
           expect { described_class.new(nil, wrong_roles, nil) }.to raise_error(
             Rabarber::InvalidArgumentError,
-            "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+            "Role names must be Symbols and may only contain lowercase letters, numbers and underscores"
           )
         end
       end
@@ -28,7 +28,7 @@ RSpec.describe Rabarber::Rule do
         it "raises an error when '#{wrong_custom_rule}' is given as a custom rule" do
           expect { described_class.new(nil, nil, wrong_custom_rule) }.to raise_error(
             Rabarber::InvalidArgumentError,
-            "Custom rule must be a symbol or a proc"
+            "Custom rule must be a Symbol or a Proc"
           )
         end
       end

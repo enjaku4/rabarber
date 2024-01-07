@@ -48,7 +48,7 @@ module Rabarber
 
       raise(
         InvalidArgumentError,
-        "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+        "Role names must be Symbols and may only contain lowercase letters, numbers and underscores"
       )
     end
 

@@ -42,7 +42,7 @@ module Rabarber
     def validate_action(action)
       return action if action.nil? || action.is_a?(Symbol)
 
-      raise InvalidArgumentError, "Action name must be a symbol"
+      raise InvalidArgumentError, "Action name must be a Symbol"
     end
 
     # TODO
@@ -55,7 +55,7 @@ module Rabarber
 
       raise(
         InvalidArgumentError,
-        "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+        "Role names must be Symbols and may only contain lowercase letters, numbers and underscores"
       )
     end
 
@@ -63,7 +63,7 @@ module Rabarber
     def validate_custom_rule(custom)
       return custom if custom.nil? || custom.is_a?(Symbol) || custom.is_a?(Proc)
 
-      raise InvalidArgumentError, "Custom rule must be a symbol or a proc"
+      raise InvalidArgumentError, "Custom rule must be a Symbol or a Proc"
     end
   end
 end

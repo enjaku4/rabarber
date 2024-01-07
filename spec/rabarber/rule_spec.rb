@@ -3,7 +3,7 @@
 RSpec.describe Rabarber::Rule do
   describe "validations" do
     context "when action is invalid" do
-      [1, ["index"], "", Symbol, {}].each do |wrong_action_name|
+      [1, ["index"], "", Symbol, {}, :""].each do |wrong_action_name|
         it "raises an error when '#{wrong_action_name}' is given as an action name" do
           expect { described_class.new(wrong_action_name, nil, nil) }.to raise_error(
             Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
@@ -24,7 +24,7 @@ RSpec.describe Rabarber::Rule do
     end
 
     context "when custom rule is invalid" do
-      [1, ["rule"], "", Symbol, [], {}].each do |wrong_custom_rule|
+      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_custom_rule|
         it "raises an error when '#{wrong_custom_rule}' is given as a custom rule" do
           expect { described_class.new(nil, nil, wrong_custom_rule) }.to raise_error(
             Rabarber::InvalidArgumentError,

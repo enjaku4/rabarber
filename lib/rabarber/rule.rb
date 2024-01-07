@@ -39,15 +39,15 @@ module Rabarber
     end
 
     def pre_process_action(action)
-      return action.to_sym if action.is_a?(String) && action.present?
-      return action if action.nil? || action.is_a?(Symbol)
+      return action.to_sym if (action.is_a?(String) || action.is_a?(Symbol)) && action.present?
+      return action if action.nil?
 
       raise InvalidArgumentError, "Action name must be a Symbol or a String"
     end
 
     def pre_process_custom_rule(custom)
-      return custom.to_sym if custom.is_a?(String) && action.present?
-      return custom if custom.nil? || custom.is_a?(Symbol) || custom.is_a?(Proc)
+      return custom.to_sym if (custom.is_a?(String) || custom.is_a?(Symbol)) && action.present?
+      return custom if custom.nil? || custom.is_a?(Proc)
 
       raise InvalidArgumentError, "Custom rule must be a Symbol, a String, or a Proc"
     end

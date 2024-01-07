@@ -32,7 +32,7 @@ RSpec.describe Rabarber do
 
     context "when misconfigured" do
       context "when current_user_method is not a symbol or a string" do
-        [nil, 1, [], {}, User].each do |value|
+        [nil, 1, [], {}, User, "", :""].each do |value|
           it "raises an ArgumentError when '#{value}' is given" do
             expect { described_class.configure { |config| config.current_user_method = value } }
               .to raise_error(

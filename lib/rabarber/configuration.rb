@@ -21,7 +21,7 @@ module Rabarber
     end
 
     def current_user_method=(method_name)
-      unless method_name.is_a?(Symbol) || method_name.is_a?(String)
+      unless (method_name.is_a?(Symbol) || method_name.is_a?(String)) && method_name.present?
         raise ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
       end
 

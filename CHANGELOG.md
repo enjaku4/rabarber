@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Allow to use strings as role names
+
 ## 1.0.3
 
 - Enhance clarity by improving error types and messages

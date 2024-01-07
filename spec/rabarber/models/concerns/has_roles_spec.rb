@@ -9,13 +9,13 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   shared_examples_for "role names are validated" do
-    [nil, 1, ["admin"], Symbol, "admin", :"simple-user", :Admin, :"admin "].each do |wrong_argument|
+    [nil, 1, ["admin"], [""], Symbol, :"a-user", :Admin, "Admin", "admin ", []].each do |wrong_argument|
       let(:roles) { [wrong_argument] }
 
       it "raises an error when '#{wrong_argument}' is given as a role name" do
         expect { subject }.to raise_error(
           Rabarber::InvalidArgumentError,
-          "Role names must be symbols and may only contain lowercase letters, numbers and underscores"
+          "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
         )
       end
     end

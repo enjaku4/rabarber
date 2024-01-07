@@ -9,7 +9,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   shared_examples_for "role names are validated" do
-    [nil, 1, ["admin"], Symbol, :"a-user", :Admin, :"admin ", "a-user", "Admin", "admin "].each do |wrong_argument|
+    [nil, 1, ["admin"], Symbol, :"a-user", :Admin, :"admin ", "a-user", "Admin", "admin ", []].each do |wrong_argument|
       let(:roles) { [wrong_argument] }
 
       it "raises an error when '#{wrong_argument}' is given as a role name" do

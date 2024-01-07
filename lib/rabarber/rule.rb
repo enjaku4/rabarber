@@ -38,12 +38,14 @@ module Rabarber
       end
     end
 
+    # TODO
     def validate_action(action)
       return action if action.nil? || action.is_a?(Symbol)
 
       raise InvalidArgumentError, "Action name must be a symbol"
     end
 
+    # TODO
     def validate_roles(roles)
       roles_array = Array(roles)
 
@@ -57,6 +59,7 @@ module Rabarber
       )
     end
 
+    # TODO
     def validate_custom_rule(custom)
       return custom if custom.nil? || custom.is_a?(Symbol) || custom.is_a?(Proc)
 

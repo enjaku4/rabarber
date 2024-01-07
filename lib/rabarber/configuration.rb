@@ -20,6 +20,7 @@ module Rabarber
       end
     end
 
+    # TODO
     def current_user_method=(method_name)
       raise ConfigurationError, "current_user_method must be a symbol" unless method_name.is_a?(Symbol)
 

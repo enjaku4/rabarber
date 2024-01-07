@@ -18,12 +18,14 @@ module Rabarber
       rabarber_roles.names
     end
 
+    # TODO
     def has_role?(*role_names)
       validate_role_names(role_names)
 
       (roles & role_names).any?
     end
 
+    # TODO
     def assign_roles(*role_names, create_new: true)
       validate_role_names(role_names)
 
@@ -32,6 +34,7 @@ module Rabarber
       rabarber_roles << Role.where(name: role_names) - rabarber_roles
     end
 
+    # TODO
     def revoke_roles(*role_names)
       validate_role_names(role_names)
 

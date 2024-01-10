@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Add co-author: [trafium](https://github.com/trafium)
+
 ## 1.0.4
 
 - Allow to use strings as role names

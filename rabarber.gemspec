@@ -5,7 +5,7 @@ require_relative "lib/rabarber/version"
 Gem::Specification.new do |spec|
   spec.name = "rabarber"
   spec.version = Rabarber::VERSION
-  spec.authors = ["enjaku4"]
+  spec.authors = ["enjaku4", "trafium"]
   spec.email = ["enjaku4@gmail.com"]
 
   spec.summary = "Simple authorization library for Ruby on Rails."

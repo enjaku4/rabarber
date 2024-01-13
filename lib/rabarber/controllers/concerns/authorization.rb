@@ -9,7 +9,9 @@ module Rabarber
     end
 
     class_methods do
-      def grant_access(action: nil, roles: nil, if: nil)
+      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
+        # TODO: validate that either if or unless is present, but not both
+        # TODO: implement negative rules
         Permissions.write(self, action, roles, binding.local_variable_get(:if))
       end
     end

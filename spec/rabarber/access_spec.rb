@@ -6,16 +6,16 @@ RSpec.describe Rabarber::Access do
   before { permissions.extend(described_class) }
 
   describe ".access_granted?" do
-    subject { permissions.access_granted?([:admin, :client], DummyController, :index, custom_rule_receiver) }
+    subject { permissions.access_granted?([:admin, :client], DummyController, :index, dynamic_rule_receiver) }
 
-    let(:custom_rule_receiver) { double }
+    let(:dynamic_rule_receiver) { double }
 
     context "if controller is accessible" do
       before do
         allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, custom_rule_receiver).and_return(true)
+          .with([:admin, :client], DummyController, dynamic_rule_receiver).and_return(true)
         allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, custom_rule_receiver).and_return(false)
+          .with([:admin, :client], DummyController, :index, dynamic_rule_receiver).and_return(false)
       end
 
       it "returns true" do
@@ -26,9 +26,9 @@ RSpec.describe Rabarber::Access do
     context "if action is accessible" do
       before do
         allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, custom_rule_receiver).and_return(false)
+          .with([:admin, :client], DummyController, dynamic_rule_receiver).and_return(false)
         allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, custom_rule_receiver).and_return(true)
+          .with([:admin, :client], DummyController, :index, dynamic_rule_receiver).and_return(true)
       end
 
       it "returns true" do
@@ -39,9 +39,9 @@ RSpec.describe Rabarber::Access do
     context "if controller and action are not accessible" do
       before do
         allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, custom_rule_receiver).and_return(false)
+          .with([:admin, :client], DummyController, dynamic_rule_receiver).and_return(false)
         allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, custom_rule_receiver).and_return(false)
+          .with([:admin, :client], DummyController, :index, dynamic_rule_receiver).and_return(false)
       end
 
       it "returns false" do
@@ -51,9 +51,9 @@ RSpec.describe Rabarber::Access do
   end
 
   describe ".controller_accessible?" do
-    subject { permissions.controller_accessible?([:admin], controller, custom_rule_receiver) }
+    subject { permissions.controller_accessible?([:admin], controller, dynamic_rule_receiver) }
 
-    let(:custom_rule_receiver) { double }
+    let(:dynamic_rule_receiver) { double }
 
     before { permissions.write(DummyParentController, nil, [:admin], nil) }
 
@@ -63,7 +63,7 @@ RSpec.describe Rabarber::Access do
       context "if role has access to the controller" do
         before do
           allow(permissions.controller_rules[controller]).to receive(:verify_access)
-            .with([:admin], custom_rule_receiver).and_return(true)
+            .with([:admin], dynamic_rule_receiver).and_return(true)
         end
 
         it "returns true" do
@@ -74,7 +74,7 @@ RSpec.describe Rabarber::Access do
       context "if role doesn\'t have access to the controller" do
         before do
           allow(permissions.controller_rules[controller]).to receive(:verify_access)
-            .with([:admin], custom_rule_receiver).and_return(false)
+            .with([:admin], dynamic_rule_receiver).and_return(false)
         end
 
         it "returns false" do
@@ -89,7 +89,7 @@ RSpec.describe Rabarber::Access do
       context "if role has access to the controller's parent" do
         before do
           allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
-            .with([:admin], custom_rule_receiver).and_return(true)
+            .with([:admin], dynamic_rule_receiver).and_return(true)
         end
 
         it "returns true" do
@@ -100,7 +100,7 @@ RSpec.describe Rabarber::Access do
       context "if role doesn\'t have access to the controller's parent" do
         before do
           allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
-            .with([:admin], custom_rule_receiver).and_return(false)
+            .with([:admin], dynamic_rule_receiver).and_return(false)
         end
 
         it "returns false" do
@@ -119,9 +119,9 @@ RSpec.describe Rabarber::Access do
   end
 
   describe ".action_accessible?" do
-    subject { permissions.action_accessible?([:admin], controller, action, custom_rule_receiver) }
+    subject { permissions.action_accessible?([:admin], controller, action, dynamic_rule_receiver) }
 
-    let(:custom_rule_receiver) { double }
+    let(:dynamic_rule_receiver) { double }
 
     before { permissions.write(DummyController, :index, [:admin], nil) }
 
@@ -134,7 +134,7 @@ RSpec.describe Rabarber::Access do
         context "if role has access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], custom_rule_receiver, action).and_return(true)
+              .with([:admin], dynamic_rule_receiver, action).and_return(true)
           end
 
           it "returns true" do
@@ -145,7 +145,7 @@ RSpec.describe Rabarber::Access do
         context "if role doesn\'t have access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], custom_rule_receiver, action).and_return(false)
+              .with([:admin], dynamic_rule_receiver, action).and_return(false)
           end
 
           it "returns false" do

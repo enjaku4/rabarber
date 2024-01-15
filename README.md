@@ -1,4 +1,4 @@
-<!-- TODO explain unless, name custom rules dynamic rules, elaborate more on scoping and data access layer -->
+<!-- TODO -->
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -10,7 +10,7 @@ Rabarber is an authorization library for Ruby on Rails, primarily designed for u
 
 **Example of Usage**:
 
-Consider a CRM where users with different roles have distinct access levels. For instance, the role 'accountant' can interact with invoices but cannot access marketing information, while the role 'marketer' has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
+Consider a CRM where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `marketer` has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
 
 ---
 
@@ -146,7 +146,7 @@ Rabarber::Role.names
 
 `Rabarber::Role` is a model that represents roles within your application. It has a single attribute, `name`, which is validated for both uniqueness and presence. You can treat `Rabarber::Role` as a regular Rails model and use Active Record methods on it if necessary.
 
-Utilize the aforementioned methods to manipulate user roles. For example, create a custom UI for managing roles or assign necessary roles during migration or runtime (e.g., when the user is created). You can also write custom authorization policies based on `#has_role?` method (e.g., to scope the data that the user can access). Adapt these methods to fit the requirements of your application.
+Utilize the aforementioned methods to manipulate user roles. For example, create a UI for managing roles or assign roles during migration or runtime (e.g. when the user is created). You are also encouraged to write your own authorization policies based on `#has_role?` method (e.g. to scope the data that the role can access). Adapt the tools Rabarber provides to fit the requirements of your application.
 
 ## Authorization Rules
 
@@ -222,7 +222,7 @@ This allows everyone to access `OrdersController` and its children and `index` a
 
 If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to see anything.
 
-For more complex rules, Rabarber provides the following:
+For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
 class OrdersController < ApplicationController
@@ -243,9 +243,9 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a custom rule as `if` argument. It can be a symbol (the method with the same name will be called) or a lambda.
+You can pass a dynamic rule as `if` argument. It can be a symbol (the method with the same name will be called) or a lambda.
 
-Rules defined in children don't override parent rules but rather add to them:
+Rules defined in child classes don't override parent rules but rather add to them:
 ```rb
 class Crm::BaseController < ApplicationController
   grant_access roles: :admin

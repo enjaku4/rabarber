@@ -2,16 +2,16 @@
 
 module Rabarber
   class Rule
-    attr_reader :action, :roles, :custom
+    attr_reader :action, :roles, :dynamic_rule
 
-    def initialize(action, roles, custom)
+    def initialize(action, roles, dynamic_rule)
       @action = pre_process_action(action)
       @roles = RoleNames.pre_process(Array(roles))
-      @custom = pre_process_custom_rule(custom)
+      @dynamic_rule = pre_process_dynamic_rule(dynamic_rule)
     end
 
-    def verify_access(user_roles, custom_rule_receiver, action_name = nil)
-      action_accessible?(action_name) && roles_permitted?(user_roles) && custom_rule_followed?(custom_rule_receiver)
+    def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)
+      action_accessible?(action_name) && roles_permitted?(user_roles) && dynamic_rule_followed?(dynamic_rule_receiver)
     end
 
     def action_accessible?(action_name)
@@ -24,17 +24,17 @@ module Rabarber
       roles.empty? || (roles & user_roles).any?
     end
 
-    def custom_rule_followed?(custom_rule_receiver)
-      custom.nil? || execute_custom_rule(custom_rule_receiver)
+    def dynamic_rule_followed?(dynamic_rule_receiver)
+      dynamic_rule.nil? || execute_dynamic_rule(dynamic_rule_receiver)
     end
 
     private
 
-    def execute_custom_rule(custom_rule_receiver)
-      if custom.is_a?(Proc)
-        custom_rule_receiver.instance_exec(&custom)
+    def execute_dynamic_rule(dynamic_rule_receiver)
+      if dynamic_rule.is_a?(Proc)
+        dynamic_rule_receiver.instance_exec(&dynamic_rule)
       else
-        custom_rule_receiver.send(custom)
+        dynamic_rule_receiver.send(dynamic_rule)
       end
     end
 
@@ -45,11 +45,11 @@ module Rabarber
       raise InvalidArgumentError, "Action name must be a Symbol or a String"
     end
 
-    def pre_process_custom_rule(custom)
-      return custom.to_sym if (custom.is_a?(String) || custom.is_a?(Symbol)) && action.present?
-      return custom if custom.nil? || custom.is_a?(Proc)
+    def pre_process_dynamic_rule(dynamic_rule)
+      return dynamic_rule.to_sym if (dynamic_rule.is_a?(String) || dynamic_rule.is_a?(Symbol)) && action.present?
+      return dynamic_rule if dynamic_rule.nil? || dynamic_rule.is_a?(Proc)
 
-      raise InvalidArgumentError, "Custom rule must be a Symbol, a String, or a Proc"
+      raise InvalidArgumentError, "Dynamic rule must be a Symbol, a String, or a Proc"
     end
   end
 end

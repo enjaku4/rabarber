@@ -104,7 +104,7 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
     end
 
-    describe "when a custom rule is defined as a lambda" do
+    describe "when a dynamic rule is defined as a lambda" do
       context "when the lambda returns true" do
         before { user.assign_roles(:admin) }
 
@@ -120,7 +120,7 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
     end
 
-    describe "when a custom rule is defined as a method" do
+    describe "when a dynamic rule is defined as a method" do
       context "when the method returns true" do
         before { user.assign_roles(:admin) }
 

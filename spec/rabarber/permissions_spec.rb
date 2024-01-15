@@ -5,13 +5,13 @@ RSpec.describe Rabarber::Permissions do
 
   describe ".write" do
     let(:rule) { instance_double(Rabarber::Rule) }
-    let(:custom_rule) { ->(foo) { foo } }
+    let(:dynamic_rule) { ->(foo) { foo } }
 
     context "when action is given" do
-      before { allow(Rabarber::Rule).to receive(:new).with(:index, :admin, custom_rule).and_return(rule) }
+      before { allow(Rabarber::Rule).to receive(:new).with(:index, :admin, :dynamic_rule).and_return(rule) }
 
       it "writes permissions to the action rules storage" do
-        expect { permissions.write(DummyController, :index, :admin, custom_rule) }
+        expect { permissions.write(DummyController, :index, :admin, :dynamic_rule) }
           .to change { permissions.instance.storage[:action_rules] }
           .to({ DummyController => [rule] })
       end

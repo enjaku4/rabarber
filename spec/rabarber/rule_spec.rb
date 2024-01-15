@@ -23,12 +23,12 @@ RSpec.describe Rabarber::Rule do
       end
     end
 
-    context "when custom rule is invalid" do
-      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_custom_rule|
-        it "raises an error when '#{wrong_custom_rule}' is given as a custom rule" do
-          expect { described_class.new(nil, nil, wrong_custom_rule) }.to raise_error(
+    context "when dynamic rule is invalid" do
+      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
+        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
+          expect { described_class.new(nil, nil, wrong_dynamic_rule) }.to raise_error(
             Rabarber::InvalidArgumentError,
-            "Custom rule must be a Symbol, a String, or a Proc"
+            "Dynamic rule must be a Symbol, a String, or a Proc"
           )
         end
       end
@@ -44,7 +44,7 @@ RSpec.describe Rabarber::Rule do
       before do
         allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
         allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
-        allow(rule).to receive(:custom_rule_followed?).with(DummyController).and_return(true)
+        allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
       end
 
       it "returns true" do
@@ -57,7 +57,7 @@ RSpec.describe Rabarber::Rule do
         before do
           allow(rule).to receive(:action_accessible?).with(:index).and_return(false)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return([true, false].sample)
-          allow(rule).to receive(:custom_rule_followed?).with(DummyController).and_return([true, false].sample)
+          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return([true, false].sample)
         end
 
         it "returns false" do
@@ -69,7 +69,7 @@ RSpec.describe Rabarber::Rule do
         before do
           allow(rule).to receive(:action_accessible?).with(:index).and_return([true, false].sample)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return(false)
-          allow(rule).to receive(:custom_rule_followed?).with(DummyController).and_return([true, false].sample)
+          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return([true, false].sample)
         end
 
         it "returns false" do
@@ -77,11 +77,11 @@ RSpec.describe Rabarber::Rule do
         end
       end
 
-      context "if custom rule is not followed" do
+      context "if dynamic rule is not followed" do
         before do
           allow(rule).to receive(:action_accessible?).with(:index).and_return([true, false].sample)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return([true, false].sample)
-          allow(rule).to receive(:custom_rule_followed?).with(DummyController).and_return(false)
+          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
         end
 
         it "returns false" do
@@ -187,33 +187,33 @@ RSpec.describe Rabarber::Rule do
     end
   end
 
-  describe "#custom_rule_followed?" do
-    subject { rule.custom_rule_followed?(custom_rule_receiver) }
+  describe "#dynamic_rule_followed?" do
+    subject { rule.dynamic_rule_followed?(dynamic_rule_receiver) }
 
-    let(:custom_rule_receiver) { double }
-    let(:rule) { described_class.new(:index, :manager, custom_rule) }
+    let(:dynamic_rule_receiver) { double }
+    let(:rule) { described_class.new(:index, :manager, dynamic_rule) }
 
-    context "custom rule is empty" do
-      let(:custom_rule) { nil }
+    context "dynamic rule is empty" do
+      let(:dynamic_rule) { nil }
 
       it "returns true" do
         expect(subject).to be true
       end
     end
 
-    context "when custom rule is a proc" do
-      before { allow(custom_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
+    context "when dynamic rule is a proc" do
+      before { allow(dynamic_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
 
-      context "custom rule is followed" do
-        let(:custom_rule) { -> { params[:foo] == "bar" } }
+      context "dynamic rule is followed" do
+        let(:dynamic_rule) { -> { params[:foo] == "bar" } }
 
         it "returns true" do
           expect(subject).to be true
         end
       end
 
-      context "custom rule is not followed" do
-        let(:custom_rule) { -> { params[:foo] == "bad" } }
+      context "dynamic rule is not followed" do
+        let(:dynamic_rule) { -> { params[:foo] == "bad" } }
 
         it "returns false" do
           expect(subject).to be false
@@ -221,22 +221,22 @@ RSpec.describe Rabarber::Rule do
       end
     end
 
-    context "when custom rule is a method name" do
+    context "when dynamic rule is a method name" do
       before do
-        allow(custom_rule_receiver).to receive(:foo).and_return(true)
-        allow(custom_rule_receiver).to receive(:bar).and_return(false)
+        allow(dynamic_rule_receiver).to receive(:foo).and_return(true)
+        allow(dynamic_rule_receiver).to receive(:bar).and_return(false)
       end
 
-      context "custom rule is followed" do
-        let(:custom_rule) { :foo }
+      context "dynamic rule is followed" do
+        let(:dynamic_rule) { :foo }
 
         it "returns true" do
           expect(subject).to be true
         end
       end
 
-      context "custom rule is not followed" do
-        let(:custom_rule) { :bar }
+      context "dynamic rule is not followed" do
+        let(:dynamic_rule) { :bar }
 
         it "returns false" do
           expect(subject).to be false

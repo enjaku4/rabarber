@@ -10,7 +10,10 @@ module Rabarber
 
     class_methods do
       def grant_access(action: nil, roles: nil, if: nil, unless: nil)
-        # TODO: validate that either if or unless is present, but not both
+        if binding.local_variable_get(:if) && binding.local_variable_get(:unless)
+          raise InvalidArgumentError, "Either 'if' or 'unless' can be specified, but not both"
+        end
+
         # TODO: implement negative rules
         Permissions.write(self, action, roles, binding.local_variable_get(:if))
       end

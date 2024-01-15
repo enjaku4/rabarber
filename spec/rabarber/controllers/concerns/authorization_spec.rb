@@ -3,6 +3,29 @@
 RSpec.describe Rabarber::Authorization do
   let(:user) { User.create! }
 
+  describe ".grant_access" do
+    subject { DummyController.grant_access(**args) }
+
+    context "when both 'if' and 'unless' are specified" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
+
+      it "raises an error" do
+        expect { subject }
+          .to raise_error(Rabarber::InvalidArgumentError, "Either 'if' or 'unless' can be specified, but not both")
+      end
+    end
+
+    context "when arguments are valid" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
+
+      it "writes the permission" do
+        expect(::Rabarber::Permissions)
+          .to receive(:write).with(DummyController, :foo, :bar, args[:if]).and_call_original
+        subject
+      end
+    end
+  end
+
   shared_examples_for "it allows access" do |hash|
     it "allows access when request format is html" do
       send(hash.keys.first, hash.values.first, params: hash[:params])

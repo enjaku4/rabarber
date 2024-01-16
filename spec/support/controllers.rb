@@ -41,6 +41,16 @@ class DummyController < ActionController::Base
     head :ok
   end
 
+  grant_access action: :unless_lambda, roles: :admin, unless: -> { params[:foo] == "bar" }
+  def unless_lambda
+    head :ok
+  end
+
+  grant_access action: :unless_method, roles: :admin, unless: :foo?
+  def unless_method
+    head :ok
+  end
+
   private
 
   def foo?

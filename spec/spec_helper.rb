@@ -2,6 +2,7 @@
 
 ENV["RAILS_ENV"] = "test"
 
+require "byebug"
 require "rabarber"
 require "database_cleaner/active_record"
 require "action_controller/railtie"

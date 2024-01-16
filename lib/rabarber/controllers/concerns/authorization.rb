@@ -10,12 +10,14 @@ module Rabarber
 
     class_methods do
       def grant_access(action: nil, roles: nil, if: nil, unless: nil)
-        if binding.local_variable_get(:if) && binding.local_variable_get(:unless)
-          raise InvalidArgumentError, "Either 'if' or 'unless' can be specified, but not both"
-        end
+        if_rule, unless_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
-        # TODO: implement negative rules
-        Permissions.write(self, action, roles, binding.local_variable_get(:if))
+        raise InvalidArgumentError, "Either 'if' or 'unless' can be specified, but not both" if if_rule && unless_rule
+
+        dynamic_rule = if_rule || unless_rule
+        is_negated = !!unless_rule if dynamic_rule
+
+        Permissions.write(self, action, roles, dynamic_rule, is_negated)
       end
     end
 

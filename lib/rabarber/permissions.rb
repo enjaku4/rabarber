@@ -15,8 +15,8 @@ module Rabarber
       @storage = { controller_rules: Hash.new({}), action_rules: Hash.new([]) }
     end
 
-    def self.write(controller, action, roles, dynamic_rule)
-      rule = Rule.new(action, roles, dynamic_rule)
+    def self.write(controller, action, roles, dynamic_rule, is_negated)
+      rule = Rule.new(action, roles, dynamic_rule, is_negated)
 
       if action
         instance.storage[:action_rules][controller] += [rule]

@@ -16,12 +16,40 @@ RSpec.describe Rabarber::Authorization do
     end
 
     context "when arguments are valid" do
-      let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
+      context "when 'if' is specified" do
+        let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
 
-      it "writes the permission" do
-        expect(::Rabarber::Permissions)
-          .to receive(:write).with(DummyController, :foo, :bar, args[:if]).and_call_original
-        subject
+        it "writes the permission" do
+          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], false)
+          subject
+        end
+      end
+
+      context "when 'unless' is specified" do
+        let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
+
+        it "writes the permission" do
+          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:unless], true)
+          subject
+        end
+      end
+
+      context "when neither 'if' nor 'unless' is specified" do
+        let(:args) { { action: :foo, roles: :bar } }
+
+        it "writes the permission" do
+          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, nil)
+          subject
+        end
+      end
+
+      context "when action and roles are omitted" do
+        let(:args) { {} }
+
+        it "writes the permission" do
+          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, nil, nil, nil, nil)
+          subject
+        end
       end
     end
   end
@@ -127,36 +155,74 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
     end
 
-    describe "when a dynamic rule is defined as a lambda" do
-      context "when the lambda returns true" do
-        before { user.assign_roles(:admin) }
+    context "when dynamic rule is not negated" do
+      describe "when dynamic rule is defined as a lambda" do
+        context "when the lambda returns true" do
+          before { user.assign_roles(:admin) }
 
-        it_behaves_like "it allows access", get: :if_lambda, params: { foo: "bar" }
+          it_behaves_like "it allows access", get: :if_lambda, params: { foo: "bar" }
+        end
+
+        context "when the lambda returns false" do
+          before { user.assign_roles(:admin) }
+
+          it_behaves_like "it does not allow access", get: :if_lambda, params: { foo: "baz" }
+        end
+
+        it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
       end
 
-      context "when the lambda returns false" do
-        before { user.assign_roles(:admin) }
+      describe "when dynamic rule is defined as a method" do
+        context "when the method returns true" do
+          before { user.assign_roles(:admin) }
 
-        it_behaves_like "it does not allow access", get: :if_lambda, params: { foo: "baz" }
+          it_behaves_like "it allows access", post: :if_method, params: { bad: "baz" }
+        end
+
+        context "when the method returns false" do
+          before { user.assign_roles(:admin) }
+
+          it_behaves_like "it does not allow access", post: :if_method, params: { bad: "bar" }
+        end
+
+        it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
     end
 
-    describe "when a dynamic rule is defined as a method" do
-      context "when the method returns true" do
-        before { user.assign_roles(:admin) }
+    context "when dynamic rule is negated" do
+      describe "when dynamic rule is defined as a lambda" do
+        context "when the lambda returns true" do
+          before { user.assign_roles(:admin) }
 
-        it_behaves_like "it allows access", post: :if_method, params: { bad: "baz" }
+          it_behaves_like "it does not allow access", patch: :unless_lambda, params: { foo: "bar" }
+        end
+
+        context "when the lambda returns false" do
+          before { user.assign_roles(:admin) }
+
+          it_behaves_like "it allows access", patch: :unless_lambda, params: { foo: "baz" }
+        end
+
+        it_behaves_like "it does not allow access when user must have roles",
+                        patch: :unless_lambda, params: { foo: "bar" }
       end
 
-      context "when the method returns false" do
-        before { user.assign_roles(:admin) }
+      describe "when dynamic rule is defined as a method" do
+        context "when the method returns true" do
+          before { user.assign_roles(:admin) }
 
-        it_behaves_like "it does not allow access", post: :if_method, params: { bad: "bar" }
+          it_behaves_like "it does not allow access", delete: :unless_method, params: { bad: "baz" }
+        end
+
+        context "when the method returns false" do
+          before { user.assign_roles(:admin) }
+
+          it_behaves_like "it allows access", delete: :unless_method, params: { bad: "bar" }
+        end
+
+        it_behaves_like "it does not allow access when user must have roles",
+                        delete: :unless_method, params: { bad: "baz" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
     end
   end
 

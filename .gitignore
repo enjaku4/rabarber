@@ -17,3 +17,6 @@ Gemfile.lock
 
 # rbenv
 .ruby-version
+
+# byebug
+.byebug_history

@@ -50,12 +50,18 @@ RSpec/NestedGroups:
 Style/ClassVars:
   Enabled: false
 
+Style/DoubleNegation:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
 Style/Lambda:
   Enabled: true
   EnforcedStyle: literal
+
+Style/ParallelAssignment:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: true

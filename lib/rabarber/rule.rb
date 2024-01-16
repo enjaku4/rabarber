@@ -2,12 +2,13 @@
 
 module Rabarber
   class Rule
-    attr_reader :action, :roles, :dynamic_rule
+    attr_reader :action, :roles, :dynamic_rule, :is_negated
 
-    def initialize(action, roles, dynamic_rule)
+    def initialize(action, roles, dynamic_rule, is_negated)
       @action = pre_process_action(action)
       @roles = RoleNames.pre_process(Array(roles))
       @dynamic_rule = pre_process_dynamic_rule(dynamic_rule)
+      @is_negated = is_negated
     end
 
     def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)
@@ -25,17 +26,19 @@ module Rabarber
     end
 
     def dynamic_rule_followed?(dynamic_rule_receiver)
-      dynamic_rule.nil? || execute_dynamic_rule(dynamic_rule_receiver)
+      dynamic_rule.nil? || !!execute_dynamic_rule(dynamic_rule_receiver)
     end
 
     private
 
     def execute_dynamic_rule(dynamic_rule_receiver)
-      if dynamic_rule.is_a?(Proc)
-        dynamic_rule_receiver.instance_exec(&dynamic_rule)
-      else
-        dynamic_rule_receiver.send(dynamic_rule)
-      end
+      result = if dynamic_rule.is_a?(Proc)
+                 dynamic_rule_receiver.instance_exec(&dynamic_rule)
+               else
+                 dynamic_rule_receiver.send(dynamic_rule)
+               end
+
+      is_negated ? !result : result
     end
 
     def pre_process_action(action)

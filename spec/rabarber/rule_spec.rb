@@ -5,7 +5,7 @@ RSpec.describe Rabarber::Rule do
     context "when action is invalid" do
       [1, ["index"], "", Symbol, {}, :""].each do |wrong_action_name|
         it "raises an error when '#{wrong_action_name}' is given as an action name" do
-          expect { described_class.new(wrong_action_name, nil, nil) }.to raise_error(
+          expect { described_class.new(wrong_action_name, nil, nil, nil) }.to raise_error(
             Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
           )
         end
@@ -15,7 +15,7 @@ RSpec.describe Rabarber::Rule do
     context "when roles are invalid" do
       [1, Symbol, "Admin", :"foo-bar", "", [""], ["admin "]].each do |wrong_roles|
         it "raises an error when '#{wrong_roles}' are given as roles" do
-          expect { described_class.new(nil, wrong_roles, nil) }.to raise_error(
+          expect { described_class.new(nil, wrong_roles, nil, nil) }.to raise_error(
             Rabarber::InvalidArgumentError,
             "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
           )
@@ -26,7 +26,7 @@ RSpec.describe Rabarber::Rule do
     context "when dynamic rule is invalid" do
       [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
         it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, wrong_dynamic_rule) }.to raise_error(
+          expect { described_class.new(nil, nil, wrong_dynamic_rule, false) }.to raise_error(
             Rabarber::InvalidArgumentError,
             "Dynamic rule must be a Symbol, a String, or a Proc"
           )
@@ -38,7 +38,7 @@ RSpec.describe Rabarber::Rule do
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController, :index) }
 
-    let(:rule) { described_class.new(:index, :admin, -> { true }) }
+    let(:rule) { described_class.new(:index, :admin, -> { true }, false) }
 
     context "if all conditions are met" do
       before do
@@ -94,7 +94,7 @@ RSpec.describe Rabarber::Rule do
   describe "#action_accessible?" do
     subject { rule.action_accessible?(action_name) }
 
-    let(:rule) { described_class.new(:index, [:admin], -> { true }) }
+    let(:rule) { described_class.new(:index, [:admin], -> { true }, false) }
 
     context "if action is accesible" do
       let(:action_name) { :index }
@@ -124,7 +124,7 @@ RSpec.describe Rabarber::Rule do
   describe "#roles_permitted?" do
     subject { rule.roles_permitted?(user_roles) }
 
-    let(:rule) { described_class.new(:index, roles, nil) }
+    let(:rule) { described_class.new(:index, roles, nil, nil) }
 
     context "if roles are permitted" do
       let(:roles) { :admin }
@@ -191,10 +191,11 @@ RSpec.describe Rabarber::Rule do
     subject { rule.dynamic_rule_followed?(dynamic_rule_receiver) }
 
     let(:dynamic_rule_receiver) { double }
-    let(:rule) { described_class.new(:index, :manager, dynamic_rule) }
+    let(:rule) { described_class.new(:index, :manager, dynamic_rule, is_negated) }
 
     context "dynamic rule is empty" do
       let(:dynamic_rule) { nil }
+      let(:is_negated) { nil }
 
       it "returns true" do
         expect(subject).to be true
@@ -204,19 +205,43 @@ RSpec.describe Rabarber::Rule do
     context "when dynamic rule is a proc" do
       before { allow(dynamic_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
 
-      context "dynamic rule is followed" do
-        let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+      context "when is_negated is false" do
+        let(:is_negated) { false }
 
-        it "returns true" do
-          expect(subject).to be true
+        context "lambda returns true" do
+          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+
+          it "returns true" do
+            expect(subject).to be true
+          end
+        end
+
+        context "lambda returns false" do
+          let(:dynamic_rule) { -> { params[:foo] == "bad" } }
+
+          it "returns false" do
+            expect(subject).to be false
+          end
         end
       end
 
-      context "dynamic rule is not followed" do
-        let(:dynamic_rule) { -> { params[:foo] == "bad" } }
+      context "when is_negated is true" do
+        let(:is_negated) { true }
 
-        it "returns false" do
-          expect(subject).to be false
+        context "lambda returns true" do
+          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+
+          it "returns false" do
+            expect(subject).to be false
+          end
+        end
+
+        context "lambda returns false" do
+          let(:dynamic_rule) { -> { params[:foo] == "bad" } }
+
+          it "returns true" do
+            expect(subject).to be true
+          end
         end
       end
     end
@@ -227,19 +252,43 @@ RSpec.describe Rabarber::Rule do
         allow(dynamic_rule_receiver).to receive(:bar).and_return(false)
       end
 
-      context "dynamic rule is followed" do
-        let(:dynamic_rule) { :foo }
+      context "when is_negated is false" do
+        let(:is_negated) { false }
 
-        it "returns true" do
-          expect(subject).to be true
+        context "method returns true" do
+          let(:dynamic_rule) { :foo }
+
+          it "returns true" do
+            expect(subject).to be true
+          end
+        end
+
+        context "method returns false" do
+          let(:dynamic_rule) { :bar }
+
+          it "returns false" do
+            expect(subject).to be false
+          end
         end
       end
 
-      context "dynamic rule is not followed" do
-        let(:dynamic_rule) { :bar }
+      context "when is_negated is true" do
+        let(:is_negated) { true }
 
-        it "returns false" do
-          expect(subject).to be false
+        context "method returns true" do
+          let(:dynamic_rule) { :foo }
+
+          it "returns false" do
+            expect(subject).to be false
+          end
+        end
+
+        context "method returns false" do
+          let(:dynamic_rule) { :bar }
+
+          it "returns true" do
+            expect(subject).to be true
+          end
         end
       end
     end

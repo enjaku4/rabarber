@@ -1,4 +1,3 @@
-<!-- TODO -->
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -227,11 +226,16 @@ For more complex cases, Rabarber provides dynamic rules:
 ```rb
 class OrdersController < ApplicationController
   grant_access if: :user_has_access?
+  grant_access unless: :user_has_no_access?
   ...
 
   private
 
   def user_has_access?
+    ...
+  end
+
+  def user_has_no_access?
     ...
   end
 end
@@ -241,9 +245,14 @@ class InvoicesController < ApplicationController
   def index
     ...
   end
+
+  grant_access action: :show, roles: :client, unless: -> { current_user.banned? }
+  def show
+    ...
+  end
 end
 ```
-You can pass a dynamic rule as `if` argument. It can be a symbol (the method with the same name will be called) or a lambda.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol (the method with the same name will be called) or a lambda.
 
 Rules defined in child classes don't override parent rules but rather add to them:
 ```rb

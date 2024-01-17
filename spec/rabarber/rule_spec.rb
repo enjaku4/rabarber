@@ -26,7 +26,18 @@ RSpec.describe Rabarber::Rule do
     context "when dynamic rule is invalid" do
       [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
         it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, wrong_dynamic_rule, false) }.to raise_error(
+          expect { described_class.new(nil, nil, wrong_dynamic_rule, nil) }.to raise_error(
+            Rabarber::InvalidArgumentError,
+            "Dynamic rule must be a Symbol, a String, or a Proc"
+          )
+        end
+      end
+    end
+
+    context "when negated dynamic rule is invalid" do
+      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
+        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
+          expect { described_class.new(nil, nil, nil, wrong_dynamic_rule) }.to raise_error(
             Rabarber::InvalidArgumentError,
             "Dynamic rule must be a Symbol, a String, or a Proc"
           )
@@ -38,7 +49,7 @@ RSpec.describe Rabarber::Rule do
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController, :index) }
 
-    let(:rule) { described_class.new(:index, :admin, -> { true }, false) }
+    let(:rule) { described_class.new(:index, :admin, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
@@ -56,8 +67,8 @@ RSpec.describe Rabarber::Rule do
       context "if action is not accessible" do
         before do
           allow(rule).to receive(:action_accessible?).with(:index).and_return(false)
-          allow(rule).to receive(:roles_permitted?).with(:admin).and_return([true, false].sample)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return([true, false].sample)
+          allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
+          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
         end
 
         it "returns false" do
@@ -67,9 +78,9 @@ RSpec.describe Rabarber::Rule do
 
       context "if roles are not permitted" do
         before do
-          allow(rule).to receive(:action_accessible?).with(:index).and_return([true, false].sample)
+          allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return(false)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return([true, false].sample)
+          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
         end
 
         it "returns false" do
@@ -79,8 +90,8 @@ RSpec.describe Rabarber::Rule do
 
       context "if dynamic rule is not followed" do
         before do
-          allow(rule).to receive(:action_accessible?).with(:index).and_return([true, false].sample)
-          allow(rule).to receive(:roles_permitted?).with(:admin).and_return([true, false].sample)
+          allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
+          allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
           allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
         end
 
@@ -94,7 +105,7 @@ RSpec.describe Rabarber::Rule do
   describe "#action_accessible?" do
     subject { rule.action_accessible?(action_name) }
 
-    let(:rule) { described_class.new(:index, [:admin], -> { true }, false) }
+    let(:rule) { described_class.new(:index, [:admin], -> { true }, nil) }
 
     context "if action is accesible" do
       let(:action_name) { :index }
@@ -191,11 +202,11 @@ RSpec.describe Rabarber::Rule do
     subject { rule.dynamic_rule_followed?(dynamic_rule_receiver) }
 
     let(:dynamic_rule_receiver) { double }
-    let(:rule) { described_class.new(:index, :manager, dynamic_rule, is_negated) }
+    let(:rule) { described_class.new(:index, :manager, dynamic_rule, negated_dynamic_rule) }
 
-    context "dynamic rule is empty" do
+    context "both dynamic rules are empty" do
       let(:dynamic_rule) { nil }
-      let(:is_negated) { nil }
+      let(:negated_dynamic_rule) { nil }
 
       it "returns true" do
         expect(subject).to be true
@@ -205,43 +216,69 @@ RSpec.describe Rabarber::Rule do
     context "when dynamic rule is a proc" do
       before { allow(dynamic_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
 
-      context "when is_negated is false" do
-        let(:is_negated) { false }
+      context "when negated dynamic rule is nil" do
+        let(:negated_dynamic_rule) { nil }
 
-        context "lambda returns true" do
-          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
 
-        context "lambda returns false" do
-          let(:dynamic_rule) { -> { params[:foo] == "bad" } }
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be true }
+        end
+
+        context "when dynamic rule is not followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "baz" } }
+
+          it { is_expected.to be false }
         end
       end
 
-      context "when is_negated is true" do
-        let(:is_negated) { true }
+      context "when negated dynamic rule is followed" do
+        let(:negated_dynamic_rule) { -> { params[:foo] == "baz" } }
 
-        context "lambda returns true" do
-          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be true }
         end
 
-        context "lambda returns false" do
-          let(:dynamic_rule) { -> { params[:foo] == "bad" } }
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
+        end
+
+        context "when dynamic rule is not followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "baz" } }
+
+          it { is_expected.to be false }
+        end
+      end
+
+      context "when negated dynamic rule is not followed" do
+        let(:negated_dynamic_rule) { -> { params[:foo] == "bar" } }
+
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
+
+          it { is_expected.to be false }
+        end
+
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "bar" } }
+
+          it { is_expected.to be false }
+        end
+
+        context "when dynamic rule is not followed" do
+          let(:dynamic_rule) { -> { params[:foo] == "baz" } }
+
+          it { is_expected.to be false }
         end
       end
     end
@@ -252,43 +289,69 @@ RSpec.describe Rabarber::Rule do
         allow(dynamic_rule_receiver).to receive(:bar).and_return(false)
       end
 
-      context "when is_negated is false" do
-        let(:is_negated) { false }
+      context "when negated dynamic rule is nil" do
+        let(:negated_dynamic_rule) { nil }
 
-        context "method returns true" do
-          let(:dynamic_rule) { :foo }
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
 
-        context "method returns false" do
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { :foo }
+
+          it { is_expected.to be true }
+        end
+
+        context "when dynamic rule is not followed" do
           let(:dynamic_rule) { :bar }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be false }
         end
       end
 
-      context "when is_negated is true" do
-        let(:is_negated) { true }
+      context "when negated dynamic rule is followed" do
+        let(:negated_dynamic_rule) { :bar }
 
-        context "method returns true" do
-          let(:dynamic_rule) { :foo }
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be true }
         end
 
-        context "method returns false" do
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { :foo }
+
+          it { is_expected.to be true }
+        end
+
+        context "when dynamic rule is not followed" do
           let(:dynamic_rule) { :bar }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be false }
+        end
+      end
+
+      context "when negated dynamic rule is not followed" do
+        let(:negated_dynamic_rule) { :foo }
+
+        context "when dynamic rule is nil" do
+          let(:dynamic_rule) { nil }
+
+          it { is_expected.to be false }
+        end
+
+        context "when dynamic rule is followed" do
+          let(:dynamic_rule) { :foo }
+
+          it { is_expected.to be false }
+        end
+
+        context "when dynamic rule is not followed" do
+          let(:dynamic_rule) { :bar }
+
+          it { is_expected.to be false }
         end
       end
     end

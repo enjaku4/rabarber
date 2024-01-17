@@ -31,7 +31,7 @@ RSpec.describe Rabarber::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.write(DummyController, nil, :admin, ->(foo) { foo }, true)
+        permissions.write(DummyController, nil, :admin, ->(foo) { foo }, :bar)
         permissions.write(DummyParentController, nil, nil, nil, nil)
       end
 
@@ -51,7 +51,7 @@ RSpec.describe Rabarber::Permissions do
     context "if action rules exist" do
       before do
         permissions.write(DummyController, :index, nil, nil, nil)
-        permissions.write(DummyPagesController, :show, [:manager, :admin], -> { true }, false)
+        permissions.write(DummyPagesController, :show, [:manager, :admin], -> { true }, :foo)
       end
 
       it "returns rules for actions" do

@@ -1,6 +1,7 @@
 ## 1.1.0
 
 - Add support for `unless` argument in `grant_access` method, allowing to define negated dynamic rules
+- Fix a bug where specifying a dynamic rule as a symbol would cause an error when the action was not specified
 
 ## 1.0.5
 

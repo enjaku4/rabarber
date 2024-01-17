@@ -2,13 +2,13 @@
 
 module Rabarber
   class Rule
-    attr_reader :action, :roles, :dynamic_rule, :is_negated
+    attr_reader :action, :roles, :dynamic_rule, :negated_dynamic_rule
 
-    def initialize(action, roles, dynamic_rule, is_negated)
+    def initialize(action, roles, dynamic_rule, negated_dynamic_rule)
       @action = pre_process_action(action)
       @roles = RoleNames.pre_process(Array(roles))
       @dynamic_rule = pre_process_dynamic_rule(dynamic_rule)
-      @is_negated = is_negated
+      @negated_dynamic_rule = pre_process_dynamic_rule(negated_dynamic_rule)
     end
 
     def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)
@@ -26,16 +26,20 @@ module Rabarber
     end
 
     def dynamic_rule_followed?(dynamic_rule_receiver)
-      dynamic_rule.nil? || !!execute_dynamic_rule(dynamic_rule_receiver)
+      !!(execute_dynamic_rule(dynamic_rule_receiver, false) && execute_dynamic_rule(dynamic_rule_receiver, true))
     end
 
     private
 
-    def execute_dynamic_rule(dynamic_rule_receiver)
-      result = if dynamic_rule.is_a?(Proc)
-                 dynamic_rule_receiver.instance_exec(&dynamic_rule)
+    def execute_dynamic_rule(dynamic_rule_receiver, is_negated)
+      rule = is_negated ? negated_dynamic_rule : dynamic_rule
+
+      return true if rule.nil?
+
+      result = if rule.is_a?(Proc)
+                 dynamic_rule_receiver.instance_exec(&rule)
                else
-                 dynamic_rule_receiver.send(dynamic_rule)
+                 dynamic_rule_receiver.send(rule)
                end
 
       is_negated ? !result : result
@@ -48,9 +52,9 @@ module Rabarber
       raise InvalidArgumentError, "Action name must be a Symbol or a String"
     end
 
-    def pre_process_dynamic_rule(dynamic_rule)
-      return dynamic_rule.to_sym if (dynamic_rule.is_a?(String) || dynamic_rule.is_a?(Symbol)) && action.present?
-      return dynamic_rule if dynamic_rule.nil? || dynamic_rule.is_a?(Proc)
+    def pre_process_dynamic_rule(rule)
+      return rule.to_sym if (rule.is_a?(String) || rule.is_a?(Symbol)) && rule.present?
+      return rule if rule.nil? || rule.is_a?(Proc)
 
       raise InvalidArgumentError, "Dynamic rule must be a Symbol, a String, or a Proc"
     end

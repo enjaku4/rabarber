@@ -9,8 +9,10 @@ module Rabarber
     end
 
     class_methods do
-      def grant_access(action: nil, roles: nil, if: nil)
-        Permissions.write(self, action, roles, binding.local_variable_get(:if))
+      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
+        dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
+
+        Permissions.write(self, action, roles, dynamic_rule, negated_dynamic_rule)
       end
     end
 

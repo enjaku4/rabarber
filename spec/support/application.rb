@@ -17,6 +17,8 @@ DummyApplication.routes.draw do
   delete "no_access", to: "dummy#no_access"
   get "if_lambda", to: "dummy#if_lambda"
   post "if_method", to: "dummy#if_method"
+  patch "unless_lambda", to: "dummy#unless_lambda"
+  delete "unless_method", to: "dummy#unless_method"
 
   put "foo", to: "dummy_parent#foo"
   delete "bar", to: "dummy_parent#bar"

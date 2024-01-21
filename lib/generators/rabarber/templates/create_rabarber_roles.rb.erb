@@ -13,7 +13,17 @@ class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.
     end
 
     add_index :rabarber_roles_roleables, %i[role_id roleable_id], unique: true
+
+    create_table :rabarber_groups do |t|
+      t.string :name, null: false, index: { unique: true }
+      t.timestamps
+    end
+
+    create_table :rabarber_groups_roles, id: false do |t|
+      t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }
+      t.belongs_to :group, null: false, index: true, foreign_key: { to_table: :rabarber_groups }
+    end
+
+    add_index :rabarber_groups_roles, %i[role_id group_id], unique: true
   end
 end
-
-<!-- TODO: create Groups -->

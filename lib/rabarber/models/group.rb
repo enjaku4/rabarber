@@ -4,8 +4,7 @@ module Rabarber
   class Group < ActiveRecord::Base
     self.table_name = "rabarber_groups"
 
-    # TODO: RoleNames::REGEX?
-    validates :name, presence: true, uniqueness: true, format: { with: RoleNames::REGEX }
+    validates :name, presence: true, uniqueness: true, format: { with: Input::Roles::REGEX }
 
     has_and_belongs_to_many :rabarber_roles, class_name: "Rabarber::Role", join_table: "rabarber_groups_roles"
 

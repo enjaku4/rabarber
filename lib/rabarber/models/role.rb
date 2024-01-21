@@ -4,7 +4,7 @@ module Rabarber
   class Role < ActiveRecord::Base
     self.table_name = "rabarber_roles"
 
-    validates :name, presence: true, uniqueness: true, format: { with: RoleNames::REGEX }
+    validates :name, presence: true, uniqueness: true, format: { with: Input::Roles::REGEX }
 
     def self.names
       pluck(:name).map(&:to_sym)

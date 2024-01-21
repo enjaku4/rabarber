@@ -23,6 +23,7 @@ Rails/ApplicationController:
 
 Rails/ApplicationRecord:
   Exclude:
+    - lib/rabarber/models/group.rb
     - lib/rabarber/models/role.rb
     - spec/support/models.rb
 

@@ -6,50 +6,48 @@ RSpec.describe Rabarber::Authorization do
   describe ".grant_access" do
     subject { DummyController.grant_access(**args) }
 
-    context "when arguments are valid" do
-      context "when 'if' is specified" do
-        let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
+    context "when 'if' is specified" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], nil)
-          subject
-        end
+      it "writes the permission" do
+        expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], nil)
+        subject
       end
+    end
 
-      context "when 'unless' is specified" do
-        let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
+    context "when 'unless' is specified" do
+      let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, args[:unless])
-          subject
-        end
+      it "writes the permission" do
+        expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, args[:unless])
+        subject
       end
+    end
 
-      context "when neither 'if' nor 'unless' is specified" do
-        let(:args) { { action: :foo, roles: :bar } }
+    context "when neither 'if' nor 'unless' is specified" do
+      let(:args) { { action: :foo, roles: :bar } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, nil)
-          subject
-        end
+      it "writes the permission" do
+        expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, nil)
+        subject
       end
+    end
 
-      context "when both 'if' and 'unless' are specified" do
-        let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
+    context "when both 'if' and 'unless' are specified" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], args[:unless])
-          subject
-        end
+      it "writes the permission" do
+        expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], args[:unless])
+        subject
       end
+    end
 
-      context "when action and roles are omitted" do
-        let(:args) { {} }
+    context "when action and roles are omitted" do
+      let(:args) { {} }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, nil, nil, nil, nil)
-          subject
-        end
+      it "writes the permission" do
+        expect(::Rabarber::Permissions).to receive(:write).with(DummyController, nil, nil, nil, nil)
+        subject
       end
     end
   end

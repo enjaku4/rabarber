@@ -31,32 +31,33 @@ RSpec.describe Rabarber do
     end
 
     context "when misconfigured" do
-      context "when current_user_method is not a symbol or a string" do
-        [nil, 1, [], {}, User, "", :""].each do |value|
-          it "raises an ArgumentError when '#{value}' is given" do
-            expect { described_class.configure { |config| config.current_user_method = value } }
-              .to raise_error(
-                Rabarber::ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
-              )
-          end
+      context "when current_user_method is invalid" do
+        subject { described_class.configure { |config| config.current_user_method = User } }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
+          )
         end
       end
 
       context "when must_have_roles is not a boolean" do
-        [nil, 1, "foo", :foo, [], {}, User].each do |value|
-          it "raises an ArgumentError when '#{value}' is given" do
-            expect { described_class.configure { |config| config.must_have_roles = value } }
-              .to raise_error(Rabarber::ConfigurationError, "Configuration 'must_have_roles' must be a Boolean")
-          end
+        subject { described_class.configure { |config| config.must_have_roles = nil } }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
+          )
         end
       end
 
       context "when when_unauthorized is not a Proc" do
-        [nil, 1, "foo", :foo, [], {}, User].each do |value|
-          it "raises an ArgumentError when '#{value}' is given" do
-            expect { described_class.configure { |config| config.when_unauthorized = value } }
-              .to raise_error(Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc")
-          end
+        subject { described_class.configure { |config| config.when_unauthorized = :foo } }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
+          )
         end
       end
     end

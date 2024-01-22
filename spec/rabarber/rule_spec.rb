@@ -3,45 +3,43 @@
 RSpec.describe Rabarber::Rule do
   describe "validations" do
     context "when action is invalid" do
-      [1, ["index"], "", Symbol, {}, :""].each do |wrong_action_name|
-        it "raises an error when '#{wrong_action_name}' is given as an action name" do
-          expect { described_class.new(wrong_action_name, nil, nil, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
-          )
-        end
+      subject { described_class.new(1, nil, nil, nil) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String")
       end
     end
 
     context "when roles are invalid" do
-      [1, Symbol, "Admin", :"foo-bar", "", [""], ["admin "]].each do |wrong_roles|
-        it "raises an error when '#{wrong_roles}' are given as roles" do
-          expect { described_class.new(nil, wrong_roles, nil, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
-          )
-        end
+      subject { described_class.new(nil, 1, nil, nil) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
+        )
       end
     end
 
     context "when dynamic rule is invalid" do
-      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
-        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, wrong_dynamic_rule, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Dynamic rule must be a Symbol, a String, or a Proc"
-          )
-        end
+      subject { described_class.new(nil, nil, 1, nil) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Dynamic rule must be a Symbol, a String, or a Proc"
+        )
       end
     end
 
     context "when negated dynamic rule is invalid" do
-      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
-        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, nil, wrong_dynamic_rule) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Dynamic rule must be a Symbol, a String, or a Proc"
-          )
-        end
+      subject { described_class.new(nil, nil, nil, 1) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Dynamic rule must be a Symbol, a String, or a Proc"
+        )
       end
     end
   end

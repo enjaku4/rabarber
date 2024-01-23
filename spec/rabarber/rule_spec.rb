@@ -42,6 +42,41 @@ RSpec.describe Rabarber::Rule do
         )
       end
     end
+
+    context "when everything is valid" do
+      subject { described_class.new(:index, :admin, :foo, :bar) }
+
+      it "assigns all the attributes" do
+        expect(subject.action).to eq(:index)
+        expect(subject.roles).to eq([:admin])
+        expect(subject.dynamic_rule).to eq(:foo)
+        expect(subject.negated_dynamic_rule).to eq(:bar)
+      end
+
+      it "uses Input::Actions to process the given action" do
+        input_processor = instance_double(Rabarber::Input::Actions, process: :index)
+        allow(Rabarber::Input::Actions).to receive(:new).with(:index).and_return(input_processor)
+        expect(input_processor).to receive(:process).with(no_args)
+        subject
+      end
+
+      it "uses Input::Roles to process the given roles" do
+        input_processor = instance_double(Rabarber::Input::Roles, process: [:admin])
+        allow(Rabarber::Input::Roles).to receive(:new).with(:admin).and_return(input_processor)
+        expect(input_processor).to receive(:process).with(no_args)
+        subject
+      end
+
+      it "uses Input::DynamicRules to process the given dynamic rules" do
+        input_processor_foo = instance_double(Rabarber::Input::DynamicRules, process: :foo)
+        input_processor_bar = instance_double(Rabarber::Input::DynamicRules, process: :bar)
+        allow(Rabarber::Input::DynamicRules).to receive(:new).with(:foo).and_return(input_processor_foo)
+        allow(Rabarber::Input::DynamicRules).to receive(:new).with(:bar).and_return(input_processor_bar)
+        expect(input_processor_foo).to receive(:process).with(no_args)
+        expect(input_processor_bar).to receive(:process).with(no_args)
+        subject
+      end
+    end
   end
 
   describe "#verify_access" do

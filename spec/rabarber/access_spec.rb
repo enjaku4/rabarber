@@ -55,7 +55,7 @@ RSpec.describe Rabarber::Access do
 
     let(:dynamic_rule_receiver) { double }
 
-    before { permissions.write(DummyParentController, nil, [:admin], nil, nil) }
+    before { permissions.add(DummyParentController, nil, [:admin], nil, nil) }
 
     context "if controller is in permissions" do
       let(:controller) { DummyParentController }
@@ -123,7 +123,7 @@ RSpec.describe Rabarber::Access do
 
     let(:dynamic_rule_receiver) { double }
 
-    before { permissions.write(DummyController, :index, [:admin], nil, nil) }
+    before { permissions.add(DummyController, :index, [:admin], nil, nil) }
 
     context "if controller is in permissions" do
       let(:controller) { DummyController }

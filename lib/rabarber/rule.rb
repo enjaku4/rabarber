@@ -5,10 +5,10 @@ module Rabarber
     attr_reader :action, :roles, :dynamic_rule, :negated_dynamic_rule
 
     def initialize(action, roles, dynamic_rule, negated_dynamic_rule)
-      @action = Input::Actions.new(action).process
-      @roles = Input::Roles.new(roles).process
-      @dynamic_rule = Input::DynamicRules.new(dynamic_rule).process
-      @negated_dynamic_rule = Input::DynamicRules.new(negated_dynamic_rule).process
+      @action = action
+      @roles = Array(roles)
+      @dynamic_rule = dynamic_rule
+      @negated_dynamic_rule = negated_dynamic_rule
     end
 
     def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)

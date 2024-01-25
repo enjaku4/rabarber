@@ -25,17 +25,6 @@ RSpec.describe Rabarber::Authorization do
       end
     end
 
-    context "when group is invalid" do
-      let(:args) { { group: 1 } }
-
-      it "raises an error" do
-        expect { subject }.to raise_error(
-          Rabarber::InvalidArgumentError,
-          "Role group name must be a Symbol or String and may only contain lowercase letters, numbers and underscores"
-        )
-      end
-    end
-
     context "when dynamic rule is invalid" do
       let(:args) { { if: 1 } }
 
@@ -59,16 +48,11 @@ RSpec.describe Rabarber::Authorization do
     end
 
     context "when everything is valid" do
-      let(:args) { { action: :index, roles: :admin, group: :department, if: -> { true }, unless: -> { false } } }
-
-      before do
-        group = Rabarber::Group.create!(name: :department)
-        group.add_roles(:employee)
-      end
+      let(:args) { { action: :index, roles: :admin, if: -> { true }, unless: -> { false } } }
 
       it "adds the permission" do
         expect(::Rabarber::Permissions).to receive(:add)
-          .with(DummyAuthController, :index, [:admin, :employee], args[:if], args[:unless]).and_call_original
+          .with(DummyAuthController, :index, [:admin], args[:if], args[:unless]).and_call_original
         subject
       end
 

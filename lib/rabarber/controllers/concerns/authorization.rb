@@ -9,13 +9,13 @@ module Rabarber
     end
 
     class_methods do
-      def grant_access(action: nil, roles: nil, group: nil, if: nil, unless: nil)
+      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
         Permissions.add(
           self,
           Input::Actions.new(action).process,
-          Input::Roles.new(roles).process + Input::GroupRoles.new(group).process,
+          Input::Roles.new(roles).process,
           Input::DynamicRules.new(dynamic_rule).process,
           Input::DynamicRules.new(negated_dynamic_rule).process
         )

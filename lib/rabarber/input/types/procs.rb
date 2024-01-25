@@ -3,7 +3,7 @@
 module Rabarber
   module Input
     module Types
-      class Callables < Base
+      class Procs < Base
         private
 
         def valid?

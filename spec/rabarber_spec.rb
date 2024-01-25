@@ -42,10 +42,10 @@ RSpec.describe Rabarber do
       described_class.configure { |config| config.must_have_roles = true }
     end
 
-    it "uses Input::Types::Callables to process when_unauthorized" do
+    it "uses Input::Types::Procs to process when_unauthorized" do
       callable = ->(controller) { controller.head(418) }
-      input_processor = instance_double(Rabarber::Input::Types::Callables, process: callable)
-      allow(Rabarber::Input::Types::Callables).to receive(:new).with(
+      input_processor = instance_double(Rabarber::Input::Types::Procs, process: callable)
+      allow(Rabarber::Input::Types::Procs).to receive(:new).with(
         callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)

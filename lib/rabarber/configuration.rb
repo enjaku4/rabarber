@@ -33,7 +33,7 @@ module Rabarber
     end
 
     def when_unauthorized=(callable)
-      @when_unauthorized = Input::Types::Callables.new(
+      @when_unauthorized = Input::Types::Procs.new(
         callable, ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
       ).process
     end

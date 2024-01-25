@@ -4,52 +4,130 @@ RSpec.describe Rabarber::Authorization do
   let(:user) { User.create! }
 
   describe ".grant_access" do
-    subject { DummyController.grant_access(**args) }
+    subject { DummyAuthController.grant_access(**args) }
 
-    context "when arguments are valid" do
-      context "when 'if' is specified" do
-        let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
+    context "when action is invalid" do
+      let(:args) { { action: 1 } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], nil)
-          subject
-        end
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String")
+      end
+    end
+
+    context "when roles are invalid" do
+      let(:args) { { roles: "junior developer" } }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
+        )
+      end
+    end
+
+    context "when dynamic rule is invalid" do
+      let(:args) { { if: 1 } }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Dynamic rule must be a Symbol, a String, or a Proc"
+        )
+      end
+    end
+
+    context "when negated dynamic rule is invalid" do
+      let(:args) { { unless: 1 } }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(
+          Rabarber::InvalidArgumentError,
+          "Dynamic rule must be a Symbol, a String, or a Proc"
+        )
+      end
+    end
+
+    context "when everything is valid" do
+      let(:args) { { action: :index, roles: :admin, if: -> { true }, unless: -> { false } } }
+
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, :index, [:admin], args[:if], args[:unless]).and_call_original
+        subject
       end
 
-      context "when 'unless' is specified" do
-        let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
-
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, args[:unless])
-          subject
-        end
+      it "uses Input::Actions to process the given action" do
+        input_processor = instance_double(Rabarber::Input::Actions, process: :index)
+        allow(Rabarber::Input::Actions).to receive(:new).with(:index).and_return(input_processor)
+        expect(input_processor).to receive(:process).with(no_args)
+        subject
       end
 
-      context "when neither 'if' nor 'unless' is specified" do
-        let(:args) { { action: :foo, roles: :bar } }
-
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, nil, nil)
-          subject
-        end
+      it "uses Input::Roles to process the given roles" do
+        input_processor = instance_double(Rabarber::Input::Roles, process: [:admin])
+        allow(Rabarber::Input::Roles).to receive(:new).with(:admin).and_return(input_processor)
+        expect(input_processor).to receive(:process).with(no_args)
+        subject
       end
 
-      context "when both 'if' and 'unless' are specified" do
-        let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
-
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, :foo, :bar, args[:if], args[:unless])
-          subject
-        end
+      it "uses Input::DynamicRules to process the given dynamic rules" do
+        input_processor_foo = instance_double(Rabarber::Input::DynamicRules, process: :foo)
+        input_processor_bar = instance_double(Rabarber::Input::DynamicRules, process: :bar)
+        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:if]).and_return(input_processor_foo)
+        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:unless]).and_return(input_processor_bar)
+        expect(input_processor_foo).to receive(:process).with(no_args)
+        expect(input_processor_bar).to receive(:process).with(no_args)
+        subject
       end
+    end
 
-      context "when action and roles are omitted" do
-        let(:args) { {} }
+    context "when 'if' is specified" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
 
-        it "writes the permission" do
-          expect(::Rabarber::Permissions).to receive(:write).with(DummyController, nil, nil, nil, nil)
-          subject
-        end
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, :foo, [:bar], args[:if], nil).and_call_original
+        subject
+      end
+    end
+
+    context "when 'unless' is specified" do
+      let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
+
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, :foo, [:bar], nil, args[:unless]).and_call_original
+        subject
+      end
+    end
+
+    context "when neither 'if' nor 'unless' is specified" do
+      let(:args) { { action: :foo, roles: :bar } }
+
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, :foo, [:bar], nil, nil).and_call_original
+        subject
+      end
+    end
+
+    context "when both 'if' and 'unless' are specified" do
+      let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
+
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, :foo, [:bar], args[:if], args[:unless]).and_call_original
+        subject
+      end
+    end
+
+    context "when action and roles are omitted" do
+      let(:args) { {} }
+
+      it "adds the permission" do
+        expect(::Rabarber::Permissions).to receive(:add)
+          .with(DummyAuthController, nil, [], nil, nil).and_call_original
+        subject
       end
     end
   end

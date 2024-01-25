@@ -1,3 +1,5 @@
+<!-- TODO -->
+
 ## 1.1.0
 
 - Add support for `unless` argument in `grant_access` method, allowing to define negated dynamic rules

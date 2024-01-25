@@ -9,15 +9,24 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   shared_examples_for "role names are validated" do
-    [nil, 1, ["admin"], [""], Symbol, :"a-user", :Admin, "Admin", "admin ", []].each do |wrong_argument|
-      let(:roles) { [wrong_argument] }
+    let(:roles) { [:Admin, "junior developer"] }
 
-      it "raises an error when '#{wrong_argument}' is given as a role name" do
-        expect { subject }.to raise_error(
-          Rabarber::InvalidArgumentError,
-          "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
-        )
-      end
+    it "raises an error when the given roles are invalid" do
+      expect { subject }.to raise_error(
+        Rabarber::InvalidArgumentError,
+        "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
+      )
+    end
+  end
+
+  shared_examples_for "role names are processed" do
+    let(:roles) { [:admin, :manager] }
+
+    it "uses Input::Roles to process the given roles" do
+      input_processor = instance_double(Rabarber::Input::Roles, process: roles)
+      allow(Rabarber::Input::Roles).to receive(:new).with(roles).and_return(input_processor)
+      expect(input_processor).to receive(:process).with(no_args)
+      subject
     end
   end
 
@@ -45,6 +54,7 @@ RSpec.describe Rabarber::HasRoles do
     before { user.assign_roles(:admin, :manager) }
 
     it_behaves_like "role names are validated"
+    it_behaves_like "role names are processed"
 
     context "when the user has at least one of the given roles" do
       let(:roles) { [:admin, :accountant] }
@@ -69,6 +79,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:admin, :manager] }
 
       it_behaves_like "role names are validated"
+      it_behaves_like "role names are processed"
 
       context "when the given roles exist" do
         before do
@@ -117,6 +128,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:admin, :manager] }
 
       it_behaves_like "role names are validated"
+      it_behaves_like "role names are processed"
 
       context "when the given roles exist" do
         before do
@@ -168,6 +180,7 @@ RSpec.describe Rabarber::HasRoles do
     let(:roles) { [:admin, :manager] }
 
     it_behaves_like "role names are validated"
+    it_behaves_like "role names are processed"
 
     context "when the user has the given roles" do
       before { user.assign_roles(*roles) }

@@ -21,23 +21,21 @@ module Rabarber
     end
 
     def current_user_method=(method_name)
-      unless (method_name.is_a?(Symbol) || method_name.is_a?(String)) && method_name.present?
-        raise ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
-      end
-
-      @current_user_method = method_name.to_sym
+      @current_user_method = Input::Types::Symbols.new(
+        method_name, ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
+      ).process
     end
 
     def must_have_roles=(value)
-      raise ConfigurationError, "Configuration 'must_have_roles' must be a Boolean" unless [true, false].include?(value)
-
-      @must_have_roles = value
+      @must_have_roles = Input::Types::Booleans.new(
+        value, ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
+      ).process
     end
 
     def when_unauthorized=(callable)
-      raise ConfigurationError, "Configuration 'when_unauthorized' must be a Proc" unless callable.is_a?(Proc)
-
-      @when_unauthorized = callable
+      @when_unauthorized = Input::Types::Procs.new(
+        callable, ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
+      ).process
     end
   end
 end

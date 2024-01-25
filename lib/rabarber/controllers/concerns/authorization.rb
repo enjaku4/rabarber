@@ -12,7 +12,13 @@ module Rabarber
       def grant_access(action: nil, roles: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
-        Permissions.write(self, action, roles, dynamic_rule, negated_dynamic_rule)
+        Permissions.add(
+          self,
+          Input::Actions.new(action).process,
+          Input::Roles.new(roles).process,
+          Input::DynamicRules.new(dynamic_rule).process,
+          Input::DynamicRules.new(negated_dynamic_rule).process
+        )
       end
     end
 

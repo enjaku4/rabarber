@@ -6,11 +6,14 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :current_user_method, :must_have_roles, :when_unauthorized
+    attr_reader :current_user_method, :must_have_roles, :when_roles_missing, :when_unauthorized
 
     def initialize
       @current_user_method = :current_user
       @must_have_roles = false
+      @when_roles_missing = ->(missing_roles, context) {
+        Rails.logger.warn "Rabarber: missing roles '#{missing_roles}' for '#{context}'"
+      }
       @when_unauthorized = ->(controller) do
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
@@ -29,6 +32,12 @@ module Rabarber
     def must_have_roles=(value)
       @must_have_roles = Input::Types::Booleans.new(
         value, ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
+      ).process
+    end
+
+    def when_roles_missing=(callable)
+      @when_roles_missing = Input::Types::Procs.new(
+        callable, ConfigurationError, "Configuration 'when_roles_missing' must be a Proc"
       ).process
     end
 

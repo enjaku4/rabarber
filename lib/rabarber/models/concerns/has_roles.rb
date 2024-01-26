@@ -6,7 +6,7 @@ module Rabarber
 
     included do
       if defined?(@@included) && @@included != name
-        raise ::Rabarber::Error, "Rabarber::HasRoles can only be included once"
+        raise Rabarber::Error, "Rabarber::HasRoles can only be included once"
       end
 
       @@included = name
@@ -29,22 +29,22 @@ module Rabarber
 
       create_new_roles(roles_to_assign) if create_new
 
-      rabarber_roles << ::Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+      rabarber_roles << Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
     end
 
     def revoke_roles(*role_names)
-      self.rabarber_roles = rabarber_roles - ::Rabarber::Role.where(name: process_role_names(role_names))
+      self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
     end
 
     private
 
     def create_new_roles(role_names)
-      new_roles = role_names - ::Rabarber::Role.names
-      new_roles.each { |role_name| ::Rabarber::Role.create!(name: role_name) }
+      new_roles = role_names - Rabarber::Role.names
+      new_roles.each { |role_name| Rabarber::Role.create!(name: role_name) }
     end
 
     def process_role_names(role_names)
-      ::Rabarber::Input::Roles.new(role_names).process
+      Rabarber::Input::Roles.new(role_names).process
     end
   end
 end

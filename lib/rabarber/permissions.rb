@@ -18,7 +18,7 @@ module Rabarber
     def self.add(controller, action, roles, dynamic_rule, negated_dynamic_rule)
       handle_missing_roles(roles, controller, action)
 
-      rule = ::Rabarber::Rule.new(action, roles, dynamic_rule, negated_dynamic_rule)
+      rule = Rabarber::Rule.new(action, roles, dynamic_rule, negated_dynamic_rule)
 
       if action
         instance.storage[:action_rules][controller] += [rule]
@@ -36,14 +36,14 @@ module Rabarber
     end
 
     def self.handle_missing_roles(roles, controller, action)
-      missing_roles = roles - ::Rabarber::Role.names
+      missing_roles = roles - Rabarber::Role.names
 
       return if missing_roles.empty?
 
       delimiter = action ? "#" : ""
       context = "#{controller}#{delimiter}#{action}"
 
-      ::Rabarber::Configuration.instance.when_roles_missing.call(missing_roles, context)
+      Rabarber::Configuration.instance.when_roles_missing.call(missing_roles, context)
     end
   end
 end

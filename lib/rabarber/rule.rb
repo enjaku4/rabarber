@@ -20,7 +20,7 @@ module Rabarber
     end
 
     def roles_permitted?(user_roles)
-      return false if ::Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
+      return false if Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
 
       roles.empty? || (roles & user_roles).any?
     end

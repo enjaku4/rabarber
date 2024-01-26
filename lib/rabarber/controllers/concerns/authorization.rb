@@ -12,12 +12,12 @@ module Rabarber
       def grant_access(action: nil, roles: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
-        Permissions.add(
+        ::Rabarber::Permissions.add(
           self,
-          Input::Actions.new(action).process,
-          Input::Roles.new(roles).process,
-          Input::DynamicRules.new(dynamic_rule).process,
-          Input::DynamicRules.new(negated_dynamic_rule).process
+          ::Rabarber::Input::Actions.new(action).process,
+          ::Rabarber::Input::Roles.new(roles).process,
+          ::Rabarber::Input::DynamicRules.new(dynamic_rule).process,
+          ::Rabarber::Input::DynamicRules.new(negated_dynamic_rule).process
         )
       end
     end
@@ -25,7 +25,7 @@ module Rabarber
     private
 
     def verify_access
-      return if Permissions.access_granted?(
+      return if ::Rabarber::Permissions.access_granted?(
         send(::Rabarber::Configuration.instance.current_user_method).roles, self.class, action_name.to_sym, self
       )
 

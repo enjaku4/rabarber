@@ -8,10 +8,10 @@ RSpec.describe Rabarber::Permissions do
     let(:dynamic_rule) { ->(foo) { foo } }
 
     context "when action is given" do
-      before { allow(Rabarber::Rule).to receive(:new).with(:index, :admin, :dynamic_rule, false).and_return(rule) }
+      before { allow(Rabarber::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule) }
 
       it "adds permissions to the action rules storage" do
-        expect { permissions.add(DummyController, :index, :admin, :dynamic_rule, false) }
+        expect { permissions.add(DummyController, :index, [:admin], :dynamic_rule, false) }
           .to change { permissions.instance.storage[:action_rules] }
           .to({ DummyController => [rule] })
       end
@@ -31,8 +31,8 @@ RSpec.describe Rabarber::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.add(DummyController, nil, :admin, ->(foo) { foo }, :bar)
-        permissions.add(DummyParentController, nil, nil, nil, nil)
+        permissions.add(DummyController, nil, [:admin], ->(foo) { foo }, :bar)
+        permissions.add(DummyParentController, nil, [], nil, nil)
       end
 
       it "returns rules for controllers" do
@@ -50,7 +50,7 @@ RSpec.describe Rabarber::Permissions do
   describe ".action_rules" do
     context "if action rules exist" do
       before do
-        permissions.add(DummyController, :index, nil, nil, nil)
+        permissions.add(DummyController, :index, [], nil, nil)
         permissions.add(DummyPagesController, :show, [:manager, :admin], -> { true }, :foo)
       end
 

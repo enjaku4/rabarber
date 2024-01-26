@@ -7,7 +7,7 @@ module Rabarber
 
       def initialize(
         value,
-        error_type = InvalidArgumentError,
+        error_type = ::Rabarber::InvalidArgumentError,
         error_message =
           "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
       )

@@ -65,4 +65,33 @@ RSpec.describe Rabarber::Permissions do
       end
     end
   end
+
+  describe ".handle_missing_roles" do
+    subject { permissions.handle_missing_roles(roles, "Controller", :index) }
+
+    let(:callable_double) { instance_double(Proc) }
+
+    before do
+      Rabarber::Role.create!(name: :admin)
+      allow(Rabarber::Configuration.instance).to receive(:when_roles_missing).and_return(callable_double)
+    end
+
+    context "when missing roles exist" do
+      let(:roles) { [:admin, :manager] }
+
+      it "calls when_roles_missing" do
+        expect(callable_double).to receive(:call).with([:manager], "Controller#index")
+        subject
+      end
+    end
+
+    context "when missing roles don't exist" do
+      let(:roles) { [:admin] }
+
+      it "doesn't call when_roles_missing" do
+        expect(callable_double).not_to receive(:call)
+        subject
+      end
+    end
+  end
 end

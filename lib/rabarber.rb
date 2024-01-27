@@ -34,13 +34,4 @@ module Rabarber
   def configure
     yield(Rabarber::Configuration.instance)
   end
-
-  # TODO
-
-  # class Railtie < Rails::Railtie
-  #   initializer "rabarber.after_initialize" do
-  #     Rabarber::Missing::Actions.new.handle
-  #     Rabarber::Missing::Roles.new.handle
-  #   end
-  # end
 end

@@ -70,8 +70,10 @@ RSpec.describe Rabarber do
     end
 
     it "logs a warning when roles are missing by default" do
-      Rabarber::Configuration.instance.when_roles_missing.call([:missing_role], "Controller#index")
-      message = "[Rabarber] Roles are missing: [:missing_role], context: Controller#index"
+      Rabarber::Configuration.instance.when_roles_missing.call(
+        [:missing_role], controller: "Controller", action: "index"
+      )
+      message = "[Rabarber] Missing roles: [:missing_role], context: Controller#index"
       last_log_line = File.foreach("log/test.log").to_a.last.chomp
       expect(last_log_line).to eq(message)
     end

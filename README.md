@@ -86,7 +86,7 @@ Rabarber.configure do |config|
   }
 end
 ```
-`when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` are missing (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). Such a check is performed on every request, and by default, an error is raised when actions are missing.
+`when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` are missing (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, an error is raised when actions are missing.
 
 ```rb
 Rabarber.configure do |config|
@@ -95,7 +95,7 @@ Rabarber.configure do |config|
   }
 end
 ```
-`when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). Such a check is performed on every request, and and by default, only a warning is logged when roles are missing.
+`when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, only a warning is logged when roles are missing.
 
 ```rb
 Rabarber.configure do |config|

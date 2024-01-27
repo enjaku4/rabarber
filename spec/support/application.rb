@@ -2,7 +2,7 @@
 
 class DummyApplication < Rails::Application; end
 
-Rails.application.configure do
+DummyApplication.configure do
   config.eager_load = true
 end
 

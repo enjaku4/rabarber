@@ -1,4 +1,3 @@
-<!-- TODO -->
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -70,6 +69,9 @@ Rabarber can be configured by adding the following code into an initializer:
 Rabarber.configure do |config|
   config.current_user_method = :authenticated_user
   config.must_have_roles = true
+  config.when_roles_missing = ->(missing_roles, context) {
+    raise StandardError, "Roles #{missing_roles} are missing. Context: #{context}"
+  }
   config.when_unauthorized = ->(controller) {
     controller.head 418
   }
@@ -77,7 +79,8 @@ end
 ```
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
-- `when_unauthorized` must be a lambda where you can define your actions when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
+- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a string which looks like this: `"InvoicesController#index"`). By default, missing roles are ignored and only a warning is logged.
+- `when_unauthorized` must be a proc where you can define your actions when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
 
 ## Roles
 
@@ -257,7 +260,7 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol (the method with the same name will be called) or a lambda.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol (the method with the same name will be called) or a proc.
 
 Rules defined in child classes don't override parent rules but rather add to them:
 ```rb

@@ -11,6 +11,9 @@ AllCops:
 Layout/LineLength:
   Max: 120
 
+Layout/SpaceInLambdaLiteral:
+  EnforcedStyle: require_space
+
 Metrics/AbcSize:
   Enabled: false
 

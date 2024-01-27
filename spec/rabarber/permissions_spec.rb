@@ -5,7 +5,7 @@ RSpec.describe Rabarber::Permissions do
 
   describe ".add" do
     let(:rule) { instance_double(Rabarber::Rule) }
-    let(:dynamic_rule) { ->(foo) { foo } }
+    let(:dynamic_rule) { -> (foo) { foo } }
 
     context "when action is given" do
       before { allow(Rabarber::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule) }
@@ -31,7 +31,7 @@ RSpec.describe Rabarber::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.add(DummyController, nil, [:admin], ->(foo) { foo }, :bar)
+        permissions.add(DummyController, nil, [:admin], -> (foo) { foo }, :bar)
         permissions.add(DummyParentController, nil, [], nil, nil)
       end
 

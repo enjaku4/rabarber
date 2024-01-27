@@ -81,7 +81,7 @@ end
 
 ```rb
 Rabarber.configure do |config|
-  config.when_actions_missing = ->(missing_actions, context) {
+  config.when_actions_missing = -> (missing_actions, context) {
     Rollbar.error("Actions #{missing_actions} are missing. Controller: #{context[:controller]}")
   }
 end
@@ -90,7 +90,7 @@ end
 
 ```rb
 Rabarber.configure do |config|
-  config.when_roles_missing = ->(missing_roles, context) {
+  config.when_roles_missing = -> (missing_roles, context) {
     raise StandardError, "Roles #{missing_roles} are missing. Controller: #{context[:controller]}, action: #{context[:action]}"
   }
 end
@@ -99,7 +99,7 @@ end
 
 ```rb
 Rabarber.configure do |config|
-  config.when_unauthorized = ->(controller) {
+  config.when_unauthorized = -> (controller) {
     controller.head(418)
   }
 end

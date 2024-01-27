@@ -63,7 +63,7 @@ rails db:migrate
 
 ## Configuration
 
-Rabarber can be configured using the `.configure` method in an initializer. Here are the available options with examples:
+Rabarber can be configured using the `.configure` method. Simply put it in an initializer. Here are the available options with examples:
 
 ```rb
 Rabarber.configure do |config|

@@ -5,7 +5,6 @@ require_relative "rabarber/configuration"
 
 require "active_record"
 require "active_support"
-require "rails/railtie"
 
 require_relative "rabarber/input/base"
 require_relative "rabarber/input/actions"
@@ -25,6 +24,8 @@ require_relative "rabarber/models/concerns/has_roles"
 require_relative "rabarber/models/role"
 require_relative "rabarber/permissions"
 
+require_relative "rabarber/railtie"
+
 module Rabarber
   module_function
 
@@ -34,14 +35,5 @@ module Rabarber
 
   def configure
     yield(Rabarber::Configuration.instance)
-  end
-
-  class Railtie < Rails::Railtie
-    initializer "rabarber" do
-      Rails.application.config.after_initialize do
-        Rabarber::Missing::Actions.new.handle
-        Rabarber::Missing::Roles.new.handle
-      end
-    end
   end
 end

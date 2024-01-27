@@ -162,6 +162,20 @@ RSpec.describe Rabarber::Authorization do
     it_behaves_like "it does not allow access", hash
   end
 
+  shared_examples_for "it handles missing actions and roles" do |hash|
+    it "handles missing actions and roles when request format is html" do
+      expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
+      expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
+      send(hash.keys.first, hash.values.first, params: hash[:params])
+    end
+
+    it "handles missing actions and roles when request format is not html" do
+      expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
+      expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
+      send(hash.keys.first, hash.values.first, format: :js, params: hash[:params])
+    end
+  end
+
   describe DummyController, type: :controller do
     before { allow(controller).to receive(:current_user).and_return(user) }
 
@@ -183,6 +197,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", get: :multiple_roles
+      it_behaves_like "it handles missing actions and roles", get: :multiple_roles
     end
 
     describe "when a single role is allowed" do
@@ -203,6 +218,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", post: :single_role
+      it_behaves_like "it handles missing actions and roles", post: :single_role
     end
 
     describe "when everyone is allowed" do
@@ -217,6 +233,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", put: :all_access
+      it_behaves_like "it handles missing actions and roles", put: :all_access
     end
 
     describe "when no one is allowed" do
@@ -231,6 +248,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
+      it_behaves_like "it handles missing actions and roles", delete: :no_access
     end
 
     context "when dynamic rule is not negated" do
@@ -248,6 +266,7 @@ RSpec.describe Rabarber::Authorization do
         end
 
         it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
+        it_behaves_like "it handles missing actions and roles", get: :if_lambda, params: { foo: "bar" }
       end
 
       describe "when dynamic rule is defined as a method" do
@@ -264,6 +283,7 @@ RSpec.describe Rabarber::Authorization do
         end
 
         it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
+        it_behaves_like "it handles missing actions and roles", post: :if_method, params: { bad: "baz" }
       end
     end
 
@@ -283,6 +303,8 @@ RSpec.describe Rabarber::Authorization do
 
         it_behaves_like "it does not allow access when user must have roles",
                         patch: :unless_lambda, params: { foo: "bar" }
+        it_behaves_like "it handles missing actions and roles",
+                        patch: :unless_lambda, params: { foo: "bar" }
       end
 
       describe "when dynamic rule is defined as a method" do
@@ -299,6 +321,8 @@ RSpec.describe Rabarber::Authorization do
         end
 
         it_behaves_like "it does not allow access when user must have roles",
+                        delete: :unless_method, params: { bad: "baz" }
+        it_behaves_like "it handles missing actions and roles",
                         delete: :unless_method, params: { bad: "baz" }
       end
     end
@@ -324,6 +348,8 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", put: :foo
       it_behaves_like "it does not allow access when user must have roles", delete: :bar
+      it_behaves_like "it handles missing actions and roles", put: :foo
+      it_behaves_like "it handles missing actions and roles", delete: :bar
     end
   end
 
@@ -347,6 +373,8 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", post: :baz
       it_behaves_like "it does not allow access when user must have roles", patch: :bad
+      it_behaves_like "it handles missing actions and roles", post: :baz
+      it_behaves_like "it handles missing actions and roles", patch: :bad
     end
   end
 end

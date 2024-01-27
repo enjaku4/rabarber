@@ -5,7 +5,7 @@ module Rabarber
     class DynamicRules < Base
       def initialize(
         value,
-        error_type = InvalidArgumentError,
+        error_type = Rabarber::InvalidArgumentError,
         error_message = "Dynamic rule must be a Symbol, a String, or a Proc"
       )
         super

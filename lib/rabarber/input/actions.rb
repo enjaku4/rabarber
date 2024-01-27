@@ -5,7 +5,7 @@ module Rabarber
     class Actions < Base
       def initialize(
         value,
-        error_type = InvalidArgumentError,
+        error_type = Rabarber::InvalidArgumentError,
         error_message = "Action name must be a Symbol or a String"
       )
         super

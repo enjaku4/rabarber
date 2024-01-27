@@ -24,10 +24,10 @@ module Rabarber
   module_function
 
   def configure
-    yield(Configuration.instance)
+    yield(Rabarber::Configuration.instance)
   end
 
   class Error < StandardError; end
-  class ConfigurationError < Error; end
-  class InvalidArgumentError < Error; end
+  class ConfigurationError < Rabarber::Error; end
+  class InvalidArgumentError < Rabarber::Error; end
 end

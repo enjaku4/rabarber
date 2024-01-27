@@ -123,7 +123,7 @@ RSpec.describe Rabarber::Rule do
       end
 
       context "if user is required to have roles" do
-        before { ::Rabarber::Configuration.instance.must_have_roles = true }
+        before { Rabarber::Configuration.instance.must_have_roles = true }
 
         context "if user has roles" do
           let(:user_roles) { [:manager] }

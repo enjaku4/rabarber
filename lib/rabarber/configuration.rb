@@ -6,13 +6,18 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :current_user_method, :must_have_roles, :when_roles_missing, :when_unauthorized
+    attr_reader :current_user_method, :must_have_roles, :when_actions_missing, :when_roles_missing, :when_unauthorized
 
     def initialize
       @current_user_method = :current_user
       @must_have_roles = false
+      @when_actions_missing = ->(missing_actions, context) {
+        raise Rabarber::Error, "Missing actions: #{missing_actions}, context: #{context[:controller]}"
+      }
       @when_roles_missing = ->(missing_roles, context) {
-        Rails.logger.tagged("Rabarber") { Rails.logger.warn "Roles are missing: #{missing_roles}, context: #{context}" }
+        delimiter = context[:action] ? "#" : ""
+        message = "Missing roles: #{missing_roles}, context: #{context[:controller]}#{delimiter}#{context[:action]}"
+        Rails.logger.tagged("Rabarber") { Rails.logger.warn message }
       }
       @when_unauthorized = ->(controller) do
         if controller.request.format.html?

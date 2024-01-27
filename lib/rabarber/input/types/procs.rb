@@ -3,7 +3,7 @@
 module Rabarber
   module Input
     module Types
-      class Procs < Base
+      class Procs < Rabarber::Input::Base
         private
 
         def valid?

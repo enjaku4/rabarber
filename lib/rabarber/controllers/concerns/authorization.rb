@@ -25,6 +25,9 @@ module Rabarber
     private
 
     def verify_access
+      Rabarber::Missing::Actions.new(self.class).handle
+      Rabarber::Missing::Roles.new(self.class).handle
+
       return if Rabarber::Permissions.access_granted?(
         send(Rabarber::Configuration.instance.current_user_method).roles, self.class, action_name.to_sym, self
       )

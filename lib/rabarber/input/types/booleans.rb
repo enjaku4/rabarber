@@ -3,7 +3,7 @@
 module Rabarber
   module Input
     module Types
-      class Booleans < Base
+      class Booleans < Rabarber::Input::Base
         private
 
         def valid?

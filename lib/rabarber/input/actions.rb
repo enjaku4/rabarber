@@ -2,7 +2,7 @@
 
 module Rabarber
   module Input
-    class Actions < Base
+    class Actions < Rabarber::Input::Base
       def initialize(
         value,
         error_type = Rabarber::InvalidArgumentError,

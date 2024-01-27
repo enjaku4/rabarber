@@ -14,6 +14,10 @@ require_relative "rabarber/input/types/booleans"
 require_relative "rabarber/input/types/procs"
 require_relative "rabarber/input/types/symbols"
 
+require_relative "rabarber/missing/base"
+require_relative "rabarber/missing/actions"
+require_relative "rabarber/missing/roles"
+
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/models/concerns/has_roles"
@@ -23,11 +27,20 @@ require_relative "rabarber/permissions"
 module Rabarber
   module_function
 
+  class Error < StandardError; end
+  class ConfigurationError < Rabarber::Error; end
+  class InvalidArgumentError < Rabarber::Error; end
+
   def configure
     yield(Rabarber::Configuration.instance)
   end
 
-  class Error < StandardError; end
-  class ConfigurationError < Rabarber::Error; end
-  class InvalidArgumentError < Rabarber::Error; end
+  # TODO
+
+  # class Railtie < Rails::Railtie
+  #   initializer "rabarber.after_initialize" do
+  #     Rabarber::Missing::Actions.new.handle
+  #     Rabarber::Missing::Roles.new.handle
+  #   end
+  # end
 end

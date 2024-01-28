@@ -6,7 +6,17 @@ require_relative "rabarber/configuration"
 require "active_record"
 require "active_support"
 
-require_relative "rabarber/role_names"
+require_relative "rabarber/input/base"
+require_relative "rabarber/input/actions"
+require_relative "rabarber/input/dynamic_rules"
+require_relative "rabarber/input/roles"
+require_relative "rabarber/input/types/booleans"
+require_relative "rabarber/input/types/procs"
+require_relative "rabarber/input/types/symbols"
+
+require_relative "rabarber/missing/base"
+require_relative "rabarber/missing/actions"
+require_relative "rabarber/missing/roles"
 
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
@@ -14,14 +24,16 @@ require_relative "rabarber/models/concerns/has_roles"
 require_relative "rabarber/models/role"
 require_relative "rabarber/permissions"
 
+require_relative "rabarber/railtie"
+
 module Rabarber
   module_function
 
-  def configure
-    yield(Configuration.instance)
-  end
-
   class Error < StandardError; end
-  class ConfigurationError < Error; end
-  class InvalidArgumentError < Error; end
+  class ConfigurationError < Rabarber::Error; end
+  class InvalidArgumentError < Rabarber::Error; end
+
+  def configure
+    yield(Rabarber::Configuration.instance)
+  end
 end

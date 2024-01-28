@@ -5,10 +5,10 @@ module Rabarber
     attr_reader :action, :roles, :dynamic_rule, :negated_dynamic_rule
 
     def initialize(action, roles, dynamic_rule, negated_dynamic_rule)
-      @action = pre_process_action(action)
-      @roles = RoleNames.pre_process(Array(roles))
-      @dynamic_rule = pre_process_dynamic_rule(dynamic_rule)
-      @negated_dynamic_rule = pre_process_dynamic_rule(negated_dynamic_rule)
+      @action = action
+      @roles = Array(roles)
+      @dynamic_rule = dynamic_rule
+      @negated_dynamic_rule = negated_dynamic_rule
     end
 
     def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)
@@ -20,7 +20,7 @@ module Rabarber
     end
 
     def roles_permitted?(user_roles)
-      return false if ::Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
+      return false if Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
 
       roles.empty? || (roles & user_roles).any?
     end
@@ -43,20 +43,6 @@ module Rabarber
                end
 
       is_negated ? !result : result
-    end
-
-    def pre_process_action(action)
-      return action.to_sym if (action.is_a?(String) || action.is_a?(Symbol)) && action.present?
-      return action if action.nil?
-
-      raise InvalidArgumentError, "Action name must be a Symbol or a String"
-    end
-
-    def pre_process_dynamic_rule(rule)
-      return rule.to_sym if (rule.is_a?(String) || rule.is_a?(Symbol)) && rule.present?
-      return rule if rule.nil? || rule.is_a?(Proc)
-
-      raise InvalidArgumentError, "Dynamic rule must be a Symbol, a String, or a Proc"
     end
   end
 end

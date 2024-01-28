@@ -30,12 +30,13 @@ RSpec.configure do |config|
     DatabaseCleaner.cleaning do
       example.run
     end
-  end
 
-  config.after do
     reset_config = Rabarber::Configuration.send(:new)
+
     Rabarber::Configuration.instance.current_user_method = reset_config.current_user_method
     Rabarber::Configuration.instance.must_have_roles = reset_config.must_have_roles
+    Rabarber::Configuration.instance.when_actions_missing = reset_config.when_actions_missing
+    Rabarber::Configuration.instance.when_roles_missing = reset_config.when_roles_missing
     Rabarber::Configuration.instance.when_unauthorized = reset_config.when_unauthorized
   end
 end

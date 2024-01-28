@@ -1,51 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Rule do
-  describe "validations" do
-    context "when action is invalid" do
-      [1, ["index"], "", Symbol, {}, :""].each do |wrong_action_name|
-        it "raises an error when '#{wrong_action_name}' is given as an action name" do
-          expect { described_class.new(wrong_action_name, nil, nil, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
-          )
-        end
-      end
-    end
-
-    context "when roles are invalid" do
-      [1, Symbol, "Admin", :"foo-bar", "", [""], ["admin "]].each do |wrong_roles|
-        it "raises an error when '#{wrong_roles}' are given as roles" do
-          expect { described_class.new(nil, wrong_roles, nil, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
-          )
-        end
-      end
-    end
-
-    context "when dynamic rule is invalid" do
-      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
-        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, wrong_dynamic_rule, nil) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Dynamic rule must be a Symbol, a String, or a Proc"
-          )
-        end
-      end
-    end
-
-    context "when negated dynamic rule is invalid" do
-      [1, ["rule"], "", :"", Symbol, [], {}].each do |wrong_dynamic_rule|
-        it "raises an error when '#{wrong_dynamic_rule}' is given as a dynamic rule" do
-          expect { described_class.new(nil, nil, nil, wrong_dynamic_rule) }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Dynamic rule must be a Symbol, a String, or a Proc"
-          )
-        end
-      end
-    end
-  end
-
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController, :index) }
 
@@ -168,7 +123,7 @@ RSpec.describe Rabarber::Rule do
       end
 
       context "if user is required to have roles" do
-        before { ::Rabarber::Configuration.instance.must_have_roles = true }
+        before { Rabarber::Configuration.instance.must_have_roles = true }
 
         context "if user has roles" do
           let(:user_roles) { [:manager] }

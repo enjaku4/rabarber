@@ -6,38 +6,78 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :current_user_method, :must_have_roles, :when_unauthorized
+    attr_reader :current_user_method, :must_have_roles, :when_actions_missing, :when_roles_missing, :when_unauthorized
 
     def initialize
-      @current_user_method = :current_user
-      @must_have_roles = false
-      @when_unauthorized = ->(controller) do
+      @current_user_method = default_current_user_method
+      @must_have_roles = default_must_have_roles
+      @when_actions_missing = default_when_actions_missing
+      @when_roles_missing = default_when_roles_missing
+      @when_unauthorized = default_when_unauthorized
+    end
+
+    def current_user_method=(method_name)
+      @current_user_method = Rabarber::Input::Types::Symbols.new(
+        method_name, Rabarber::ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
+      ).process
+    end
+
+    def must_have_roles=(value)
+      @must_have_roles = Rabarber::Input::Types::Booleans.new(
+        value, Rabarber::ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
+      ).process
+    end
+
+    def when_actions_missing=(callable)
+      @when_actions_missing = Rabarber::Input::Types::Procs.new(
+        callable, Rabarber::ConfigurationError, "Configuration 'when_actions_missing' must be a Proc"
+      ).process
+    end
+
+    def when_roles_missing=(callable)
+      @when_roles_missing = Rabarber::Input::Types::Procs.new(
+        callable, Rabarber::ConfigurationError, "Configuration 'when_roles_missing' must be a Proc"
+      ).process
+    end
+
+    def when_unauthorized=(callable)
+      @when_unauthorized = Rabarber::Input::Types::Procs.new(
+        callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
+      ).process
+    end
+
+    private
+
+    def default_current_user_method
+      :current_user
+    end
+
+    def default_must_have_roles
+      false
+    end
+
+    def default_when_actions_missing
+      -> (missing_actions, context) {
+        raise Rabarber::Error, "Missing actions: #{missing_actions}, context: #{context[:controller]}"
+      }
+    end
+
+    def default_when_roles_missing
+      -> (missing_roles, context) {
+        delimiter = context[:action] ? "#" : ""
+        message = "Missing roles: #{missing_roles}, context: #{context[:controller]}#{delimiter}#{context[:action]}"
+        Rails.logger.tagged("Rabarber") { Rails.logger.warn message }
+      }
+    end
+
+    def default_when_unauthorized
+      -> (controller) do
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
         else
           controller.head(:unauthorized)
         end
       end
-    end
-
-    def current_user_method=(method_name)
-      unless (method_name.is_a?(Symbol) || method_name.is_a?(String)) && method_name.present?
-        raise ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
-      end
-
-      @current_user_method = method_name.to_sym
-    end
-
-    def must_have_roles=(value)
-      raise ConfigurationError, "Configuration 'must_have_roles' must be a Boolean" unless [true, false].include?(value)
-
-      @must_have_roles = value
-    end
-
-    def when_unauthorized=(callable)
-      raise ConfigurationError, "Configuration 'when_unauthorized' must be a Proc" unless callable.is_a?(Proc)
-
-      @when_unauthorized = callable
     end
   end
 end

@@ -2,8 +2,8 @@
 
 class DummyApplication < Rails::Application; end
 
-Rails.application.configure do
-  config.eager_load = false
+DummyApplication.configure do
+  config.eager_load = true
 end
 
 DummyApplication.initialize!

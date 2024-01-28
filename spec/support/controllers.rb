@@ -9,6 +9,10 @@ class DummyPagesController < ActionController::Base
   end
 end
 
+class DummyAuthController < ActionController::Base
+  include Rabarber::Authorization
+end
+
 class DummyController < ActionController::Base
   include Rabarber::Authorization
 

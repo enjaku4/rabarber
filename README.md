@@ -68,43 +68,21 @@ Configure Rabarber using the `.configure` method by placing it in an initializer
 ```rb
 Rabarber.configure do |config|
   config.current_user_method = :authenticated_user
-end
-```
-`current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
-
-```rb
-Rabarber.configure do |config|
   config.must_have_roles = true
+  config.when_actions_missing = -> (missing_actions, context) { ... }
+  config.when_roles_missing = -> (missing_roles, context) { ... }
+  config.when_unauthorized = -> (controller) { ... }
 end
 ```
-`must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
+- `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
 
-```rb
-Rabarber.configure do |config|
-  config.when_actions_missing = -> (missing_actions, context) {
-    Rollbar.error("Actions #{missing_actions} are missing. Controller: #{context[:controller]}")
-  }
-end
-```
-`when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` are missing (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, an error is raised when actions are missing.
+- `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
 
-```rb
-Rabarber.configure do |config|
-  config.when_roles_missing = -> (missing_roles, context) {
-    raise StandardError, "Roles #{missing_roles} are missing. Controller: #{context[:controller]}, action: #{context[:action]}"
-  }
-end
-```
-`when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, only a warning is logged when roles are missing.
+- `when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` are missing (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, an error is raised when actions are missing.
 
-```rb
-Rabarber.configure do |config|
-  config.when_unauthorized = -> (controller) {
-    controller.head(418)
-  }
-end
-```
-`when_unauthorized` must be a proc where you can define the behaviour when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
+- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, only a warning is logged when roles are missing.
+
+- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
 
 ## Roles
 
@@ -136,7 +114,7 @@ You can also explicitly create new roles simply by using:
 ```rb
 Rabarber::Role.create(name: "manager")
 ```
-The role names are unique.
+The role names must be unique.
 
 **`#revoke_roles`**
 
@@ -172,12 +150,6 @@ Rabarber::Role.names
 ```
 
 `Rabarber::Role` is a model that represents roles within your application. It has a single attribute, `name`, which is validated for both uniqueness and presence. You can treat `Rabarber::Role` as a regular Rails model and use Active Record methods on it if necessary.
-
-*Utilize the aforementioned methods to manipulate user roles. For example, create a UI for managing roles or assign roles during migration or runtime (e.g. when the user is created).*
-
-*You are also encouraged to write your own authorization policies based on `#has_role?` method (e.g. to scope the data that the role can access).*
-
-*Adapt the tools Rabarber provides to fit the requirements of your application.*
 
 ## Authorization Rules
 

@@ -7,7 +7,7 @@ RSpec.describe Rabarber::Missing::Actions do
 
   before { allow(Rabarber::Configuration.instance).to receive(:when_actions_missing).and_return(callable_double) }
 
-  after { Rabarber::Permissions.action_rules[DummyAuthController].clear }
+  after { Rabarber::Permissions.action_rules.delete(DummyAuthController) }
 
   context "when controller is not specified" do
     let(:controller) { nil }

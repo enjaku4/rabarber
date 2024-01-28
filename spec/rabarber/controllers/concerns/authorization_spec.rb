@@ -6,7 +6,7 @@ RSpec.describe Rabarber::Authorization do
   describe ".grant_access" do
     subject { DummyAuthController.grant_access(**args) }
 
-    after { Rabarber::Permissions.action_rules[DummyAuthController].clear }
+    after { Rabarber::Permissions.action_rules.delete(DummyAuthController) }
 
     context "when action is invalid" do
       let(:args) { { action: 1 } }

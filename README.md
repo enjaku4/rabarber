@@ -63,24 +63,48 @@ rails db:migrate
 
 ## Configuration
 
-Rabarber can be configured by adding the following code into an initializer:
+Rabarber can be configured using the `.configure` method. Simply put it in an initializer. Here are the available options with examples:
 
 ```rb
 Rabarber.configure do |config|
   config.current_user_method = :authenticated_user
+end
+```
+`current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
+
+```rb
+Rabarber.configure do |config|
   config.must_have_roles = true
-  config.when_roles_missing = ->(missing_roles, context) {
-    raise StandardError, "Roles #{missing_roles} are missing. Context: #{context}"
-  }
-  config.when_unauthorized = ->(controller) {
-    controller.head 418
+end
+```
+`must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
+
+```rb
+Rabarber.configure do |config|
+  config.when_actions_missing = -> (missing_actions, context) {
+    Rollbar.error("Actions #{missing_actions} are missing. Controller: #{context[:controller]}")
   }
 end
 ```
-- `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
-- `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
-- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a string which looks like this: `"InvoicesController#index"`). By default, missing roles are ignored and only a warning is logged.
-- `when_unauthorized` must be a proc where you can define your actions when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
+`when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` are missing (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, an error is raised when actions are missing.
+
+```rb
+Rabarber.configure do |config|
+  config.when_roles_missing = -> (missing_roles, context) {
+    raise StandardError, "Roles #{missing_roles} are missing. Controller: #{context[:controller]}, action: #{context[:action]}"
+  }
+end
+```
+`when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` are missing (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `config.eager_load` is enabled in Rails. By default, only a warning is logged when roles are missing.
+
+```rb
+Rabarber.configure do |config|
+  config.when_unauthorized = -> (controller) {
+    controller.head(418)
+  }
+end
+```
+`when_unauthorized` must be a proc where you can define the behaviour when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
 
 ## Roles
 

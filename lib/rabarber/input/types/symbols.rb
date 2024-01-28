@@ -3,7 +3,7 @@
 module Rabarber
   module Input
     module Types
-      class Symbols < Base
+      class Symbols < Rabarber::Input::Base
         private
 
         def valid?

@@ -2,7 +2,7 @@
 
 module Rabarber
   module Input
-    class DynamicRules < Base
+    class DynamicRules < Rabarber::Input::Base
       def initialize(
         value,
         error_type = Rabarber::InvalidArgumentError,

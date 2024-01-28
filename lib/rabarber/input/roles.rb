@@ -2,7 +2,7 @@
 
 module Rabarber
   module Input
-    class Roles < Base
+    class Roles < Rabarber::Input::Base
       REGEX = /\A[a-z0-9_]+\z/
 
       def initialize(

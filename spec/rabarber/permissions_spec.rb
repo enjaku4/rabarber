@@ -5,7 +5,7 @@ RSpec.describe Rabarber::Permissions do
 
   describe ".add" do
     let(:rule) { instance_double(Rabarber::Rule) }
-    let(:dynamic_rule) { ->(foo) { foo } }
+    let(:dynamic_rule) { -> (foo) { foo } }
 
     context "when action is given" do
       before { allow(Rabarber::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule) }
@@ -31,7 +31,7 @@ RSpec.describe Rabarber::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.add(DummyController, nil, [:admin], ->(foo) { foo }, :bar)
+        permissions.add(DummyController, nil, [:admin], -> (foo) { foo }, :bar)
         permissions.add(DummyParentController, nil, [], nil, nil)
       end
 
@@ -62,35 +62,6 @@ RSpec.describe Rabarber::Permissions do
     context "if action rules don\'t exist" do
       it "returns an empty array" do
         expect(permissions.action_rules.keys).to eq([])
-      end
-    end
-  end
-
-  describe ".handle_missing_roles" do
-    subject { permissions.handle_missing_roles(roles, "Controller", :index) }
-
-    let(:callable_double) { instance_double(Proc) }
-
-    before do
-      Rabarber::Role.create!(name: :admin)
-      allow(Rabarber::Configuration.instance).to receive(:when_roles_missing).and_return(callable_double)
-    end
-
-    context "when missing roles exist" do
-      let(:roles) { [:admin, :manager] }
-
-      it "calls when_roles_missing" do
-        expect(callable_double).to receive(:call).with([:manager], "Controller#index")
-        subject
-      end
-    end
-
-    context "when missing roles don't exist" do
-      let(:roles) { [:admin] }
-
-      it "doesn't call when_roles_missing" do
-        expect(callable_double).not_to receive(:call)
-        subject
       end
     end
   end

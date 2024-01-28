@@ -11,6 +11,12 @@ AllCops:
 Layout/LineLength:
   Max: 120
 
+Layout/SpaceInLambdaLiteral:
+  EnforcedStyle: require_space
+
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/BlockLength:
   Enabled: false
 
@@ -36,6 +42,9 @@ RSpec/ExampleLength:
   Enabled: false
 
 RSpec/FilePath:
+  Enabled: false
+
+RSpec/MessageChain:
   Enabled: false
 
 RSpec/MessageSpies:

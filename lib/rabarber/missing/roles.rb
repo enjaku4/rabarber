@@ -28,7 +28,10 @@ module Rabarber
       end
 
       def all_roles
-        @all_roles ||= Rabarber::Role.names
+        # TODO: add configuration option to enable/disable caching and set cache expiration time and race condition ttl
+        Rails.cache.fetch("rabarber:roles", expires_in: 1.day, race_condition_ttl: 10.seconds) do
+          @all_roles ||= Rabarber::Role.names
+        end
       end
     end
   end

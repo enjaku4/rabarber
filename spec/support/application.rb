@@ -4,6 +4,9 @@ class DummyApplication < Rails::Application; end
 
 DummyApplication.configure do
   config.eager_load = true
+  # TODO: tests are red when cache_store is set to :memory_store but green when set to :null_store
+  # TODO: number of failing tests is different each time
+  config.cache_store = :memory_store
 end
 
 DummyApplication.initialize!

@@ -1,3 +1,5 @@
+<!-- TODO -->
+
 ## 1.2.0
 
 - Enhance handling of missing actions and roles specified in `grant_access` method by raising an error for missing actions and logging a warning for missing roles.

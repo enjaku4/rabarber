@@ -30,10 +30,14 @@ module Rabarber
       create_new_roles(roles_to_assign) if create_new
 
       rabarber_roles << Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+
+      delete_cache
     end
 
     def revoke_roles(*role_names)
       self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
+
+      delete_cache
     end
 
     private
@@ -45,6 +49,11 @@ module Rabarber
 
     def process_role_names(role_names)
       Rabarber::Input::Roles.new(role_names).process
+    end
+
+    def delete_cache
+      # TODO: cache key should probably be defined somewhere else and reused
+      Rails.cache.delete("rabarber:user_roles_#{id}")
     end
   end
 end

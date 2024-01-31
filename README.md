@@ -276,7 +276,16 @@ This means that `Crm::InvoicesController` is still accessible to `admin` but is 
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. The usage is straightforward:
+Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. To use them, simply include `Rabarber::Helpers` in the desired helper (usually `ApplicationHelper`, but it can be any helper):
+
+```rb
+module ApplicationHelper
+  include Rabarber::Helpers
+  ...
+end
+```
+
+The usage is straightforward:
 
 ```erb
 <%= visible_to(:admin, :manager) do %>

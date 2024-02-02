@@ -30,8 +30,7 @@ module Rabarber
 
       user = send(Rabarber::Configuration.instance.current_user_method)
 
-      # TODO: add configuration option to enable/disable caching and set cache expiration time and race condition ttl
-      roles = Rails.cache.fetch("rabarber:user_roles_#{user.id}", expires_in: 1.hour, race_condition_ttl: 5.seconds) do
+      roles = Rabarber::Cache.fetch(Rabarber::Cache.key_for(user), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
         user.roles
       end
 

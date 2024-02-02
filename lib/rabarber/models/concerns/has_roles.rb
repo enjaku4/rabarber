@@ -52,8 +52,7 @@ module Rabarber
     end
 
     def delete_cache
-      # TODO: cache key should probably be defined somewhere else and reused
-      Rails.cache.delete("rabarber:user_roles_#{id}")
+      Rabarber::Cache.delete(Rabarber::Cache.key_for(self))
     end
   end
 end

@@ -28,9 +28,13 @@ module Rabarber
       Rabarber::Missing::Actions.new(self.class).handle
       Rabarber::Missing::Roles.new(self.class).handle
 
-      return if Rabarber::Permissions.access_granted?(
-        send(Rabarber::Configuration.instance.current_user_method).roles, self.class, action_name.to_sym, self
-      )
+      user = send(Rabarber::Configuration.instance.current_user_method)
+
+      roles = Rabarber::Cache.fetch(Rabarber::Cache.key_for(user), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
+        user.roles
+      end
+
+      return if Rabarber::Permissions.access_granted?(roles, self.class, action_name.to_sym, self)
 
       Rabarber::Configuration.instance.when_unauthorized.call(self)
     end

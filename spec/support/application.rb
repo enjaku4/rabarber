@@ -4,6 +4,7 @@ class DummyApplication < Rails::Application; end
 
 DummyApplication.configure do
   config.eager_load = true
+  config.cache_store = :null_store
 end
 
 DummyApplication.initialize!

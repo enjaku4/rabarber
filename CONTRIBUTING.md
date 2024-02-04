@@ -25,7 +25,7 @@ By submitting a pull request, you indicate that you waive any rights or claims t
 
 If you are unable or unwilling to transfer these rights, please refrain from submitting a pull request.
 
-### Local Development
+## Local Development
 
 Use the Ruby version specified in the `rabarber.gemspec` file.
 

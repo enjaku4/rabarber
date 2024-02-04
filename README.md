@@ -306,7 +306,8 @@ Encountered a bug or facing a problem?
 
 ## Contributing
 
-If you want to contribute please read [contributing guidelines](https://github.com/enjaku4/rabarber/CONTRIBUTING.md).
+<!-- TODO change to main -->
+If you want to contribute please read [contributing guidelines](https://github.com/enjaku4/rabarber/blob/contributing/CONTRIBUTING.md).
 
 ## License
 
@@ -314,4 +315,5 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/CODE_OF_CONDUCT.md).
+<!-- TODO change to main -->
+Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/contributing/CODE_OF_CONDUCT.md).

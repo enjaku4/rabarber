@@ -42,9 +42,9 @@ RSpec.configure do |config|
   end
 end
 
-load "#{File.dirname(__FILE__)}/support/schema.rb"
+load "#{File.dirname(__FILE__)}/support/dummy_app/schema.rb"
 
-require "#{File.dirname(__FILE__)}/support/application"
-require "#{File.dirname(__FILE__)}/support/controllers"
-require "#{File.dirname(__FILE__)}/support/helpers"
-require "#{File.dirname(__FILE__)}/support/models"
+require "#{File.dirname(__FILE__)}/support/dummy_app/application"
+require "#{File.dirname(__FILE__)}/support/dummy_app/controllers"
+require "#{File.dirname(__FILE__)}/support/dummy_app/helpers"
+require "#{File.dirname(__FILE__)}/support/dummy_app/models"

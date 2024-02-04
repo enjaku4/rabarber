@@ -2,10 +2,10 @@
 
 class DummyApplication < Rails::Application; end
 
-DummyApplication.configure do
+Rails.application.configure do
   config.eager_load = true
   # TODO: write tests specifically for the case when caching is enabled
-  config.cache_store = :null_store
+  config.cache_store = :file_store, "/tmp/cache"
 end
 
 DummyApplication.initialize!

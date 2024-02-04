@@ -307,7 +307,7 @@ Encountered a bug or facing a problem?
 ## Contributing
 
 <!-- TODO change to main -->
-If you want to contribute please read [contributing guidelines](https://github.com/enjaku4/rabarber/blob/contributing/CONTRIBUTING.md).
+If you want to contribute, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/contributing/CONTRIBUTING.md).
 
 ## License
 

@@ -9,7 +9,7 @@ class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.
 
     create_table :rabarber_roles_roleables, id: false do |t|
       t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }
-      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: raise(Rabarber::Error, "Please specify your user model's table name") }
+      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: <%= table_name.to_sym.inspect %> }
     end
 
     add_index :rabarber_roles_roleables, [:role_id, :roleable_id], unique: true

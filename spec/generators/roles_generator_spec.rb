@@ -4,13 +4,13 @@ require "rails/generators"
 require_relative "../../lib/generators/rabarber/roles_generator"
 
 RSpec.describe Rabarber::RolesGenerator do
-  subject(:run_generator) { described_class.start }
+  subject { described_class.start([:my_users]) }
 
   before do
     allow(Time).to receive(:now).and_return(Time.new(2022, 12, 1, 21, 10, 56, "+01:00"))
     allow(ActiveRecord::Migration).to receive(:current_version).and_return(6.2)
 
-    run_generator
+    subject
   end
 
   after do
@@ -34,7 +34,7 @@ RSpec.describe Rabarber::RolesGenerator do
 
           create_table :rabarber_roles_roleables, id: false do |t|
             t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }
-            t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: raise(Rabarber::Error, "Please specify your user model's table name") }
+            t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: :my_users }
           end
 
           add_index :rabarber_roles_roleables, [:role_id, :roleable_id], unique: true

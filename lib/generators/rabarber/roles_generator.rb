@@ -8,6 +8,8 @@ module Rabarber
 
     source_root File.expand_path("templates", __dir__)
 
+    argument :table_name, type: :string, required: true
+
     def create_migrations
       migration_template "create_rabarber_roles.rb.erb", "db/migrate/create_rabarber_roles.rb"
     end

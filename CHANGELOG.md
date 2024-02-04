@@ -1,4 +1,7 @@
-<!-- TODO -->
+## 1.2.1
+
+- Cache roles to avoid unnecessary database queries
+- Add configuration option `cache_enabled` to enable or disable role caching
 
 ## 1.2.0
 

@@ -1,5 +1,3 @@
-<!-- TODO -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -69,6 +67,7 @@ Rabarber can be configured by using `.configure` method in an initializer:
 
 ```rb
 Rabarber.configure do |config|
+  config.cache_enabled = false
   config.current_user_method = :authenticated_user
   config.must_have_roles = true
   config.when_actions_missing = -> (missing_actions, context) { ... }
@@ -76,6 +75,9 @@ Rabarber.configure do |config|
   config.when_unauthorized = -> (controller) { ... }
 end
 ```
+
+- `cache_enabled` must be a boolean determining whether roles should be cached. Roles are cached by default to avoid unnecessary database queries. If you want to disable caching, set this option to `false`.
+
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
 
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).

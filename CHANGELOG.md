@@ -1,12 +1,12 @@
 ## 1.2.1
 
 - Cache roles to avoid unnecessary database queries
-- Add configuration option `cache_enabled` to enable or disable role caching
+- Introduce `cache_enabled` configuration option, allowing to enable or disable role caching
 
 ## 1.2.0
 
-- Enhance handling of missing actions and roles specified in `grant_access` method by raising an error for missing actions and logging a warning for missing roles.
-- Introduce `when_actions_missing` and `when_roles_missing` configuration options, allowing to customize the behavior when actions or roles are not found.
+- Enhance handling of missing actions and roles specified in `grant_access` method by raising an error for missing actions and logging a warning for missing roles
+- Introduce `when_actions_missing` and `when_roles_missing` configuration options, allowing to customize the behavior when actions or roles are not found
 
 ## 1.1.0
 

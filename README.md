@@ -76,7 +76,7 @@ Rabarber.configure do |config|
 end
 ```
 
-- `cache_enabled` must be a boolean determining whether roles should be cached. Roles are cached by default to avoid unnecessary database queries. If you want to disable caching, set this option to `false`.
+- `cache_enabled` must be a boolean determining whether roles are cached. Roles are cached by default to avoid unnecessary database queries. If you want to disable caching, set this option to `false`.
 
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
 

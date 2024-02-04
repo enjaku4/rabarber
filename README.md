@@ -302,12 +302,11 @@ The usage is straightforward:
 Encountered a bug or facing a problem?
 
 - **Create an Issue**: If you've identified a problem, please create an issue on the gem's GitHub repository. Be sure to provide detailed information about the problem, including the steps to reproduce it.
-- **Contribute a Solution**: Found a fix for the issue or want to contribute to the project? Feel free to create a pull request with your changes.
+- **Contribute a Solution**: Found a fix for the issue? Feel free to create a pull request with your changes.
 
 ## Contributing
 
-<!-- TODO change to main -->
-If you want to contribute, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/contributing/CONTRIBUTING.md).
+If you want to contribute, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
 
 ## License
 
@@ -315,5 +314,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-<!-- TODO change to main -->
-Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/contributing/CODE_OF_CONDUCT.md).
+Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/main/CODE_OF_CONDUCT.md).

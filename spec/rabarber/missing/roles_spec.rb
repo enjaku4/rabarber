@@ -16,6 +16,20 @@ RSpec.describe Rabarber::Missing::Roles do
     Rabarber::Permissions.controller_rules.delete(DummyAuthController)
   end
 
+  context "cache" do
+    let(:controller) { nil }
+
+    it "caches roles" do
+      expect(Rabarber::Cache).to receive(:fetch)
+        .with(Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds) do |&block|
+          result = block.call
+          expect(result).to eq(Rabarber::Role.names)
+          result
+        end.at_least(:once)
+      subject
+    end
+  end
+
   context "when controller is not specified" do
     let(:controller) { nil }
 

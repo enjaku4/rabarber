@@ -8,6 +8,7 @@ RSpec.describe Rabarber do
   describe ".configure" do
     it "can be configured" do
       described_class.configure do |config|
+        config.cache_enabled = false
         config.current_user_method = "user"
         config.must_have_roles = true
         config.when_actions_missing = -> (missing_actions, context) { "#{context}: #{missing_actions}" }
@@ -19,6 +20,7 @@ RSpec.describe Rabarber do
 
       allow(controller).to receive(:head).with(418).and_return("I'm a teapot")
 
+      expect(Rabarber::Configuration.instance.cache_enabled).to be false
       expect(Rabarber::Configuration.instance.current_user_method).to eq(:user)
       expect(Rabarber::Configuration.instance.must_have_roles).to be true
       expect(Rabarber::Configuration.instance.when_actions_missing.call([:foo], "context")).to eq("context: [:foo]")

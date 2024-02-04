@@ -2,6 +2,7 @@
 
 - Cache roles to avoid unnecessary database queries
 - Introduce `cache_enabled` configuration option, allowing to enable or disable role caching
+- Enhance migration generator to accept user model's table name as an argument
 
 ## 1.2.0
 

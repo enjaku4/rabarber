@@ -113,13 +113,6 @@ By default, `#assign_roles` method will automatically create any roles that don'
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```
 
-You can also explicitly create new roles simply by using:
-
-```rb
-Rabarber::Role.create(name: "manager")
-```
-The role names must be unique.
-
 **`#revoke_roles`**
 
 To revoke roles, use:
@@ -152,8 +145,6 @@ If you need to list all the role names available in your application, use:
 ```rb
 Rabarber::Role.names
 ```
-
-`Rabarber::Role` is a model that represents roles within your application. It has a single attribute, `name`, which is validated for both uniqueness and presence. You can treat `Rabarber::Role` as a regular Rails model and use Active Record methods on it if necessary.
 
 ## Authorization Rules
 

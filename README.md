@@ -45,7 +45,7 @@ Install the gem:
 bundle install
 ```
 
-Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of your user model as an argument. For instance, if your user model's table name is `users`, run:
+Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
 
 ```
 rails g rabarber:roles users

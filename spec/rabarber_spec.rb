@@ -95,13 +95,13 @@ RSpec.describe Rabarber do
     end
 
     it "raises an error when actions are missing by default" do
-      expect { Rabarber::Configuration.instance.when_actions_missing.call([:foo], controller: "Controller") }
+      expect { Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" }) }
         .to raise_error(Rabarber::Error, "Missing actions: [:foo], context: Controller")
     end
 
     it "logs a warning when roles are missing by default" do
       Rabarber::Configuration.instance.when_roles_missing.call(
-        [:missing_role], controller: "Controller", action: "index"
+        [:missing_role], { controller: "Controller", action: "index" }
       )
       message = "[Rabarber] Missing roles: [:missing_role], context: Controller#index"
       last_log_line = File.foreach("log/test.log").to_a.last.chomp

@@ -16,9 +16,8 @@ module Rabarber
         return if missing_list.empty?
 
         missing_list.each do |item|
-          Rabarber::Configuration.instance.public_send(configuration_name).call(
-            item.missing, controller: item.controller, action: item.action
-          )
+          context = item.action ? { controller: item.controller, action: item.action } : { controller: item.controller }
+          Rabarber::Configuration.instance.public_send(configuration_name).call(item.missing, context)
         end
       end
 

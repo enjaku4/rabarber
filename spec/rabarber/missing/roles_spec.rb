@@ -38,7 +38,7 @@ RSpec.describe Rabarber::Missing::Roles do
         before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], controller: DummyAuthController, action: nil)
+          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
       end
@@ -48,7 +48,7 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
@@ -62,10 +62,10 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration twice" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: nil
+            [:missing_role], { controller: DummyAuthController }
           )
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
@@ -88,7 +88,7 @@ RSpec.describe Rabarber::Missing::Roles do
         before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], controller: DummyAuthController, action: nil)
+          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
       end
@@ -98,7 +98,7 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
@@ -112,10 +112,10 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration twice" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: nil
+            [:missing_role], { controller: DummyAuthController }
           )
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end

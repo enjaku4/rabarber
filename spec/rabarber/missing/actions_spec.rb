@@ -16,7 +16,7 @@ RSpec.describe Rabarber::Missing::Actions do
       before { Rabarber::Permissions.add(DummyAuthController, :index, [:admin], nil, nil) }
 
       it "calls configuration" do
-        expect(callable_double).to receive(:call).with([:index], controller: DummyAuthController, action: nil)
+        expect(callable_double).to receive(:call).with([:index], { controller: DummyAuthController })
         subject
       end
     end
@@ -36,7 +36,7 @@ RSpec.describe Rabarber::Missing::Actions do
       before { Rabarber::Permissions.add(DummyAuthController, :index, [:admin], nil, nil) }
 
       it "calls configuration" do
-        expect(callable_double).to receive(:call).with([:index], controller: DummyAuthController, action: nil)
+        expect(callable_double).to receive(:call).with([:index], { controller: DummyAuthController })
         subject
       end
     end

@@ -84,6 +84,7 @@ module Rabarber
 
     def default_when_unauthorized
       -> (controller) do
+        Rails.logger.tagged("Rabarber") { Rails.logger.warn "Unauthorized attempt" }
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
         else

@@ -26,4 +26,8 @@ DummyApplication.routes.draw do
 
   post "baz", to: "dummy_child#baz"
   patch "bad", to: "dummy_child#bad"
+
+  put :access_with_roles, to: "no_user#access_with_roles"
+  get :all_access, to: "no_user#all_access"
+  post :no_access, to: "no_user#no_access"
 end

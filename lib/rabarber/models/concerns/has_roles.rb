@@ -17,7 +17,9 @@ module Rabarber
     end
 
     def roles
-      rabarber_roles.names
+      Rabarber::Cache.fetch(Rabarber::Cache.key_for(self), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
+        rabarber_roles.names
+      end
     end
 
     def has_role?(*role_names)

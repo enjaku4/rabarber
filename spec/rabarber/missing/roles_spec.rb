@@ -16,8 +16,8 @@ RSpec.describe Rabarber::Missing::Roles do
     Rabarber::Permissions.controller_rules.delete(DummyAuthController)
   end
 
-  context "cache" do
-    let(:controller) { nil }
+  shared_examples_for "it caches roles" do
+    before { allow(callable_double).to receive(:call).with(any_args) }
 
     it "caches roles" do
       expect(Rabarber::Cache).to receive(:fetch)
@@ -25,7 +25,7 @@ RSpec.describe Rabarber::Missing::Roles do
           result = block.call
           expect(result).to eq(Rabarber::Role.names)
           result
-        end.at_least(:once)
+        end
       subject
     end
   end
@@ -41,6 +41,8 @@ RSpec.describe Rabarber::Missing::Roles do
           expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in action rules" do
@@ -52,6 +54,8 @@ RSpec.describe Rabarber::Missing::Roles do
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in both controller and action rules" do
@@ -69,6 +73,8 @@ RSpec.describe Rabarber::Missing::Roles do
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
     end
 
@@ -77,6 +83,8 @@ RSpec.describe Rabarber::Missing::Roles do
         expect(callable_double).not_to receive(:call)
         subject
       end
+
+      it_behaves_like "it caches roles"
     end
   end
 
@@ -91,6 +99,8 @@ RSpec.describe Rabarber::Missing::Roles do
           expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in action rules" do
@@ -102,6 +112,8 @@ RSpec.describe Rabarber::Missing::Roles do
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in both controller and action rules" do
@@ -119,6 +131,8 @@ RSpec.describe Rabarber::Missing::Roles do
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
     end
 

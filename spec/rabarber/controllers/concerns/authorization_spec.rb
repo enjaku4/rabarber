@@ -172,26 +172,6 @@ RSpec.describe Rabarber::Authorization do
     end
   end
 
-  shared_examples_for "it caches user roles" do |hash|
-    let(:cache_key) { Rabarber::Cache.key_for(user) }
-
-    before do
-      allow(Rabarber::Cache).to receive(:fetch).with(
-        Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds
-      ).and_yield.and_call_original
-    end
-
-    it "caches user roles" do
-      expect(Rabarber::Cache).to receive(:fetch)
-        .with(cache_key, expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
-          result = block.call
-          expect(result).to match_array(user.roles)
-          result
-        end.and_call_original
-      send(hash.keys.first, hash.values.first, params: hash[:params])
-    end
-  end
-
   describe DummyController, type: :controller do
     before { allow(controller).to receive(:current_user).and_return(user) }
 
@@ -214,7 +194,6 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", get: :multiple_roles
       it_behaves_like "it handles missing actions and roles", get: :multiple_roles
-      it_behaves_like "it caches user roles", get: :multiple_roles
     end
 
     describe "when a single role is allowed" do
@@ -236,7 +215,6 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", post: :single_role
       it_behaves_like "it handles missing actions and roles", post: :single_role
-      it_behaves_like "it caches user roles", post: :single_role
     end
 
     describe "when everyone is allowed" do
@@ -252,7 +230,6 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", put: :all_access
       it_behaves_like "it handles missing actions and roles", put: :all_access
-      it_behaves_like "it caches user roles", put: :all_access
     end
 
     describe "when no one is allowed" do
@@ -268,7 +245,6 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
       it_behaves_like "it handles missing actions and roles", delete: :no_access
-      it_behaves_like "it caches user roles", delete: :no_access
     end
 
     context "when dynamic rule is not negated" do
@@ -287,7 +263,6 @@ RSpec.describe Rabarber::Authorization do
 
         it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
         it_behaves_like "it handles missing actions and roles", get: :if_lambda, params: { foo: "bar" }
-        it_behaves_like "it caches user roles", get: :if_lambda, params: { foo: "bar" }
       end
 
       describe "when dynamic rule is defined as a method" do
@@ -305,7 +280,6 @@ RSpec.describe Rabarber::Authorization do
 
         it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
         it_behaves_like "it handles missing actions and roles", post: :if_method, params: { bad: "baz" }
-        it_behaves_like "it caches user roles", post: :if_method, params: { bad: "baz" }
       end
     end
 
@@ -327,8 +301,6 @@ RSpec.describe Rabarber::Authorization do
                         patch: :unless_lambda, params: { foo: "bar" }
         it_behaves_like "it handles missing actions and roles",
                         patch: :unless_lambda, params: { foo: "bar" }
-        it_behaves_like "it caches user roles",
-                        patch: :unless_lambda, params: { foo: "bar" }
       end
 
       describe "when dynamic rule is defined as a method" do
@@ -347,8 +319,6 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it does not allow access when user must have roles",
                         delete: :unless_method, params: { bad: "baz" }
         it_behaves_like "it handles missing actions and roles",
-                        delete: :unless_method, params: { bad: "baz" }
-        it_behaves_like "it caches user roles",
                         delete: :unless_method, params: { bad: "baz" }
       end
     end
@@ -376,8 +346,6 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access when user must have roles", delete: :bar
       it_behaves_like "it handles missing actions and roles", put: :foo
       it_behaves_like "it handles missing actions and roles", delete: :bar
-      it_behaves_like "it caches user roles", put: :foo
-      it_behaves_like "it caches user roles", delete: :bar
     end
   end
 
@@ -403,8 +371,6 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access when user must have roles", patch: :bad
       it_behaves_like "it handles missing actions and roles", post: :baz
       it_behaves_like "it handles missing actions and roles", patch: :bad
-      it_behaves_like "it caches user roles", post: :baz
-      it_behaves_like "it caches user roles", patch: :bad
     end
   end
 

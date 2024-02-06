@@ -35,14 +35,34 @@ RSpec.describe Rabarber::HasRoles do
 
     let(:user) { User.create! }
 
+    shared_examples_for "it caches user roles" do
+      it "caches user roles" do
+        expect(Rabarber::Cache).to receive(:fetch)
+          .with(Rabarber::Cache.key_for(user), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
+            result = block.call
+            expect(result).to match_array(roles)
+            result
+          end
+        subject
+      end
+    end
+
     context "when the user has no roles" do
-      it { is_expected.to eq([]) }
+      let(:roles) { [] }
+
+      it { is_expected.to eq(roles) }
+
+      it_behaves_like "it caches user roles"
     end
 
     context "when the user has some roles" do
-      before { user.assign_roles(:admin, :manager) }
+      let(:roles) { [:admin, :manager] }
 
-      it { is_expected.to contain_exactly(:admin, :manager) }
+      before { user.assign_roles(*roles) }
+
+      it { is_expected.to match_array(roles) }
+
+      it_behaves_like "it caches user roles"
     end
   end
 

@@ -21,5 +21,9 @@ module Rabarber
     def key_for(record)
       "rabarber:roles_#{record.public_send(record.class.primary_key)}"
     end
+
+    def clear
+      Rails.cache.delete_matched(/^rabarber/)
+    end
   end
 end

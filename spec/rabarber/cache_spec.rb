@@ -148,4 +148,19 @@ RSpec.describe Rabarber::Cache do
       expect(described_class::ALL_ROLES_KEY).to eq("rabarber:roles")
     end
   end
+
+  describe ".clear" do
+    let(:keys) { ["rabarber:roles_1", "rabarber:roles_2", "rabarber:roles"] }
+
+    before do
+      Rabarber.configure { |config| config.cache_enabled = true }
+      keys.each { |key| described_class.fetch(key, expires_in: 1.minute) { "foo" } }
+    end
+
+    it "deletes all keys that start with 'rabarber'" do
+      keys.each { |key| expect(Rails.cache.exist?(key)).to be true }
+      described_class.clear
+      keys.each { |key| expect(Rails.cache.exist?(key)).to be false }
+    end
+  end
 end

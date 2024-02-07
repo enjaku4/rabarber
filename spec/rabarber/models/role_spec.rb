@@ -41,6 +41,33 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe "callbacks" do
+    describe "after_create" do
+      it "deletes the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original
+        described_class.create!(name: "admin")
+      end
+    end
+
+    describe "after_update" do
+      let(:role) { described_class.create!(name: "admin") }
+
+      it "deletes the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).twice.and_call_original
+        role.update!(name: "developer")
+      end
+    end
+
+    describe "after_destroy" do
+      let(:role) { described_class.create!(name: "admin") }
+
+      it "deletes the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).twice.and_call_original
+        role.destroy!
+      end
+    end
+  end
+
   describe ".names" do
     subject { described_class.names }
 

@@ -35,14 +35,34 @@ RSpec.describe Rabarber::HasRoles do
 
     let(:user) { User.create! }
 
+    shared_examples_for "it caches user roles" do
+      it "caches user roles" do
+        expect(Rabarber::Cache).to receive(:fetch)
+          .with(Rabarber::Cache.key_for(user), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
+            result = block.call
+            expect(result).to match_array(roles)
+            result
+          end
+        subject
+      end
+    end
+
     context "when the user has no roles" do
-      it { is_expected.to eq([]) }
+      let(:roles) { [] }
+
+      it { is_expected.to eq(roles) }
+
+      it_behaves_like "it caches user roles"
     end
 
     context "when the user has some roles" do
-      before { user.assign_roles(:admin, :manager) }
+      let(:roles) { [:admin, :manager] }
 
-      it { is_expected.to contain_exactly(:admin, :manager) }
+      before { user.assign_roles(*roles) }
+
+      it { is_expected.to match_array(roles) }
+
+      it_behaves_like "it caches user roles"
     end
   end
 
@@ -66,6 +86,15 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:accountant] }
 
       it { is_expected.to be false }
+    end
+  end
+
+  shared_examples_for "it deletes the cache" do
+    before { allow(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original }
+
+    it "deletes the cache" do
+      expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user)).and_call_original
+      subject
     end
   end
 
@@ -96,6 +125,8 @@ RSpec.describe Rabarber::HasRoles do
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
+
+        it_behaves_like "it deletes the cache"
       end
 
       context "when the given roles do not exist" do
@@ -107,6 +138,8 @@ RSpec.describe Rabarber::HasRoles do
         it "creates new roles" do
           expect { subject }.to change(Rabarber::Role, :names).from([]).to(roles)
         end
+
+        it_behaves_like "it deletes the cache"
       end
 
       context "when some of the given roles exist" do
@@ -120,6 +153,8 @@ RSpec.describe Rabarber::HasRoles do
         it "creates new roles" do
           expect { subject }.to change(Rabarber::Role, :names).from([roles.first]).to(roles)
         end
+
+        it_behaves_like "it deletes the cache"
       end
     end
 
@@ -145,6 +180,8 @@ RSpec.describe Rabarber::HasRoles do
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
+
+        it_behaves_like "it deletes the cache"
       end
 
       context "when the given roles do not exist" do
@@ -156,6 +193,8 @@ RSpec.describe Rabarber::HasRoles do
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(0)
         end
+
+        it_behaves_like "it deletes the cache"
       end
 
       context "when some of the given roles exist" do
@@ -169,6 +208,8 @@ RSpec.describe Rabarber::HasRoles do
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(1)
         end
+
+        it_behaves_like "it deletes the cache"
       end
     end
   end
@@ -189,6 +230,8 @@ RSpec.describe Rabarber::HasRoles do
         subject
         expect(user.roles).to be_empty
       end
+
+      it_behaves_like "it deletes the cache"
     end
 
     context "when the user does not have the given roles" do
@@ -198,6 +241,8 @@ RSpec.describe Rabarber::HasRoles do
         subject
         expect(user.roles).to eq([:accountant])
       end
+
+      it_behaves_like "it deletes the cache"
     end
 
     context "when the user has some of the given roles" do
@@ -207,6 +252,8 @@ RSpec.describe Rabarber::HasRoles do
         subject
         expect(user.roles).to be_empty
       end
+
+      it_behaves_like "it deletes the cache"
     end
   end
 end

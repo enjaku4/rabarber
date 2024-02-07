@@ -17,7 +17,9 @@ module Rabarber
     end
 
     def roles
-      rabarber_roles.names
+      Rabarber::Cache.fetch(Rabarber::Cache.key_for(self), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
+        rabarber_roles.names
+      end
     end
 
     def has_role?(*role_names)
@@ -30,10 +32,14 @@ module Rabarber
       create_new_roles(roles_to_assign) if create_new
 
       rabarber_roles << Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+
+      delete_cache
     end
 
     def revoke_roles(*role_names)
       self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
+
+      delete_cache
     end
 
     private
@@ -45,6 +51,10 @@ module Rabarber
 
     def process_role_names(role_names)
       Rabarber::Input::Roles.new(role_names).process
+    end
+
+    def delete_cache
+      Rabarber::Cache.delete(Rabarber::Cache.key_for(self))
     end
   end
 end

@@ -85,3 +85,21 @@ class DummyChildController < DummyParentController
     head :ok
   end
 end
+
+class NoUserController < ActionController::Base
+  include Rabarber::Authorization
+
+  grant_access action: :access_with_roles, roles: :admin
+  def access_with_roles
+    head :ok
+  end
+
+  grant_access action: :all_access
+  def all_access
+    head :ok
+  end
+
+  def no_access
+    head :ok
+  end
+end

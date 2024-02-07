@@ -26,6 +26,9 @@ Metrics/MethodLength:
 Naming/PredicateName:
   Enabled: false
 
+RSpec/AnyInstance:
+  Enabled: false
+
 Rails/ApplicationController:
   Exclude:
     - spec/support/controllers.rb

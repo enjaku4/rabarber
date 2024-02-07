@@ -16,6 +16,20 @@ RSpec.describe Rabarber::Missing::Roles do
     Rabarber::Permissions.controller_rules.delete(DummyAuthController)
   end
 
+  shared_examples_for "it caches roles" do
+    before { allow(callable_double).to receive(:call).with(any_args) }
+
+    it "caches roles" do
+      expect(Rabarber::Cache).to receive(:fetch)
+        .with(Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds) do |&block|
+          result = block.call
+          expect(result).to eq(Rabarber::Role.names)
+          result
+        end
+      subject
+    end
+  end
+
   context "when controller is not specified" do
     let(:controller) { nil }
 
@@ -24,9 +38,11 @@ RSpec.describe Rabarber::Missing::Roles do
         before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], controller: DummyAuthController, action: nil)
+          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in action rules" do
@@ -34,10 +50,12 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in both controller and action rules" do
@@ -48,13 +66,15 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration twice" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: nil
+            [:missing_role], { controller: DummyAuthController }
           )
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
     end
 
@@ -63,6 +83,8 @@ RSpec.describe Rabarber::Missing::Roles do
         expect(callable_double).not_to receive(:call)
         subject
       end
+
+      it_behaves_like "it caches roles"
     end
   end
 
@@ -74,9 +96,11 @@ RSpec.describe Rabarber::Missing::Roles do
         before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], controller: DummyAuthController, action: nil)
+          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in action rules" do
@@ -84,10 +108,12 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
 
       context "in both controller and action rules" do
@@ -98,13 +124,15 @@ RSpec.describe Rabarber::Missing::Roles do
 
         it "calls configuration twice" do
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: nil
+            [:missing_role], { controller: DummyAuthController }
           )
           expect(callable_double).to receive(:call).with(
-            [:missing_role], controller: DummyAuthController, action: :index
+            [:missing_role], { controller: DummyAuthController, action: :index }
           )
           subject
         end
+
+        it_behaves_like "it caches roles"
       end
     end
 

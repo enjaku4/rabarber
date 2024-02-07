@@ -6,14 +6,22 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :current_user_method, :must_have_roles, :when_actions_missing, :when_roles_missing, :when_unauthorized
+    attr_reader :cache_enabled, :current_user_method, :must_have_roles,
+                :when_actions_missing, :when_roles_missing, :when_unauthorized
 
     def initialize
+      @cache_enabled = default_cache_enabled
       @current_user_method = default_current_user_method
       @must_have_roles = default_must_have_roles
       @when_actions_missing = default_when_actions_missing
       @when_roles_missing = default_when_roles_missing
       @when_unauthorized = default_when_unauthorized
+    end
+
+    def cache_enabled=(value)
+      @cache_enabled = Rabarber::Input::Types::Booleans.new(
+        value, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
+      ).process
     end
 
     def current_user_method=(method_name)
@@ -48,6 +56,10 @@ module Rabarber
 
     private
 
+    def default_cache_enabled
+      true
+    end
+
     def default_current_user_method
       :current_user
     end
@@ -72,6 +84,7 @@ module Rabarber
 
     def default_when_unauthorized
       -> (controller) do
+        Rails.logger.tagged("Rabarber") { Rails.logger.warn "Unauthorized attempt" }
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
         else

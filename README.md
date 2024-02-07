@@ -3,7 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
-Rabarber is a role-based authorization library for Ruby on Rails, designed primarily for use in the web layer (specifically controllers and views) but not limited to that. It provides tools for managing user roles and defining authorization rules, mainly focusing on answering the question of 'Who can access which endpoint?'. 
+Rabarber is a role-based authorization library for Ruby on Rails, designed primarily for use in the web layer (specifically controllers and views) but not limited to that. It provides tools for managing user roles and defining authorization rules, mainly focusing on answering the question of 'Who can access which endpoint?'.
 
 Unlike some other libraries, Rabarber does not handle data scoping. Instead, it focuses on providing a lightweight and flexible solution for role-based access control, allowing developers to implement data scoping according to their specific business rules directly within their application's code.
 
@@ -47,15 +47,13 @@ Install the gem:
 bundle install
 ```
 
-Next, generate a migration to create tables for storing roles in the database:
+Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
 
 ```
-rails g rabarber:roles
+rails g rabarber:roles users
 ```
 
 This will create a migration file in `db/migrate` directory.
-
-Replace `raise(Rabarber::Error, "Please specify your user model's table name")` in that file with the name of your user model's table.
 
 Finally, run the migration to apply the changes to the database:
 
@@ -69,6 +67,7 @@ Rabarber can be configured by using `.configure` method in an initializer:
 
 ```rb
 Rabarber.configure do |config|
+  config.cache_enabled = false
   config.current_user_method = :authenticated_user
   config.must_have_roles = true
   config.when_actions_missing = -> (missing_actions, context) { ... }
@@ -76,6 +75,9 @@ Rabarber.configure do |config|
   config.when_unauthorized = -> (controller) { ... }
 end
 ```
+
+- `cache_enabled` must be a boolean determining whether roles are cached. Roles are cached by default to avoid unnecessary database queries. If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use the `Rabarber::Cache.clear` method.
+
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
 
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
@@ -111,13 +113,6 @@ By default, `#assign_roles` method will automatically create any roles that don'
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```
 
-You can also explicitly create new roles simply by using:
-
-```rb
-Rabarber::Role.create(name: "manager")
-```
-The role names must be unique.
-
 **`#revoke_roles`**
 
 To revoke roles, use:
@@ -150,8 +145,6 @@ If you need to list all the role names available in your application, use:
 ```rb
 Rabarber::Role.names
 ```
-
-`Rabarber::Role` is a model that represents roles within your application. It has a single attribute, `name`, which is validated for both uniqueness and presence. You can treat `Rabarber::Role` as a regular Rails model and use Active Record methods on it if necessary.
 
 ## Authorization Rules
 
@@ -223,9 +216,9 @@ class InvoicesController < ApplicationController
 end
 ```
 
-This allows everyone to access `OrdersController` and its children and `index` action in `InvoicesController`.
+This allows everyone to access `OrdersController` and its children and `index` action in `InvoicesController`. This also extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
 
-If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to see anything.
+If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
 
 For more complex cases, Rabarber provides dynamic rules:
 

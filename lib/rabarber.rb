@@ -18,6 +18,8 @@ require_relative "rabarber/missing/base"
 require_relative "rabarber/missing/actions"
 require_relative "rabarber/missing/roles"
 
+require_relative "rabarber/cache"
+
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/models/concerns/has_roles"

@@ -28,7 +28,9 @@ module Rabarber
       end
 
       def all_roles
-        @all_roles ||= Rabarber::Role.names
+        @all_roles ||= Rabarber::Cache.fetch(
+          Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds
+        ) { Rabarber::Role.names }
       end
     end
   end

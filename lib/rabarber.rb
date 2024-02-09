@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "rabarber/version"
+require_relative "rabarber/logger"
 require_relative "rabarber/configuration"
 
 require "active_record"

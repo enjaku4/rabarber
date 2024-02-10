@@ -1,3 +1,8 @@
+## 1.2.2
+
+- Refactor to improve readability and maintainability
+- Fix minor code errors
+
 ## 1.2.1
 
 - Cache roles to avoid unnecessary database queries

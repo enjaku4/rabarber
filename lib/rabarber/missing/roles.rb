@@ -7,8 +7,8 @@ module Rabarber
 
       def check_controller_rules
         controller_rules.each do |controller, controller_rule|
-          missing_roles = controller_rule.roles - all_roles if controller_rule.present?
-          missing_list << Rabarber::Missing::Item.new(missing_roles, controller, nil) if missing_roles.present?
+          missing_roles = controller_rule.roles - all_roles
+          missing_list << Rabarber::Missing::Item.new(missing_roles, controller, nil) unless missing_roles.empty?
         end
       end
 

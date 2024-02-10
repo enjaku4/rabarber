@@ -78,13 +78,13 @@ module Rabarber
       -> (missing_roles, context) {
         delimiter = context[:action] ? "#" : ""
         message = "Missing roles: #{missing_roles}, context: #{context[:controller]}#{delimiter}#{context[:action]}"
-        Rails.logger.tagged("Rabarber") { Rails.logger.warn message }
+        Rabarber::Logger.log(:warn, message)
       }
     end
 
     def default_when_unauthorized
       -> (controller) do
-        Rails.logger.tagged("Rabarber") { Rails.logger.warn "Unauthorized attempt" }
+        Rabarber::Logger.log(:warn, "Unauthorized attempt")
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
         else

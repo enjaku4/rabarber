@@ -226,18 +226,18 @@ For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
 class OrdersController < ApplicationController
-  grant_access if: :user_has_access?
-  grant_access unless: :user_has_no_access?
+  grant_access if: :current_company_accountant?
+  grant_access unless: :fired?
   ...
 
   private
 
-  def user_has_access?
-    ...
+  def current_company_accountant?
+    current_company.accountant == current_user
   end
 
-  def user_has_no_access?
-    ...
+  def fired?
+    current_user.fired?
   end
 end
 

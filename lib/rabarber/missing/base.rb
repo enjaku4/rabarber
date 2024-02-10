@@ -41,7 +41,7 @@ module Rabarber
 
       def controller_rules
         if controller
-          { controller => Rabarber::Permissions.controller_rules[controller] }
+          Rabarber::Permissions.controller_rules.slice(controller)
         else
           Rabarber::Permissions.controller_rules
         end
@@ -49,7 +49,7 @@ module Rabarber
 
       def action_rules
         if controller
-          { controller => Rabarber::Permissions.action_rules[controller] }
+          Rabarber::Permissions.action_rules.slice(controller)
         else
           Rabarber::Permissions.action_rules
         end

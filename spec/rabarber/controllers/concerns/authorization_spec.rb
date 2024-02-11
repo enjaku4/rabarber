@@ -188,7 +188,13 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it does not allow access", get: :multiple_roles
       end
 
-      context "when the user does not have a role" do
+      context "when the user has a different role" do
+        before { user.assign_roles(:client) }
+
+        it_behaves_like "it does not allow access", get: :multiple_roles
+      end
+
+      context "when the user does not have any roles" do
         it_behaves_like "it does not allow access", get: :multiple_roles
       end
 
@@ -209,7 +215,13 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it does not allow access", post: :single_role
       end
 
-      context "when the user does not have a role" do
+      context "when the user has a different role" do
+        before { user.assign_roles(:manager) }
+
+        it_behaves_like "it does not allow access", post: :single_role
+      end
+
+      context "when the user does not have any roles" do
         it_behaves_like "it does not allow access", post: :single_role
       end
 
@@ -224,7 +236,7 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it allows access", put: :all_access
       end
 
-      context "when the user does not have a role" do
+      context "when the user does not have any roles" do
         it_behaves_like "it allows access", put: :all_access
       end
 
@@ -239,12 +251,39 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it does not allow access", delete: :no_access
       end
 
-      context "when the user does not have a role" do
+      context "when the user does not have any roles" do
         it_behaves_like "it does not allow access", delete: :no_access
       end
 
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
       it_behaves_like "it handles missing actions and roles", delete: :no_access
+    end
+
+    describe "when multiple rules applied" do
+      context "when the user has one of the roles" do
+        before { user.assign_roles(:manager) }
+
+        it_behaves_like "it allows access", post: :multiple_rules
+      end
+
+      context "when the user has the other role" do
+        before { user.assign_roles(:client) }
+
+        it_behaves_like "it allows access", post: :multiple_rules
+      end
+
+      context "when the user has another role" do
+        before { user.assign_roles(:admin) }
+
+        it_behaves_like "it does not allow access", post: :multiple_rules
+      end
+
+      context "when the user does not have any roles" do
+        it_behaves_like "it does not allow access", post: :multiple_rules
+      end
+
+      it_behaves_like "it does not allow access when user must have roles", post: :multiple_rules
+      it_behaves_like "it handles missing actions and roles", post: :multiple_rules
     end
 
     context "when dynamic rule is not negated" do
@@ -342,6 +381,11 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it does not allow access", delete: :bar
       end
 
+      context "when the user does not have any roles" do
+        it_behaves_like "it does not allow access", put: :foo
+        it_behaves_like "it does not allow access", delete: :bar
+      end
+
       it_behaves_like "it does not allow access when user must have roles", put: :foo
       it_behaves_like "it does not allow access when user must have roles", delete: :bar
       it_behaves_like "it handles missing actions and roles", put: :foo
@@ -360,9 +404,21 @@ RSpec.describe Rabarber::Authorization do
         it_behaves_like "it allows access", patch: :bad
       end
 
+      context "when additional rule is applied to the child and the user's role allows access" do
+        before { user.assign_roles(:client) }
+
+        it_behaves_like "it allows access", post: :baz
+        it_behaves_like "it allows access", patch: :bad
+      end
+
       context "when the user's role does not allow access" do
         before { user.assign_roles(:admin) }
 
+        it_behaves_like "it does not allow access", post: :baz
+        it_behaves_like "it does not allow access", patch: :bad
+      end
+
+      context "when the user does not have any roles" do
         it_behaves_like "it does not allow access", post: :baz
         it_behaves_like "it does not allow access", patch: :bad
       end
@@ -377,7 +433,7 @@ RSpec.describe Rabarber::Authorization do
   describe NoUserController, type: :controller do
     before { allow(controller).to receive(:current_user).and_return(nil) }
 
-    describe "when a single role is allowed" do
+    describe "when a role is allowed" do
       it_behaves_like "it does not allow access", put: :access_with_roles
 
       it_behaves_like "it does not allow access when user must have roles", put: :access_with_roles

@@ -35,6 +35,12 @@ class DummyController < ActionController::Base
     head :ok
   end
 
+  grant_access action: :multiple_rules, roles: [:manager]
+  grant_access action: :multiple_rules, roles: [:client]
+  def multiple_rules
+    head :ok
+  end
+
   grant_access action: :if_lambda, roles: :admin, if: -> { params[:foo] == "bar" }
   def if_lambda
     head :ok
@@ -77,6 +83,8 @@ class DummyParentController < ActionController::Base
 end
 
 class DummyChildController < DummyParentController
+  grant_access roles: :client
+
   def baz
     head :ok
   end

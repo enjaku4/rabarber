@@ -16,6 +16,7 @@ DummyApplication.routes.draw do
   post "single_role", to: "dummy#single_role"
   put "all_access", to: "dummy#all_access"
   delete "no_access", to: "dummy#no_access"
+  post "multiple_rules", to: "dummy#multiple_rules"
   get "if_lambda", to: "dummy#if_lambda"
   post "if_method", to: "dummy#if_method"
   patch "unless_lambda", to: "dummy#unless_lambda"

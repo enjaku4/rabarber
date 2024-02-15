@@ -89,4 +89,34 @@ RSpec.describe Rabarber::Role do
       end
     end
   end
+
+  describe ".remove" do
+    subject { described_class.remove(:admin) }
+
+    context "when the role exists" do
+      let!(:role) { described_class.create!(name: "admin") }
+
+      context "when the role is not assigned to any user" do
+        it "removes the role" do
+          expect { subject }.to change { described_class.find_by(name: "admin") }.from(role).to(nil)
+        end
+      end
+
+      context "when the role is assigned to some users" do
+        before { User.create!.assign_roles(:admin) }
+
+        it "removes the role" do
+          expect { subject }.to change { described_class.find_by(name: "admin") }.from(role).to(nil)
+        end
+      end
+    end
+
+    context "when the role does not exist" do
+      before { described_class.create!(name: "manager") }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count).from(1)
+      end
+    end
+  end
 end

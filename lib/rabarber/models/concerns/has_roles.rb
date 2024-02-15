@@ -26,20 +26,26 @@ module Rabarber
       (roles & process_role_names(role_names)).any?
     end
 
+    # TODO: test return value
     def assign_roles(*role_names, create_new: true)
+      delete_cache
+
       roles_to_assign = process_role_names(role_names)
 
       create_new_roles(roles_to_assign) if create_new
 
       rabarber_roles << Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
 
-      delete_cache
+      roles
     end
 
+    # TODO: test return value
     def revoke_roles(*role_names)
+      delete_cache
+
       self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
 
-      delete_cache
+      roles
     end
 
     private

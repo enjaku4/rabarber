@@ -28,7 +28,7 @@ module Rabarber
         # TODO: return something meaningful
       end
 
-      def remove(name, force: false)
+      def delete(name, force: false)
         # TODO: process input
         delete_cache
         # TODO: don't delete if role is assigned, unless force is true

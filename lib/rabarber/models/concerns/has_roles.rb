@@ -26,7 +26,6 @@ module Rabarber
       (roles & process_role_names(role_names)).any?
     end
 
-    # TODO: test return value
     def assign_roles(*role_names, create_new: true)
       delete_cache
 
@@ -39,7 +38,6 @@ module Rabarber
       roles
     end
 
-    # TODO: test return value
     def revoke_roles(*role_names)
       delete_cache
 

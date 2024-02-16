@@ -127,6 +127,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to match_array(roles) }
       end
 
       context "when the given roles do not exist" do
@@ -140,6 +142,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to match_array(roles) }
       end
 
       context "when some of the given roles exist" do
@@ -155,6 +159,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to match_array(roles) }
       end
     end
 
@@ -182,6 +188,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to match_array(roles) }
       end
 
       context "when the given roles do not exist" do
@@ -195,6 +203,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to be_empty }
       end
 
       context "when some of the given roles exist" do
@@ -210,6 +220,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it_behaves_like "it deletes the cache"
+
+        it { is_expected.to contain_exactly(roles.first) }
       end
     end
   end
@@ -232,6 +244,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it_behaves_like "it deletes the cache"
+
+      it { is_expected.to be_empty }
     end
 
     context "when the user does not have the given roles" do
@@ -243,6 +257,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it_behaves_like "it deletes the cache"
+
+      it { is_expected.to contain_exactly(:accountant) }
     end
 
     context "when the user has some of the given roles" do
@@ -254,6 +270,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it_behaves_like "it deletes the cache"
+
+      it { is_expected.to be_empty }
     end
   end
 end

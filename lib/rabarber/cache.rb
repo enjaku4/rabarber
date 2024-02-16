@@ -18,8 +18,8 @@ module Rabarber
       Rabarber::Configuration.instance.cache_enabled
     end
 
-    def key_for(record)
-      "rabarber:roles_#{record.public_send(record.class.primary_key)}"
+    def key_for(id)
+      "rabarber:roles_#{id}"
     end
 
     def clear

@@ -17,7 +17,7 @@ module Rabarber
     end
 
     def roles
-      Rabarber::Cache.fetch(Rabarber::Cache.key_for(self), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
+      Rabarber::Cache.fetch(Rabarber::Cache.key_for(roleable_id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
         rabarber_roles.names
       end
     end
@@ -58,7 +58,11 @@ module Rabarber
     end
 
     def delete_cache
-      Rabarber::Cache.delete(Rabarber::Cache.key_for(self))
+      Rabarber::Cache.delete(Rabarber::Cache.key_for(roleable_id))
+    end
+
+    def roleable_id
+      public_send(self.class.primary_key)
     end
   end
 end

@@ -38,7 +38,7 @@ RSpec.describe Rabarber::HasRoles do
     shared_examples_for "it caches user roles" do
       it "caches user roles" do
         expect(Rabarber::Cache).to receive(:fetch)
-          .with(Rabarber::Cache.key_for(user), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
+          .with(Rabarber::Cache.key_for(user.id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
             result = block.call
             expect(result).to match_array(roles)
             result
@@ -93,7 +93,7 @@ RSpec.describe Rabarber::HasRoles do
     before { allow(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original }
 
     it "deletes the cache" do
-      expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user)).and_call_original
+      expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)).and_call_original
       subject
     end
   end

@@ -136,10 +136,8 @@ RSpec.describe Rabarber::Cache do
   end
 
   describe ".key_for" do
-    it "returns the cache key for the provided record" do
-      record = User.create!(id: 123)
-
-      expect(described_class.key_for(record)).to eq("rabarber:roles_123")
+    it "returns the cache key for the provided record id" do
+      expect(described_class.key_for(123)).to eq("rabarber:roles_123")
     end
   end
 

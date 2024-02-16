@@ -14,14 +14,13 @@ module Rabarber
       end
 
       def add(name)
-        # TODO: process input
         delete_cache
-        create(name: name).persisted?
+        create(name: Rabarber::Input::Roles.new(name).process[0]).persisted?
       end
 
       def rename(old_name, new_name, force: false)
-        # TODO: process input
         delete_cache
+        # TODO: process input
         # TODO: don't rename if role is assigned, unless force is true
         # TODO: delete user's cache to whom the role is assigned if force is true
         find_by(name: old_name)&.update(name: new_name)
@@ -29,8 +28,8 @@ module Rabarber
       end
 
       def delete(name, force: false)
-        # TODO: process input
         delete_cache
+        # TODO: process input
         # TODO: don't delete if role is assigned, unless force is true
         # TODO: delete user's cache to whom the role is assigned if force is true
         find_by(name: name)&.destroy

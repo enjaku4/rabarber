@@ -14,7 +14,7 @@ module Rabarber
       end
 
       def add(name)
-        delete_cache
+        delete_roles_cache
         create(name: Rabarber::Input::Roles.new(name).process[0]).persisted?
       end
 
@@ -24,7 +24,7 @@ module Rabarber
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
-        delete_cache
+        delete_roles_cache
         delete_roleables_cache(role)
 
         role.update(name: name)
@@ -35,7 +35,7 @@ module Rabarber
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
-        delete_cache
+        delete_roles_cache
         delete_roleables_cache(role)
 
         role.destroy!.destroyed?
@@ -43,7 +43,7 @@ module Rabarber
 
       private
 
-      def delete_cache
+      def delete_roles_cache
         Rabarber::Cache.delete(Rabarber::Cache::ALL_ROLES_KEY)
       end
 

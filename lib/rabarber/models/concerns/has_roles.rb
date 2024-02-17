@@ -27,7 +27,7 @@ module Rabarber
     end
 
     def assign_roles(*role_names, create_new: true)
-      delete_cache
+      delete_roleable_cache
 
       roles_to_assign = process_role_names(role_names)
 
@@ -39,7 +39,7 @@ module Rabarber
     end
 
     def revoke_roles(*role_names)
-      delete_cache
+      delete_roleable_cache
 
       self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
 
@@ -57,7 +57,7 @@ module Rabarber
       Rabarber::Input::Roles.new(role_names).process
     end
 
-    def delete_cache
+    def delete_roleable_cache
       Rabarber::Cache.delete(Rabarber::Cache.key_for(roleable_id))
     end
 

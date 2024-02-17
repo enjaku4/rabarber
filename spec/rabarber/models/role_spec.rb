@@ -41,33 +41,6 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe "callbacks" do
-    describe "after_create" do
-      it "deletes the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original
-        described_class.create!(name: "admin")
-      end
-    end
-
-    describe "after_update" do
-      let(:role) { described_class.create!(name: "admin") }
-
-      it "deletes the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).twice.and_call_original
-        role.update!(name: "developer")
-      end
-    end
-
-    describe "after_destroy" do
-      let(:role) { described_class.create!(name: "admin") }
-
-      it "deletes the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).twice.and_call_original
-        role.destroy!
-      end
-    end
-  end
-
   describe ".names" do
     subject { described_class.names }
 
@@ -91,31 +64,84 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".delete" do
-    subject { described_class.delete(:admin) }
+    subject { described_class.delete(:admin, force: force) }
 
-    context "when the role exists" do
-      let!(:role) { described_class.create!(name: "admin") }
+    shared_examples_for "it does nothing" do
+      before { described_class.create!(name: "manager") }
 
-      context "when the role is not assigned to any user" do
-        it "deletes the role" do
-          expect { subject }.to change { described_class.find_by(name: "admin") }.from(role).to(nil)
-        end
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
       end
 
-      context "when the role is assigned to some users" do
-        before { User.create!.assign_roles(:admin) }
+      it { is_expected.to be false }
 
-        it "deletes the role" do
-          expect { subject }.to change { described_class.find_by(name: "admin") }.from(role).to(nil)
-        end
+      it "does not clear the cache" do
+        expect(Rabarber::Cache).not_to receive(:delete)
+        subject
+      end
+    end
+
+    shared_examples_for "it deletes the role" do |role_assigned: false|
+      it "deletes the role" do
+        expect { subject }.to change(described_class.where(name: "admin"), :count).from(1).to(0)
+      end
+
+      it { is_expected.to be true }
+
+      it "clears the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)) if role_assigned
+        subject
       end
     end
 
     context "when the role does not exist" do
-      before { described_class.create!(name: "manager") }
+      context "when force is false" do
+        let(:force) { false }
 
-      it "does nothing" do
-        expect { subject }.not_to change(described_class, :count).from(1)
+        it_behaves_like "it does nothing"
+      end
+
+      context "when force is true" do
+        let(:force) { true }
+
+        it_behaves_like "it does nothing"
+      end
+    end
+
+    context "when the role exists" do
+      before { described_class.create!(name: "admin") }
+
+      context "when the role is not assigned to any user" do
+        context "when force is false" do
+          let(:force) { false }
+
+          it_behaves_like "it deletes the role"
+        end
+
+        context "when force is true" do
+          let(:force) { true }
+
+          it_behaves_like "it deletes the role"
+        end
+      end
+
+      context "when the role is assigned to some users" do
+        let(:user) { User.create! }
+
+        before { user.assign_roles(:admin) }
+
+        context "when force is false" do
+          let(:force) { false }
+
+          it_behaves_like "it does nothing"
+        end
+
+        context "when force is true" do
+          let(:force) { true }
+
+          it_behaves_like "it deletes the role", role_assigned: true
+        end
       end
     end
   end

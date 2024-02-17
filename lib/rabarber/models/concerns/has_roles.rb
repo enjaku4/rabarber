@@ -50,7 +50,7 @@ module Rabarber
 
     def create_new_roles(role_names)
       new_roles = role_names - Rabarber::Role.names
-      new_roles.each { |role_name| Rabarber::Role.add(role_name) }
+      new_roles.each { |role_name| Rabarber::Role.create!(name: role_name) }
     end
 
     def process_role_names(role_names)

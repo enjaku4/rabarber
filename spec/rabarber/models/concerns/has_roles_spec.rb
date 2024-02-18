@@ -162,6 +162,26 @@ RSpec.describe Rabarber::HasRoles do
 
         it { is_expected.to match_array(roles) }
       end
+
+      context "when the user has the given roles" do
+        before { user.assign_roles(*roles) }
+
+        it "does not assign any roles to the user" do
+          subject
+          expect(user.roles).to match_array(roles)
+        end
+
+        it "does not create new roles" do
+          expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
+        end
+
+        it "does not clear the cache" do
+          expect(Rabarber::Cache).not_to receive(:delete)
+          subject
+        end
+
+        it { is_expected.to match_array(roles) }
+      end
     end
 
     context "when create_new is false" do
@@ -202,7 +222,10 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.not_to change(Rabarber::Role, :count).from(0)
         end
 
-        it_behaves_like "it deletes the cache"
+        it "does not clear the cache" do
+          expect(Rabarber::Cache).not_to receive(:delete)
+          subject
+        end
 
         it { is_expected.to be_empty }
       end
@@ -222,6 +245,26 @@ RSpec.describe Rabarber::HasRoles do
         it_behaves_like "it deletes the cache"
 
         it { is_expected.to contain_exactly(roles.first) }
+      end
+
+      context "when the user has the given roles" do
+        before { user.assign_roles(*roles) }
+
+        it "does not assign any roles to the user" do
+          subject
+          expect(user.roles).to match_array(roles)
+        end
+
+        it "does not create new roles" do
+          expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
+        end
+
+        it "does not clear the cache" do
+          expect(Rabarber::Cache).not_to receive(:delete)
+          subject
+        end
+
+        it { is_expected.to match_array(roles) }
       end
     end
   end
@@ -256,7 +299,10 @@ RSpec.describe Rabarber::HasRoles do
         expect(user.roles).to eq([:accountant])
       end
 
-      it_behaves_like "it deletes the cache"
+      it "does not clear the cache" do
+        expect(Rabarber::Cache).not_to receive(:delete)
+        subject
+      end
 
       it { is_expected.to contain_exactly(:accountant) }
     end

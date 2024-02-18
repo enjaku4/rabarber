@@ -27,21 +27,27 @@ module Rabarber
     end
 
     def assign_roles(*role_names, create_new: true)
-      delete_roleable_cache
-
       roles_to_assign = process_role_names(role_names)
 
       create_new_roles(roles_to_assign) if create_new
 
-      rabarber_roles << Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+      new_roles = Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+
+      if new_roles.any?
+        delete_roleable_cache
+        rabarber_roles << new_roles
+      end
 
       roles
     end
 
     def revoke_roles(*role_names)
-      delete_roleable_cache
+      new_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
 
-      self.rabarber_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
+      if rabarber_roles != new_roles
+        delete_roleable_cache
+        self.rabarber_roles = new_roles
+      end
 
       roles
     end

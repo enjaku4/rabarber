@@ -140,6 +140,8 @@ To view all the roles assigned to the user, use:
 user.roles
 ```
 
+<!-- TODO: describe all Role methods (add, rename, remove) -->
+
 If you need to list all the role names available in your application, use:
 
 ```rb

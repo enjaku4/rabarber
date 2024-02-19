@@ -63,8 +63,19 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".delete" do
-    subject { described_class.delete(:admin, force: force) }
+  shared_examples_for "role name is processed" do
+    it "uses Input::Roles to process the given roles" do
+      input_processor = instance_double(Rabarber::Input::Roles, process: [role])
+      allow(Rabarber::Input::Roles).to receive(:new).with(role).and_return(input_processor)
+      expect(input_processor).to receive(:process).with(no_args)
+      subject
+    end
+  end
+
+  describe ".remove" do
+    subject { described_class.remove(role, force: force) }
+
+    let(:role) { :admin }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -79,6 +90,8 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Cache).not_to receive(:delete)
         subject
       end
+
+      it_behaves_like "role name is processed"
     end
 
     shared_examples_for "it deletes the role" do |role_assigned: false|
@@ -93,6 +106,8 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)) if role_assigned
         subject
       end
+
+      it_behaves_like "role name is processed"
     end
 
     context "when the role does not exist" do

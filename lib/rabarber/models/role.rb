@@ -30,7 +30,7 @@ module Rabarber
         role.update(name: name)
       end
 
-      def delete(name, force: false)
+      def remove(name, force: false)
         role = find_by(name: process_role_name(name))
 
         return false if !role || assigned_to_roleables(role).any? && !force

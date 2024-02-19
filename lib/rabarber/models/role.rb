@@ -20,7 +20,7 @@ module Rabarber
 
         delete_roles_cache
 
-        create!(name: name).persisted?
+        !!create!(name: name)
       end
 
       def rename(old_name, new_name, force: false)
@@ -43,7 +43,7 @@ module Rabarber
         delete_roles_cache
         delete_roleables_cache(role)
 
-        role.destroy!.destroyed?
+        !!role.destroy!
       end
 
       private

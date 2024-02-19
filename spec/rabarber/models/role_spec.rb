@@ -74,6 +74,42 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe ".add" do
+    subject { described_class.add(:admin) }
+
+    context "when the role does not exist" do
+      it "creates the role" do
+        expect { subject }.to change { described_class.where(name: "admin").count }.from(0).to(1)
+      end
+
+      it { is_expected.to be true }
+
+      it "clears the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
+        subject
+      end
+
+      it_behaves_like "role name is processed", [:admin]
+    end
+
+    context "when the role exists" do
+      before { described_class.create!(name: "admin") }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+
+      it { is_expected.to be false }
+
+      it "does not clear the cache" do
+        expect(Rabarber::Cache).not_to receive(:delete)
+        subject
+      end
+
+      it_behaves_like "role name is processed", [:admin]
+    end
+  end
+
   describe ".rename" do
     subject { described_class.rename(:admin, :manager, force: force) }
 

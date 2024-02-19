@@ -14,8 +14,13 @@ module Rabarber
       end
 
       def add(name)
+        name = process_role_name(name)
+
+        return false if exists?(name: name)
+
         delete_roles_cache
-        create(name: process_role_name(name)).persisted?
+
+        create!(name: name).persisted?
       end
 
       def rename(old_name, new_name, force: false)
@@ -27,7 +32,7 @@ module Rabarber
         delete_roles_cache
         delete_roleables_cache(role)
 
-        role.update(name: name)
+        role.update!(name: name)
       end
 
       def remove(name, force: false)

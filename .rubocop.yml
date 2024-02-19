@@ -44,6 +44,9 @@ RSpec/ExampleLength:
 RSpec/FilePath:
   Enabled: false
 
+RSpec/LetSetup:
+  Enabled: false
+
 RSpec/MessageChain:
   Enabled: false
 

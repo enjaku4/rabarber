@@ -63,19 +63,154 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  shared_examples_for "role name is processed" do
+  shared_examples_for "role name is processed" do |roles|
     it "uses Input::Roles to process the given roles" do
-      input_processor = instance_double(Rabarber::Input::Roles, process: [role])
-      allow(Rabarber::Input::Roles).to receive(:new).with(role).and_return(input_processor)
-      expect(input_processor).to receive(:process).with(no_args)
+      roles.each do |role|
+        input_processor = instance_double(Rabarber::Input::Roles, process: [role])
+        allow(Rabarber::Input::Roles).to receive(:new).with(role).and_return(input_processor)
+        expect(input_processor).to receive(:process).with(no_args)
+      end
       subject
     end
   end
 
-  describe ".remove" do
-    subject { described_class.remove(role, force: force) }
+  describe ".rename" do
+    subject { described_class.rename(:admin, :manager, force: force) }
 
-    let(:role) { :admin }
+    shared_examples_for "it does nothing" do |role_exists: true|
+      if role_exists
+        it "does nothing" do
+          expect { subject }.not_to change(role, :name)
+        end
+      end
+
+      it { is_expected.to be false }
+
+      it "does not clear the cache" do
+        expect(Rabarber::Cache).not_to receive(:delete)
+        subject
+      end
+
+      it_behaves_like "role name is processed", [:admin, :manager]
+    end
+
+    shared_examples_for "it renames the role" do |role_assigned: false|
+      it "renames the role" do
+        expect { subject }.to change { role.reload.name }.from("admin").to("manager")
+      end
+
+      it { is_expected.to be true }
+
+      it "clears the cache" do
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
+        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)) if role_assigned
+        subject
+      end
+
+      it_behaves_like "role name is processed", [:admin, :manager]
+    end
+
+    context "when the role does not exist" do
+      context "when force is false" do
+        let(:force) { false }
+
+        context "when the new role name is already taken" do
+          before { described_class.create!(name: "manager") }
+
+          it_behaves_like "it does nothing", role_exists: false
+        end
+
+        context "when the new role name is not taken" do
+          it_behaves_like "it does nothing", role_exists: false
+        end
+      end
+
+      context "when force is true" do
+        let(:force) { true }
+
+        context "when the new role name is already taken" do
+          before { described_class.create!(name: "manager") }
+
+          it_behaves_like "it does nothing", role_exists: false
+        end
+
+        context "when the new role name is not taken" do
+          it_behaves_like "it does nothing", role_exists: false
+        end
+      end
+    end
+
+    context "when the role exists" do
+      let!(:role) { described_class.create!(name: "admin") }
+
+      context "when the role is not assigned to any user" do
+        context "when force is false" do
+          let(:force) { false }
+
+          context "when the new role name is already taken" do
+            before { described_class.create!(name: "manager") }
+
+            it_behaves_like "it does nothing"
+          end
+
+          context "when the new role name is not taken" do
+            it_behaves_like "it renames the role"
+          end
+        end
+
+        context "when force is true" do
+          let(:force) { true }
+
+          context "when the new role name is already taken" do
+            before { described_class.create!(name: "manager") }
+
+            it_behaves_like "it does nothing"
+          end
+
+          context "when the new role name is not taken" do
+            it_behaves_like "it renames the role"
+          end
+        end
+      end
+
+      context "when the role is assigned to some users" do
+        let(:user) { User.create! }
+
+        before { user.assign_roles(:admin) }
+
+        context "when force is false" do
+          let(:force) { false }
+
+          context "when the new role name is already taken" do
+            before { described_class.create!(name: "manager") }
+
+            it_behaves_like "it does nothing"
+          end
+
+          context "when the new role name is not taken" do
+            it_behaves_like "it does nothing"
+          end
+        end
+
+        context "when force is true" do
+          let(:force) { true }
+
+          context "when the new role name is already taken" do
+            before { described_class.create!(name: "manager") }
+
+            it_behaves_like "it does nothing"
+          end
+
+          context "when the new role name is not taken" do
+            it_behaves_like "it renames the role", role_assigned: true
+          end
+        end
+      end
+    end
+  end
+
+  describe ".remove" do
+    subject { described_class.remove(:admin, force: force) }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -91,7 +226,7 @@ RSpec.describe Rabarber::Role do
         subject
       end
 
-      it_behaves_like "role name is processed"
+      it_behaves_like "role name is processed", [:admin]
     end
 
     shared_examples_for "it deletes the role" do |role_assigned: false|
@@ -107,7 +242,7 @@ RSpec.describe Rabarber::Role do
         subject
       end
 
-      it_behaves_like "role name is processed"
+      it_behaves_like "role name is processed", [:admin]
     end
 
     context "when the role does not exist" do

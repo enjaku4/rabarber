@@ -22,7 +22,7 @@ module Rabarber
         role = find_by(name: process_role_name(old_name))
         name = process_role_name(new_name)
 
-        return false if !role || assigned_to_roleables(role).any? && !force
+        return false if !role || exists?(name: name) || assigned_to_roleables(role).any? && !force
 
         delete_roles_cache
         delete_roleables_cache(role)

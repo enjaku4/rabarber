@@ -15,12 +15,12 @@ module Rabarber
 
       def add(name)
         delete_roles_cache
-        create(name: Rabarber::Input::Roles.new(name).process[0]).persisted?
+        create(name: process_role_name(name)).persisted?
       end
 
       def rename(old_name, new_name, force: false)
-        role = find_by(name: Rabarber::Input::Roles.new(old_name).process[0])
-        name = Rabarber::Input::Roles.new(new_name).process[0]
+        role = find_by(name: process_role_name(old_name))
+        name = process_role_name(new_name)
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
@@ -31,7 +31,7 @@ module Rabarber
       end
 
       def delete(name, force: false)
-        role = find_by(name: Rabarber::Input::Roles.new(name).process[0])
+        role = find_by(name: process_role_name(name))
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
@@ -57,6 +57,10 @@ module Rabarber
         ActiveRecord::Base.connection.select_values(
           "SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = #{role.id}"
         )
+      end
+
+      def process_role_name(name)
+        Rabarber::Input::Roles.new(name).process[0]
       end
     end
   end

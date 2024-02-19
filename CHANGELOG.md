@@ -1,3 +1,8 @@
+<!-- TODO -->
+<!-- Remove unnecessary cache clearing -->
+<!-- Add methods to add, rename and remove roles -->
+<!-- HasRoles methods now return meanigful things -->
+
 ## 1.2.2
 
 - Refactor to improve readability and maintainability

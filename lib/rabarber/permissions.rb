@@ -15,22 +15,24 @@ module Rabarber
       @storage = { controller_rules: Hash.new({}), action_rules: Hash.new([]) }
     end
 
-    def self.add(controller, action, roles, dynamic_rule, negated_dynamic_rule)
-      rule = Rabarber::Rule.new(action, roles, dynamic_rule, negated_dynamic_rule)
+    class << self
+      def add(controller, action, roles, dynamic_rule, negated_dynamic_rule)
+        rule = Rabarber::Rule.new(action, roles, dynamic_rule, negated_dynamic_rule)
 
-      if action
-        instance.storage[:action_rules][controller] += [rule]
-      else
-        instance.storage[:controller_rules][controller] = rule
+        if action
+          instance.storage[:action_rules][controller] += [rule]
+        else
+          instance.storage[:controller_rules][controller] = rule
+        end
       end
-    end
 
-    def self.controller_rules
-      instance.storage[:controller_rules]
-    end
+      def controller_rules
+        instance.storage[:controller_rules]
+      end
 
-    def self.action_rules
-      instance.storage[:action_rules]
+      def action_rules
+        instance.storage[:action_rules]
+      end
     end
   end
 end

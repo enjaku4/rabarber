@@ -145,7 +145,7 @@ user.roles
 
 ---
 
-To manipulate roles directly, you can use `Rabarber::Role` methods.
+To manipulate roles directly, you can use `Rabarber::Role` methods:
 
 **`.add`**
 
@@ -164,8 +164,7 @@ To rename a role, use:
 ```rb
 Rabarber::Role.rename(:admin, :administrator)
 ```
-
-This will rename the role and return `true`. If a role with the new name already exists, it will return `false`.
+The first argument is the old name, and the second argument is the new name. This will rename the role and return `true`. If a role with the new name already exists, it will return `false`.
 
 The method won't rename the role if it is assigned to any user. To force the rename, use the method with `force: true` argument:
 ```rb

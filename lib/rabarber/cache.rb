@@ -10,8 +10,8 @@ module Rabarber
       enabled? ? Rails.cache.fetch(key, options, &block) : yield
     end
 
-    def delete(key)
-      Rails.cache.delete(key) if enabled?
+    def delete(*keys)
+      Rails.cache.delete_multi(keys) if enabled?
     end
 
     def enabled?

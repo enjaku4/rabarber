@@ -53,9 +53,8 @@ module Rabarber
       end
 
       def delete_roleables_cache(role)
-        assigned_to_roleables(role).each do |roleable_id|
-          Rabarber::Cache.delete(Rabarber::Cache.key_for(roleable_id))
-        end
+        keys = assigned_to_roleables(role).map { |roleable_id| Rabarber::Cache.key_for(roleable_id) }
+        Rabarber::Cache.delete(*keys) if keys.any?
       end
 
       def assigned_to_roleables(role)

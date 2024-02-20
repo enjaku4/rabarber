@@ -84,21 +84,24 @@ RSpec.describe Rabarber::Cache do
   end
 
   describe ".delete" do
-    subject { described_class.delete("foo") }
+    subject { described_class.delete("foo", "bar") }
 
     context "when cache is enabled" do
       before { Rabarber.configure { |config| config.cache_enabled = true } }
 
-      it "calls Rails.cache.delete" do
-        expect(Rails.cache).to receive(:delete).with("foo").and_call_original
+      it "calls Rails.cache.delete_multi" do
+        expect(Rails.cache).to receive(:delete_multi).with(["foo", "bar"]).and_call_original
         subject
       end
 
       it "deletes the cached value" do
         described_class.fetch("foo", expires_in: 1.minute) { "bar" }
+        described_class.fetch("bar", expires_in: 1.minute) { "baz" }
         expect(Rails.cache.read("foo")).to eq("bar")
+        expect(Rails.cache.read("bar")).to eq("baz")
         subject
         expect(Rails.cache.read("foo")).to be_nil
+        expect(Rails.cache.read("bar")).to be_nil
       end
     end
 

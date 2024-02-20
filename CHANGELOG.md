@@ -1,3 +1,9 @@
+## 1.3.0
+
+- Add methods to directly add, rename, and remove roles
+- `HasRoles#assign_roles` and `HasRoles#revoke_roles` methods now return the list of roles assigned to the user
+- Minor performance improvements
+
 ## 1.2.2
 
 - Refactor to improve readability and maintainability

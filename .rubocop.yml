@@ -30,13 +30,10 @@ RSpec/AnyInstance:
   Enabled: false
 
 Rails/ApplicationController:
-  Exclude:
-    - spec/support/controllers.rb
+  Enabled: false
 
 Rails/ApplicationRecord:
-  Exclude:
-    - lib/rabarber/models/role.rb
-    - spec/support/models.rb
+  Enabled: false
 
 RSpec/ContextWording:
   Enabled: false
@@ -45,6 +42,9 @@ RSpec/ExampleLength:
   Enabled: false
 
 RSpec/FilePath:
+  Enabled: false
+
+RSpec/LetSetup:
   Enabled: false
 
 RSpec/MessageChain:

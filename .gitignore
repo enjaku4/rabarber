@@ -20,3 +20,6 @@ Gemfile.lock
 
 # byebug
 .byebug_history
+
+# RubyMine
+.idea

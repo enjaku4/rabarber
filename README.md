@@ -112,6 +112,7 @@ By default, `#assign_roles` method will automatically create any roles that don'
 ```rb
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```
+The method returns an array of roles assigned to the user.
 
 **`#revoke_roles`**
 
@@ -121,6 +122,8 @@ To revoke roles, use:
 user.revoke_roles(:accountant, :marketer)
 ```
 If any of the specified roles doesn't exist or the user doesn't have the role you want to revoke, it will be ignored.
+
+The method returns an array of roles assigned to the user.
 
 **`#has_role?`**
 
@@ -140,7 +143,51 @@ To view all the roles assigned to the user, use:
 user.roles
 ```
 
-<!-- TODO: describe all methods for direct role manipulation (add, rename, remove) -->
+---
+
+To manipulate roles directly, you can use `Rabarber::Role` methods.
+
+**`.add`**
+
+To add a new role, use:
+
+```rb
+Rabarber::Role.add(:admin)
+```
+
+This will create a new role with the specified name and return `true`. If the role already exists, it will return `false`.
+
+**`.rename`**
+
+To rename a role, use:
+
+```rb
+Rabarber::Role.rename(:admin, :administrator)
+```
+
+This will rename the role and return `true`. If a role with the new name already exists, it will return `false`.
+
+The method won't rename the role if it is assigned to any user. To force the rename, use the method with `force: true` argument:
+```rb
+Rabarber::Role.rename(:admin, :administrator, force: true)
+```
+
+**`.remove`**
+
+To remove a role, use:
+
+```rb
+Rabarber::Role.remove(:admin)
+```
+
+This will remove the role and return `true`. If the role doesn't exist, it will return `false`.
+
+The method won't remove the role if it is assigned to any user. To force the removal, use the method with `force: true` argument:
+```rb
+Rabarber::Role.remove(:admin, force: true)
+```
+
+**`.names`**
 
 If you need to list all the role names available in your application, use:
 

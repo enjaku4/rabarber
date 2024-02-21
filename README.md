@@ -344,14 +344,18 @@ The usage is straightforward:
 
 ## Problems?
 
-Encountered a bug or facing a problem?
+Facing a problem or want to suggest an enhancement?
 
-- **Create an Issue**: If you've identified a problem, please create an issue on the gem's GitHub repository. Be sure to provide detailed information about the problem, including the steps to reproduce it.
+- **Open a Discussion**: If you have a question, experience difficulties using the gem, or have an improvement suggestion, feel free to use the Discussions section.
+
+Encountered a bug?
+
+- **Create an Issue**: If you've identified a bug, please create an issue. Be sure to provide detailed information about the problem, including the steps to reproduce it.
 - **Contribute a Solution**: Found a fix for the issue? Feel free to create a pull request with your changes.
 
 ## Contributing
 
-If you want to contribute, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
+Before opening an issue or creating a pull request, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
 
 ## License
 

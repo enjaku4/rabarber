@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["enjaku4", "trafium"]
   spec.email = ["rabarber_gem@icloud.com"]
 
-  spec.summary = "Simple authorization library for Ruby on Rails."
+  spec.summary = "Simple role-based authorization library for Ruby on Rails."
   spec.homepage = "https://github.com/enjaku4/rabarber"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"

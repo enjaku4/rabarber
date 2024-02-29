@@ -45,7 +45,8 @@ RSpec/FilePath:
   Enabled: false
 
 RSpec/LetSetup:
-  Enabled: false
+  Exclude:
+    - spec/rabarber/models/role_spec.rb
 
 RSpec/MessageChain:
   Enabled: false

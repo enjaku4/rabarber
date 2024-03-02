@@ -38,6 +38,10 @@ Rails/ApplicationRecord:
 RSpec/ContextWording:
   Enabled: false
 
+RSpec/DescribedClass:
+  Exclude:
+    - spec/rabarber_spec.rb
+
 RSpec/ExampleLength:
   Enabled: false
 

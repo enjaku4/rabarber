@@ -6,7 +6,7 @@ RSpec.describe Rabarber::Authorization do
   describe ".grant_access" do
     subject { DummyAuthController.grant_access(**args) }
 
-    after { Rabarber::Permissions.action_rules.delete(DummyAuthController) }
+    after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
 
     context "when action is invalid" do
       let(:args) { { action: 1 } }
@@ -53,7 +53,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :index, roles: :admin, if: -> { true }, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :index, [:admin], args[:if], args[:unless]).and_call_original
         subject
       end
@@ -87,7 +87,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], args[:if], nil).and_call_original
         subject
       end
@@ -97,7 +97,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], nil, args[:unless]).and_call_original
         subject
       end
@@ -107,7 +107,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], nil, nil).and_call_original
         subject
       end
@@ -117,7 +117,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], args[:if], args[:unless]).and_call_original
         subject
       end
@@ -127,7 +127,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { {} }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, nil, [], nil, nil).and_call_original
         subject
       end

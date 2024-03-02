@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Rule do
+RSpec.describe Rabarber::Core::Rule do
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController, :index) }
 

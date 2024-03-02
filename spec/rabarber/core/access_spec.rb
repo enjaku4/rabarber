@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Access do
-  let(:permissions) { Class.new(Rabarber::Permissions) }
+RSpec.describe Rabarber::Core::Access do
+  let(:permissions) { Class.new(Rabarber::Core::Permissions) }
 
   before { permissions.extend(described_class) }
 

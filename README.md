@@ -3,9 +3,9 @@
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
-Rabarber is a role-based authorization library for Ruby on Rails, designed primarily for use in the web layer (specifically controllers and views) but not limited to that. It provides tools for managing user roles and defining authorization rules, mainly focusing on answering the question of 'Who can access which endpoint?'.
+Rabarber is a role-based authorization library for Ruby on Rails, designed primarily for use in the application's web layer (specifically controllers and views) but not limited to that. It provides tools for managing user roles and defining authorization rules, mainly focusing on answering the question of 'Who can access which endpoint?'.
 
-Unlike some other libraries, Rabarber does not handle data scoping. Instead, it focuses on providing a lightweight and flexible solution for role-based access control, allowing developers to implement data scoping according to their specific business rules directly within their application's code.
+Unlike some other libraries, Rabarber does not handle data scoping. Instead, it focuses on providing a lightweight and flexible solution for role-based access control, allowing developers to implement data scoping according to their specific business rules within their application's logic.
 
 ---
 
@@ -53,8 +53,6 @@ Next, generate a migration to create tables for storing roles in the database. M
 rails g rabarber:roles users
 ```
 
-This will create a migration file in `db/migrate` directory.
-
 Finally, run the migration to apply the changes to the database:
 
 ```
@@ -63,7 +61,7 @@ rails db:migrate
 
 ## Configuration
 
-Rabarber can be configured by using `.configure` method in an initializer:
+If specific customization is required, Rabarber can be configured by using `.configure` method in an initializer:
 
 ```rb
 Rabarber.configure do |config|
@@ -76,17 +74,17 @@ Rabarber.configure do |config|
 end
 ```
 
-- `cache_enabled` must be a boolean determining whether roles are cached. Roles are cached by default to avoid unnecessary database queries. If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
+- `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
 
-- `current_user_method` must be a symbol representing the method that returns the currently authenticated user. The default value is `:current_user`.
+- `current_user_method` must be a symbol representing the method that returns the currently authenticated user. _The default value is `:current_user`._
 
-- `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access endpoints permitted to everyone).
+- `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
 
-- `when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` method cannot be found in the controller (`missing_actions` is an array of missing actions, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `eager_load` configuration is enabled in Rails. By default, an error is raised when actions are missing.
+- `when_actions_missing` must be a proc where you can define the behaviour when the actions specified in `grant_access` method cannot be found in the controller (`missing_actions` is an array of symbols e.g., `[:index]`, `context` is a hash that looks like this: `{ controller: "InvoicesController" }`). This check is performed on every request and when the application is initialized if `eager_load` configuration is enabled in Rails. _By default, an error is raised when actions are missing._
 
-- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database (`missing_roles` is an array of missing roles, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `eager_load` configuration is enabled in Rails. By default, only a warning is logged when roles are missing.
+- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database (`missing_roles` is an array of symbols e.g., `[:admin]`, `context` is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`). This check is performed on every request and when the application is initialized if `eager_load` configuration is enabled in Rails. _By default, only a warning is logged when roles are missing._
 
-- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized (`controller` is an instance of the controller where the code is executed). By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent.
+- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized (`controller` is an instance of the controller where the code is executed). _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
 
 ## Roles
 
@@ -103,7 +101,7 @@ This adds the following methods:
 
 **`#assign_roles`**
 
-To assign roles to the user, use:
+To assign roles, use:
 
 ```rb
 user.assign_roles(:accountant, :marketer)
@@ -166,7 +164,7 @@ Rabarber::Role.rename(:admin, :administrator)
 ```
 The first argument is the old name, and the second argument is the new name. This will rename the role and return `true`. If a role with the new name already exists, it will return `false`.
 
-The method won't rename the role if it is assigned to any user. To force the rename, use the method with `force: true` argument:
+The method won't rename the role and will return `false` if it is assigned to any user. To force the rename, use the method with `force: true` argument:
 ```rb
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
@@ -181,7 +179,7 @@ Rabarber::Role.remove(:admin)
 
 This will remove the role and return `true`. If the role doesn't exist, it will return `false`.
 
-The method won't remove the role if it is assigned to any user. To force the removal, use the method with `force: true` argument:
+The method won't remove the role and will return `false` if it is assigned to any user. To force the removal, use the method with `force: true` argument:
 ```rb
 Rabarber::Role.remove(:admin, force: true)
 ```
@@ -196,7 +194,7 @@ Rabarber::Role.names
 
 ## Authorization Rules
 
-Include `Rabarber::Authorization` module into the controller that needs authorization rules to be applied (authorization rules will be applied to the controller and its children). Typically, it is `ApplicationController`, but it can be any controller.
+Include `Rabarber::Authorization` module into the controller that needs authorization rules to be applied. Typically, it is `ApplicationController`, but it can be any controller of your choice.
 
 ```rb
 class ApplicationController < ActionController::Base
@@ -264,9 +262,9 @@ class InvoicesController < ApplicationController
 end
 ```
 
-This allows everyone to access `OrdersController` and its children and `index` action in `InvoicesController`. This also extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
+This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`. This extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
 
-Be aware that if the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user with no roles assigned was authenticated.
+_Be aware that if the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user with no roles assigned was authenticated._
 
 If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
 
@@ -301,7 +299,7 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol (the method with the same name will be called) or a proc.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with the same name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
 
 Rules defined in child classes don't override parent rules but rather add to them:
 ```rb
@@ -319,7 +317,7 @@ This means that `Crm::InvoicesController` is still accessible to `admin` but is 
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. To use them, simply include `Rabarber::Helpers` in the desired helper (usually `ApplicationHelper`, but it can be any helper):
+Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
 
 ```rb
 module ApplicationHelper

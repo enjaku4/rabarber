@@ -8,7 +8,9 @@ RSpec.describe Rabarber::Core::Permissions do
     let(:dynamic_rule) { -> (foo) { foo } }
 
     context "when action is given" do
-      before { allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule) }
+      before do
+        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule)
+      end
 
       it "adds permissions to the action rules storage" do
         expect { permissions.add(DummyController, :index, [:admin], :dynamic_rule, false) }

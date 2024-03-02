@@ -38,10 +38,10 @@ module Rabarber
         return true if rule.nil?
 
         result = if rule.is_a?(Proc)
-                  dynamic_rule_receiver.instance_exec(&rule)
-                else
-                  dynamic_rule_receiver.send(rule)
-                end
+                   dynamic_rule_receiver.instance_exec(&rule)
+                 else
+                   dynamic_rule_receiver.send(rule)
+                 end
 
         is_negated ? !result : result
       end

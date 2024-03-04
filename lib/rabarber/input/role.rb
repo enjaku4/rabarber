@@ -15,7 +15,7 @@ module Rabarber
       end
 
       def valid?
-        (value.is_a?(Symbol) || value.is_a?(String)) && value.to_s.match?(REGEX)
+        Rabarber::Input::Types::Symbol.new(value, nil, nil).valid? && value.to_s.match?(REGEX)
       end
 
       private

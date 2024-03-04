@@ -12,7 +12,7 @@ module Rabarber
       end
 
       def valid?
-        (value.is_a?(String) || value.is_a?(Symbol)) && value.present? || value.nil?
+        Rabarber::Input::Types::Symbol.new(value, nil, nil).valid? || value.nil?
       end
 
       private

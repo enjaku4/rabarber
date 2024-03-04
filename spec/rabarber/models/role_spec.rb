@@ -41,6 +41,10 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe "#assignees" do
+    it "works", pending: true
+  end
+
   describe ".names" do
     subject { described_class.names }
 

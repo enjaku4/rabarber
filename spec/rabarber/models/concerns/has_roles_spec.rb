@@ -320,4 +320,8 @@ RSpec.describe Rabarber::HasRoles do
       it { is_expected.to be_empty }
     end
   end
+
+  describe "#roleable_class" do
+    it "works", pending: true
+  end
 end

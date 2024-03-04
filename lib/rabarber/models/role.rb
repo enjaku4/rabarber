@@ -8,10 +8,8 @@ module Rabarber
 
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
-    # TODO: this is a general idea how role's assignees could be fetched, needs to be implemented properly
     def assignees
-      user_model = Rabarber::HasRoles.class_variable_get(:@@included).constantize
-      user_model.where(user_model.primary_key => self.class.send(:assigned_to_roleables, self))
+      Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(rabarber_roles: { id: id })
     end
 
     class << self

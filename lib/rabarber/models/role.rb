@@ -4,7 +4,7 @@ module Rabarber
   class Role < ActiveRecord::Base
     self.table_name = "rabarber_roles"
 
-    validates :name, presence: true, uniqueness: true, format: { with: Rabarber::Input::Roles::REGEX }
+    validates :name, presence: true, uniqueness: true, format: { with: Rabarber::Input::Role::REGEX }
 
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
@@ -68,7 +68,7 @@ module Rabarber
       end
 
       def process_role_name(name)
-        Rabarber::Input::Roles.new(name).process[0]
+        Rabarber::Input::Role.new(name).process
       end
     end
   end

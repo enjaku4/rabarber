@@ -15,11 +15,11 @@ module Rabarber
         valid? ? processed_value : raise_error
       end
 
-      private
-
       def valid?
         raise NotImplementedError
       end
+
+      private
 
       def processed_value
         raise NotImplementedError

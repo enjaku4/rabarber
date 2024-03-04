@@ -68,10 +68,10 @@ RSpec.describe Rabarber::Role do
   end
 
   shared_examples_for "role name is processed" do |roles|
-    it "uses Input::Roles to process the given roles" do
+    it "uses Input::Role to process the given roles" do
       roles.each do |role|
-        input_processor = instance_double(Rabarber::Input::Roles, process: [role])
-        allow(Rabarber::Input::Roles).to receive(:new).with(role).and_return(input_processor)
+        input_processor = instance_double(Rabarber::Input::Role, process: role)
+        allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
         expect(input_processor).to receive(:process).with(no_args)
       end
       subject

@@ -3,8 +3,6 @@
 module Rabarber
   module Input
     class Roles < Rabarber::Input::Base
-      REGEX = /\A[a-z0-9_]+\z/
-
       def initialize(
         value,
         error_type = Rabarber::InvalidArgumentError,
@@ -18,11 +16,11 @@ module Rabarber
         Array(super)
       end
 
-      private
-
       def valid?
-        value.all? { |role_name| (role_name.is_a?(Symbol) || role_name.is_a?(String)) && role_name.to_s.match?(REGEX) }
+        value.all? { |role_name| Rabarber::Input::Role.new(role_name).valid? }
       end
+
+      private
 
       def processed_value
         value.map(&:to_sym)

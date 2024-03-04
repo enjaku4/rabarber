@@ -19,37 +19,37 @@ module Rabarber
     end
 
     def cache_enabled=(value)
-      @cache_enabled = Rabarber::Input::Types::Booleans.new(
+      @cache_enabled = Rabarber::Input::Types::Boolean.new(
         value, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
       ).process
     end
 
     def current_user_method=(method_name)
-      @current_user_method = Rabarber::Input::Types::Symbols.new(
+      @current_user_method = Rabarber::Input::Types::Symbol.new(
         method_name, Rabarber::ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
       ).process
     end
 
     def must_have_roles=(value)
-      @must_have_roles = Rabarber::Input::Types::Booleans.new(
+      @must_have_roles = Rabarber::Input::Types::Boolean.new(
         value, Rabarber::ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
       ).process
     end
 
     def when_actions_missing=(callable)
-      @when_actions_missing = Rabarber::Input::Types::Procs.new(
+      @when_actions_missing = Rabarber::Input::Types::Proc.new(
         callable, Rabarber::ConfigurationError, "Configuration 'when_actions_missing' must be a Proc"
       ).process
     end
 
     def when_roles_missing=(callable)
-      @when_roles_missing = Rabarber::Input::Types::Procs.new(
+      @when_roles_missing = Rabarber::Input::Types::Proc.new(
         callable, Rabarber::ConfigurationError, "Configuration 'when_roles_missing' must be a Proc"
       ).process
     end
 
     def when_unauthorized=(callable)
-      @when_unauthorized = Rabarber::Input::Types::Procs.new(
+      @when_unauthorized = Rabarber::Input::Types::Proc.new(
         callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
       ).process
     end

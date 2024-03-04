@@ -3,12 +3,12 @@
 module Rabarber
   module Input
     module Types
-      class Booleans < Rabarber::Input::Base
-        private
-
+      class Boolean < Rabarber::Input::Base
         def valid?
           [true, false].include?(value)
         end
+
+        private
 
         def processed_value
           value

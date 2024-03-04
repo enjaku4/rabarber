@@ -14,10 +14,10 @@ module Rabarber
 
         Rabarber::Core::Permissions.add(
           self,
-          Rabarber::Input::Actions.new(action).process,
+          Rabarber::Input::Action.new(action).process,
           Rabarber::Input::Roles.new(roles).process,
-          Rabarber::Input::DynamicRules.new(dynamic_rule).process,
-          Rabarber::Input::DynamicRules.new(negated_dynamic_rule).process
+          Rabarber::Input::DynamicRule.new(dynamic_rule).process,
+          Rabarber::Input::DynamicRule.new(negated_dynamic_rule).process
         )
       end
     end

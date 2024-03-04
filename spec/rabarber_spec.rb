@@ -28,57 +28,57 @@ RSpec.describe Rabarber do
       expect(Rabarber::Configuration.instance.when_unauthorized.call(controller)).to eq("I'm a teapot")
     end
 
-    it "uses Input::Types::Booleans to process cache_enabled" do
-      input_processor = instance_double(Rabarber::Input::Types::Booleans, process: false)
-      allow(Rabarber::Input::Types::Booleans).to receive(:new).with(
+    it "uses Input::Types::Boolean to process cache_enabled" do
+      input_processor = instance_double(Rabarber::Input::Types::Boolean, process: false)
+      allow(Rabarber::Input::Types::Boolean).to receive(:new).with(
         false, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)
       described_class.configure { |config| config.cache_enabled = false }
     end
 
-    it "uses Input::Types::Symbols to process current_user_method" do
-      input_processor = instance_double(Rabarber::Input::Types::Symbols, process: :user)
-      allow(Rabarber::Input::Types::Symbols).to receive(:new).with(
+    it "uses Input::Types::Symbol to process current_user_method" do
+      input_processor = instance_double(Rabarber::Input::Types::Symbol, process: :user)
+      allow(Rabarber::Input::Types::Symbol).to receive(:new).with(
         :user, Rabarber::ConfigurationError, "Configuration 'current_user_method' must be a Symbol or a String"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)
       described_class.configure { |config| config.current_user_method = :user }
     end
 
-    it "uses Input::Types::Booleans to process must_have_roles" do
-      input_processor = instance_double(Rabarber::Input::Types::Booleans, process: true)
-      allow(Rabarber::Input::Types::Booleans).to receive(:new).with(
+    it "uses Input::Types::Boolean to process must_have_roles" do
+      input_processor = instance_double(Rabarber::Input::Types::Boolean, process: true)
+      allow(Rabarber::Input::Types::Boolean).to receive(:new).with(
         true, Rabarber::ConfigurationError, "Configuration 'must_have_roles' must be a Boolean"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)
       described_class.configure { |config| config.must_have_roles = true }
     end
 
-    it "uses Input::Types::Procs to process when_actions_missing" do
+    it "uses Input::Types::Proc to process when_actions_missing" do
       callable = -> (missing_actions, context) { puts("#{context}: #{missing_actions}") }
-      input_processor = instance_double(Rabarber::Input::Types::Procs, process: callable)
-      allow(Rabarber::Input::Types::Procs).to receive(:new).with(
+      input_processor = instance_double(Rabarber::Input::Types::Proc, process: callable)
+      allow(Rabarber::Input::Types::Proc).to receive(:new).with(
         callable, Rabarber::ConfigurationError, "Configuration 'when_actions_missing' must be a Proc"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)
       described_class.configure { |config| config.when_actions_missing = callable }
     end
 
-    it "uses Input::Types::Procs to process when_roles_missing" do
+    it "uses Input::Types::Proc to process when_roles_missing" do
       callable = -> (missing_roles, context) { puts("#{context}: #{missing_roles}") }
-      input_processor = instance_double(Rabarber::Input::Types::Procs, process: callable)
-      allow(Rabarber::Input::Types::Procs).to receive(:new).with(
+      input_processor = instance_double(Rabarber::Input::Types::Proc, process: callable)
+      allow(Rabarber::Input::Types::Proc).to receive(:new).with(
         callable, Rabarber::ConfigurationError, "Configuration 'when_roles_missing' must be a Proc"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)
       described_class.configure { |config| config.when_roles_missing = callable }
     end
 
-    it "uses Input::Types::Procs to process when_unauthorized" do
+    it "uses Input::Types::Proc to process when_unauthorized" do
       callable = -> (controller) { controller.head(418) }
-      input_processor = instance_double(Rabarber::Input::Types::Procs, process: callable)
-      allow(Rabarber::Input::Types::Procs).to receive(:new).with(
+      input_processor = instance_double(Rabarber::Input::Types::Proc, process: callable)
+      allow(Rabarber::Input::Types::Proc).to receive(:new).with(
         callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
       ).and_return(input_processor)
       expect(input_processor).to receive(:process).with(no_args)

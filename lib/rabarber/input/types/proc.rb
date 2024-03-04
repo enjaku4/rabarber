@@ -3,15 +3,15 @@
 module Rabarber
   module Input
     module Types
-      class Symbols < Rabarber::Input::Base
-        private
-
+      class Proc < Rabarber::Input::Base
         def valid?
-          (value.is_a?(Symbol) || value.is_a?(String)) && value.present?
+          value.is_a?(::Proc)
         end
 
+        private
+
         def processed_value
-          value.to_sym
+          value
         end
       end
     end

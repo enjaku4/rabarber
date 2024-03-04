@@ -58,9 +58,9 @@ RSpec.describe Rabarber::Authorization do
         subject
       end
 
-      it "uses Input::Actions to process the given action" do
-        input_processor = instance_double(Rabarber::Input::Actions, process: :index)
-        allow(Rabarber::Input::Actions).to receive(:new).with(:index).and_return(input_processor)
+      it "uses Input::Action to process the given action" do
+        input_processor = instance_double(Rabarber::Input::Action, process: :index)
+        allow(Rabarber::Input::Action).to receive(:new).with(:index).and_return(input_processor)
         expect(input_processor).to receive(:process).with(no_args)
         subject
       end
@@ -72,11 +72,11 @@ RSpec.describe Rabarber::Authorization do
         subject
       end
 
-      it "uses Input::DynamicRules to process the given dynamic rules" do
-        input_processor_foo = instance_double(Rabarber::Input::DynamicRules, process: :foo)
-        input_processor_bar = instance_double(Rabarber::Input::DynamicRules, process: :bar)
-        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:if]).and_return(input_processor_foo)
-        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:unless]).and_return(input_processor_bar)
+      it "uses Input::DynamicRule to process the given dynamic rules" do
+        input_processor_foo = instance_double(Rabarber::Input::DynamicRule, process: :foo)
+        input_processor_bar = instance_double(Rabarber::Input::DynamicRule, process: :bar)
+        allow(Rabarber::Input::DynamicRule).to receive(:new).with(args[:if]).and_return(input_processor_foo)
+        allow(Rabarber::Input::DynamicRule).to receive(:new).with(args[:unless]).and_return(input_processor_bar)
         expect(input_processor_foo).to receive(:process).with(no_args)
         expect(input_processor_bar).to receive(:process).with(no_args)
         subject

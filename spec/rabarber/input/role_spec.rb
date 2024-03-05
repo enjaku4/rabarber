@@ -19,7 +19,7 @@ RSpec.describe Rabarber::Input::Role do
     end
 
     context "when the given role is invalid" do
-      [nil, 1, [""], Symbol, :"a-user", :Admin, "Admin", "admin ", { manager: true }].each do |invalid_role|
+      [nil, "", 1, [""], Symbol, :"a-user", :Admin, "Admin", "admin ", { manager: true }].each do |invalid_role|
         let(:role) { invalid_role }
 
         it "raises an error when '#{invalid_role}' is given as a role name" do

@@ -13,6 +13,10 @@ module Rabarber
         def processed_value
           value
         end
+
+        def default_error_message
+          "Value must be a Boolean"
+        end
       end
     end
   end

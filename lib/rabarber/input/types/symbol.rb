@@ -13,6 +13,10 @@ module Rabarber
         def processed_value
           value.to_sym
         end
+
+        def default_error_message
+          "Value must be a Symbol or a String"
+        end
       end
     end
   end

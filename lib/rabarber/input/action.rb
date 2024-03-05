@@ -3,16 +3,8 @@
 module Rabarber
   module Input
     class Action < Rabarber::Input::Base
-      def initialize(
-        value,
-        error_type = Rabarber::InvalidArgumentError,
-        error_message = "Action name must be a Symbol or a String"
-      )
-        super
-      end
-
       def valid?
-        Rabarber::Input::Types::Symbol.new(value, nil, nil).valid? || value.nil?
+        Rabarber::Input::Types::Symbol.new(value).valid? || value.nil?
       end
 
       private
@@ -24,6 +16,10 @@ module Rabarber
         when nil
           value
         end
+      end
+
+      def default_error_message
+        "Action name must be a Symbol or a String"
       end
     end
   end

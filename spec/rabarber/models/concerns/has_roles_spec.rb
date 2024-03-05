@@ -322,6 +322,8 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#roleable_class" do
-    it "works", pending: true
+    subject { described_class.roleable_class }
+
+    it { is_expected.to eq(User) }
   end
 end

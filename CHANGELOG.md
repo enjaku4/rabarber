@@ -1,4 +1,8 @@
-<!-- TODO -->
+## 1.3.1
+
+- Add `Role.assignees_for` method
+- Fix inconsistent behavior where passing `nil` as a role name to role management methods would raise an `ActiveRecord` error instead of `Rabarber` error
+- Various minor code improvements
 
 ## 1.3.0
 

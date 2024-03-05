@@ -42,7 +42,20 @@ RSpec.describe Rabarber::Role do
   end
 
   describe "#assignees" do
-    it "works", pending: true
+    subject { role.assignees }
+
+    let!(:role) { described_class.create!(name: "admin") }
+    let(:users) { [User.create!, User.create!] }
+
+    context "when the role is not assigned to any user" do
+      it { is_expected.to be_empty }
+    end
+
+    context "when the role is assigned to some users" do
+      before { users.each { |user| user.assign_roles(:admin) } }
+
+      it { is_expected.to match_array(users) }
+    end
   end
 
   describe ".names" do

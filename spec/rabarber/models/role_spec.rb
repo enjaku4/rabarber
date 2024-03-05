@@ -41,23 +41,6 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe "#assignees" do
-    subject { role.assignees }
-
-    let!(:role) { described_class.create!(name: "admin") }
-    let(:users) { [User.create!, User.create!] }
-
-    context "when the role is not assigned to any user" do
-      it { is_expected.to be_empty }
-    end
-
-    context "when the role is assigned to some users" do
-      before { users.each { |user| user.assign_roles(:admin) } }
-
-      it { is_expected.to match_array(users) }
-    end
-  end
-
   describe ".names" do
     subject { described_class.names }
 
@@ -346,6 +329,38 @@ RSpec.describe Rabarber::Role do
           it_behaves_like "it deletes the role", role_assigned: true
         end
       end
+    end
+  end
+
+  describe ".assignees_for" do
+    subject { described_class.assignees_for(role) }
+
+    let(:users) { [User.create!, User.create!] }
+
+    context "when the role exists" do
+      let!(:role) { described_class.create!(name: "admin").name }
+
+      context "when the role is not assigned to any user" do
+        it { is_expected.to be_empty }
+
+        it_behaves_like "role name is processed", ["admin"]
+      end
+
+      context "when the role is assigned to some users" do
+        before { users.each { |user| user.assign_roles(:admin) } }
+
+        it { is_expected.to match_array(users) }
+
+        it_behaves_like "role name is processed", ["admin"]
+      end
+    end
+
+    context "when the role does not exist" do
+      let(:role) { "client" }
+
+      it { is_expected.to be_empty }
+
+      it_behaves_like "role name is processed", ["client"]
     end
   end
 end

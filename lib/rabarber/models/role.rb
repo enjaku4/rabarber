@@ -8,10 +8,6 @@ module Rabarber
 
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
-    def assignees
-      Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(rabarber_roles: { id: id })
-    end
-
     class << self
       def names
         pluck(:name).map(&:to_sym)
@@ -48,6 +44,12 @@ module Rabarber
         delete_roleables_cache(role)
 
         !!role.destroy!
+      end
+
+      def assignees_for(name)
+        Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
+          rabarber_roles: { name: Rabarber::Input::Role.new(name).process }
+        )
       end
 
       private

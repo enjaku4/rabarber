@@ -53,7 +53,7 @@ module Rabarber
     end
 
     def roleable_class
-      class_variable_get(:@@included).constantize
+      @@included.constantize
     end
     module_function :roleable_class
 

@@ -12,8 +12,8 @@ RSpec.describe Rabarber::Missing::Roles do
   end
 
   after do
-    Rabarber::Permissions.action_rules.delete(DummyAuthController)
-    Rabarber::Permissions.controller_rules.delete(DummyAuthController)
+    Rabarber::Core::Permissions.action_rules.delete(DummyAuthController)
+    Rabarber::Core::Permissions.controller_rules.delete(DummyAuthController)
   end
 
   shared_examples_for "it caches roles" do
@@ -35,7 +35,7 @@ RSpec.describe Rabarber::Missing::Roles do
 
     context "when role is missing" do
       context "in controller rules" do
-        before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
@@ -46,7 +46,7 @@ RSpec.describe Rabarber::Missing::Roles do
       end
 
       context "in action rules" do
-        before { Rabarber::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
@@ -60,8 +60,8 @@ RSpec.describe Rabarber::Missing::Roles do
 
       context "in both controller and action rules" do
         before do
-          Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil)
-          Rabarber::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
         end
 
         it "calls configuration twice" do
@@ -93,7 +93,7 @@ RSpec.describe Rabarber::Missing::Roles do
 
     context "when role is missing" do
       context "in controller rules" do
-        before { Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
@@ -104,7 +104,7 @@ RSpec.describe Rabarber::Missing::Roles do
       end
 
       context "in action rules" do
-        before { Rabarber::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
 
         it "calls configuration" do
           expect(callable_double).to receive(:call).with(
@@ -118,8 +118,8 @@ RSpec.describe Rabarber::Missing::Roles do
 
       context "in both controller and action rules" do
         before do
-          Rabarber::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil)
-          Rabarber::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
         end
 
         it "calls configuration twice" do
@@ -145,9 +145,9 @@ RSpec.describe Rabarber::Missing::Roles do
 
     context "when role is missing in another controller" do
       context "in controller rules" do
-        before { Rabarber::Permissions.add(DummyController, nil, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyController, nil, [:missing_role], nil, nil) }
 
-        after { Rabarber::Permissions.controller_rules.delete(DummyController) }
+        after { Rabarber::Core::Permissions.controller_rules.delete(DummyController) }
 
         it "does not call configuration" do
           expect(callable_double).not_to receive(:call)
@@ -156,9 +156,9 @@ RSpec.describe Rabarber::Missing::Roles do
       end
 
       context "in action rules" do
-        before { Rabarber::Permissions.add(DummyController, :index, [:missing_role], nil, nil) }
+        before { Rabarber::Core::Permissions.add(DummyController, :index, [:missing_role], nil, nil) }
 
-        after { Rabarber::Permissions.action_rules[DummyController].pop }
+        after { Rabarber::Core::Permissions.action_rules[DummyController].pop }
 
         it "does not call configuration" do
           expect(callable_double).not_to receive(:call)
@@ -168,13 +168,13 @@ RSpec.describe Rabarber::Missing::Roles do
 
       context "in both controller and action rules" do
         before do
-          Rabarber::Permissions.add(DummyController, nil, [:missing_role], nil, nil)
-          Rabarber::Permissions.add(DummyController, :index, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyController, nil, [:missing_role], nil, nil)
+          Rabarber::Core::Permissions.add(DummyController, :index, [:missing_role], nil, nil)
         end
 
         after do
-          Rabarber::Permissions.controller_rules.delete(DummyController)
-          Rabarber::Permissions.action_rules[DummyController].pop
+          Rabarber::Core::Permissions.controller_rules.delete(DummyController)
+          Rabarber::Core::Permissions.action_rules[DummyController].pop
         end
 
         it "does not call configuration" do

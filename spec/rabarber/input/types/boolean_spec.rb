@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Input::Types::Symbols do
+RSpec.describe Rabarber::Input::Types::Boolean do
   describe "#process" do
     subject { described_class.new(value, Rabarber::Error, "Error").process }
 
     context "when the given value is valid" do
-      context "when a string is given" do
-        let(:value) { "foo" }
+      context "when true is given" do
+        let(:value) { true }
 
-        it { is_expected.to eq(:foo) }
+        it { is_expected.to be true }
       end
 
-      context "when a symbol is given" do
-        let(:value) { :bar }
+      context "when false is given" do
+        let(:value) { false }
 
-        it { is_expected.to eq(:bar) }
+        it { is_expected.to be false }
       end
     end
 
     context "when the given value is invalid" do
-      [nil, 1, [], {}, User, "", :""].each do |invalid_value|
+      [nil, 1, "foo", :foo, [], {}, User].each do |invalid_value|
         let(:value) { invalid_value }
 
         it "raises an ArgumentError when '#{invalid_value}' is given" do

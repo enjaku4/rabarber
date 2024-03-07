@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Input::Types::Procs do
+RSpec.describe Rabarber::Input::Types::Proc do
   describe "#process" do
     subject { described_class.new(value, Rabarber::Error, "Error").process }
 

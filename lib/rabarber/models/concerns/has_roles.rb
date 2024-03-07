@@ -52,6 +52,11 @@ module Rabarber
       roles
     end
 
+    def roleable_class
+      @@included.constantize
+    end
+    module_function :roleable_class
+
     private
 
     def create_new_roles(role_names)

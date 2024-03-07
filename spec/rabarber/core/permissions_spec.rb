@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Permissions do
+RSpec.describe Rabarber::Core::Permissions do
   let(:permissions) { Class.new(described_class) }
 
   describe ".add" do
-    let(:rule) { instance_double(Rabarber::Rule) }
+    let(:rule) { instance_double(Rabarber::Core::Rule) }
     let(:dynamic_rule) { -> (foo) { foo } }
 
     context "when action is given" do
-      before { allow(Rabarber::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule) }
+      before do
+        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule)
+      end
 
       it "adds permissions to the action rules storage" do
         expect { permissions.add(DummyController, :index, [:admin], :dynamic_rule, false) }
@@ -18,7 +20,7 @@ RSpec.describe Rabarber::Permissions do
     end
 
     context "when no action is given" do
-      before { allow(Rabarber::Rule).to receive(:new).with(nil, [:admin, :manager], nil, nil).and_return(rule) }
+      before { allow(Rabarber::Core::Rule).to receive(:new).with(nil, [:admin, :manager], nil, nil).and_return(rule) }
 
       it "adds permissions to the controller rules storage" do
         expect { permissions.add(DummyController, nil, [:admin, :manager], nil, nil) }

@@ -1,7 +1,13 @@
+## 1.3.1
+
+- Add `Rabarber::Role.assignees_for` method
+- Fix inconsistent behavior where passing `nil` as a role name to role management methods would raise an `ActiveRecord` error instead of `Rabarber` error
+- Various minor code improvements
+
 ## 1.3.0
 
 - Add methods to directly add, rename, and remove roles
-- `HasRoles#assign_roles` and `HasRoles#revoke_roles` methods now return the list of roles assigned to the user
+- Modify `Rabarber::HasRoles#assign_roles` and `Rabarber::HasRoles#revoke_roles` methods to return the list of roles assigned to the user
 - Minor performance improvements
 
 ## 1.2.2
@@ -43,7 +49,7 @@
 ## 1.0.2
 
 - Various enhancements for gem development and release
-- Modify `HasRoles#roles` method to return an array of role names instead of `Rabarber::Role` objects
+- Modify `Rabarber::HasRoles#roles` method to return an array of role names instead of `Rabarber::Role` objects
 
 ## 1.0.1
 
@@ -62,7 +68,7 @@
 
 ## 0.1.4
 
-- Remove `HasRoles#role?` method as unnecessary
+- Remove `Rabarber::HasRoles#role?` method as unnecessary
 
 ## 0.1.3
 

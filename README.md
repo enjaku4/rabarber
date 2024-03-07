@@ -190,6 +190,14 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
+**`.assignees_for`**
+
+To get all the users to whom the role is assigned, use:
+
+```rb
+Rabarber::Role.assignees_for(:admin)
+```
+
 ## Authorization Rules
 
 Include `Rabarber::Authorization` module into the controller that needs authorization rules to be applied. Typically, it is `ApplicationController`, but it can be any controller of your choice.

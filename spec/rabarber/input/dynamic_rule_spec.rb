@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Input::DynamicRules do
+RSpec.describe Rabarber::Input::DynamicRule do
   describe "#process" do
     subject { described_class.new(dynamic_rule).process }
 

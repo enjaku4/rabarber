@@ -4,7 +4,7 @@ module Rabarber
   class Role < ActiveRecord::Base
     self.table_name = "rabarber_roles"
 
-    validates :name, presence: true, uniqueness: true, format: { with: Rabarber::Input::Roles::REGEX }
+    validates :name, presence: true, uniqueness: true, format: { with: Rabarber::Input::Role::REGEX }, strict: true
 
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
@@ -46,6 +46,12 @@ module Rabarber
         !!role.destroy!
       end
 
+      def assignees_for(name)
+        Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
+          rabarber_roles: { name: Rabarber::Input::Role.new(name).process }
+        )
+      end
+
       private
 
       def delete_roles_cache
@@ -64,7 +70,7 @@ module Rabarber
       end
 
       def process_role_name(name)
-        Rabarber::Input::Roles.new(name).process[0]
+        Rabarber::Input::Role.new(name).process
       end
     end
   end

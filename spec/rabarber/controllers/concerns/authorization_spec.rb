@@ -6,7 +6,7 @@ RSpec.describe Rabarber::Authorization do
   describe ".grant_access" do
     subject { DummyAuthController.grant_access(**args) }
 
-    after { Rabarber::Permissions.action_rules.delete(DummyAuthController) }
+    after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
 
     context "when action is invalid" do
       let(:args) { { action: 1 } }
@@ -53,14 +53,14 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :index, roles: :admin, if: -> { true }, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :index, [:admin], args[:if], args[:unless]).and_call_original
         subject
       end
 
-      it "uses Input::Actions to process the given action" do
-        input_processor = instance_double(Rabarber::Input::Actions, process: :index)
-        allow(Rabarber::Input::Actions).to receive(:new).with(:index).and_return(input_processor)
+      it "uses Input::Action to process the given action" do
+        input_processor = instance_double(Rabarber::Input::Action, process: :index)
+        allow(Rabarber::Input::Action).to receive(:new).with(:index).and_return(input_processor)
         expect(input_processor).to receive(:process).with(no_args)
         subject
       end
@@ -72,11 +72,11 @@ RSpec.describe Rabarber::Authorization do
         subject
       end
 
-      it "uses Input::DynamicRules to process the given dynamic rules" do
-        input_processor_foo = instance_double(Rabarber::Input::DynamicRules, process: :foo)
-        input_processor_bar = instance_double(Rabarber::Input::DynamicRules, process: :bar)
-        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:if]).and_return(input_processor_foo)
-        allow(Rabarber::Input::DynamicRules).to receive(:new).with(args[:unless]).and_return(input_processor_bar)
+      it "uses Input::DynamicRule to process the given dynamic rules" do
+        input_processor_foo = instance_double(Rabarber::Input::DynamicRule, process: :foo)
+        input_processor_bar = instance_double(Rabarber::Input::DynamicRule, process: :bar)
+        allow(Rabarber::Input::DynamicRule).to receive(:new).with(args[:if]).and_return(input_processor_foo)
+        allow(Rabarber::Input::DynamicRule).to receive(:new).with(args[:unless]).and_return(input_processor_bar)
         expect(input_processor_foo).to receive(:process).with(no_args)
         expect(input_processor_bar).to receive(:process).with(no_args)
         subject
@@ -87,7 +87,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, if: -> { true } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], args[:if], nil).and_call_original
         subject
       end
@@ -97,7 +97,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], nil, args[:unless]).and_call_original
         subject
       end
@@ -107,7 +107,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], nil, nil).and_call_original
         subject
       end
@@ -117,7 +117,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { { action: :foo, roles: :bar, if: -> { true }, unless: -> { false } } }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, :foo, [:bar], args[:if], args[:unless]).and_call_original
         subject
       end
@@ -127,7 +127,7 @@ RSpec.describe Rabarber::Authorization do
       let(:args) { {} }
 
       it "adds the permission" do
-        expect(Rabarber::Permissions).to receive(:add)
+        expect(Rabarber::Core::Permissions).to receive(:add)
           .with(DummyAuthController, nil, [], nil, nil).and_call_original
         subject
       end

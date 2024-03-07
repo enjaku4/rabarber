@@ -5,36 +5,30 @@ RSpec.describe Rabarber::Role do
     subject { role }
 
     describe "presence of name" do
-      let(:role) { described_class.create(name: "") }
+      subject { described_class.create(name: "") }
 
-      it { is_expected.to be_invalid }
-
-      it "has the 'name can't be blank' error" do
-        expect(role.errors.added?(:name, :blank)).to be true
+      it "raises the 'name can't be blank' error" do
+        expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name can't be blank")
       end
     end
 
     describe "uniqueness of name" do
-      let(:role) { described_class.create(name: "admin") }
+      subject { described_class.create(name: "admin") }
 
       before { described_class.create(name: "admin") }
 
-      it { is_expected.to be_invalid }
-
-      it "has the 'name has already been taken' error" do
-        expect(role.errors.added?(:name, :taken, value: "admin")).to be true
+      it "raises the 'name has already been taken' error" do
+        expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name has already been taken")
       end
     end
 
     describe "format of name" do
       ["admin 1", "admin!", "super-admin", "Admin"].each do |role_name|
         context "when role name is '#{role_name}'" do
-          let(:role) { described_class.create(name: role_name) }
+          subject { described_class.create(name: role_name) }
 
-          it { is_expected.to be_invalid }
-
-          it "has the 'name is invalid' error" do
-            expect(role.errors.added?(:name, :invalid, value: role_name)).to be true
+          it "raises the 'name is invalid' error" do
+            expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name is invalid")
           end
         end
       end
@@ -64,10 +58,10 @@ RSpec.describe Rabarber::Role do
   end
 
   shared_examples_for "role name is processed" do |roles|
-    it "uses Input::Roles to process the given roles" do
+    it "uses Input::Role to process the given roles" do
       roles.each do |role|
-        input_processor = instance_double(Rabarber::Input::Roles, process: [role])
-        allow(Rabarber::Input::Roles).to receive(:new).with(role).and_return(input_processor)
+        input_processor = instance_double(Rabarber::Input::Role, process: role)
+        allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
         expect(input_processor).to receive(:process).with(no_args)
       end
       subject
@@ -329,6 +323,38 @@ RSpec.describe Rabarber::Role do
           it_behaves_like "it deletes the role", role_assigned: true
         end
       end
+    end
+  end
+
+  describe ".assignees_for" do
+    subject { described_class.assignees_for(role) }
+
+    let(:users) { [User.create!, User.create!] }
+
+    context "when the role exists" do
+      let!(:role) { described_class.create!(name: "admin").name }
+
+      context "when the role is not assigned to any user" do
+        it { is_expected.to be_empty }
+
+        it_behaves_like "role name is processed", ["admin"]
+      end
+
+      context "when the role is assigned to some users" do
+        before { users.each { |user| user.assign_roles(:admin) } }
+
+        it { is_expected.to match_array(users) }
+
+        it_behaves_like "role name is processed", ["admin"]
+      end
+    end
+
+    context "when the role does not exist" do
+      let(:role) { "client" }
+
+      it { is_expected.to be_empty }
+
+      it_behaves_like "role name is processed", ["client"]
     end
   end
 end

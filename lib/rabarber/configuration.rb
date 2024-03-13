@@ -70,14 +70,14 @@ module Rabarber
 
     def default_when_actions_missing
       -> (missing_actions, context) {
-        raise Rabarber::Error, "Missing actions: #{missing_actions}, context: #{context[:controller]}"
+        raise(Rabarber::Error, "'grant_access' method called with non-existent actions: #{missing_actions}, context: '#{context[:controller]}'")
       }
     end
 
     def default_when_roles_missing
       -> (missing_roles, context) {
         delimiter = context[:action] ? "#" : ""
-        message = "Missing roles: #{missing_roles}, context: #{context[:controller]}#{delimiter}#{context[:action]}"
+        message = "'grant_access' method called with non-existent roles: #{missing_roles}, context: '#{context[:controller]}#{delimiter}#{context[:action]}'"
         Rabarber::Logger.log(:warn, message)
       }
     end

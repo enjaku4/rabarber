@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/DescribedClass
 RSpec.describe Rabarber do
   it "has a version number" do
     expect(Rabarber::VERSION).not_to be nil
@@ -95,12 +96,17 @@ RSpec.describe Rabarber do
     end
 
     it "raises an error when actions are missing by default" do
-      expect { Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" }) }
-        .to raise_error(Rabarber::Error, "Missing actions: [:foo], context: Controller")
+      expect do
+        Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" })
+      end.to raise_error(
+        Rabarber::Error, "'grant_access' method called with non-existent actions: [:foo], context: 'Controller'"
+      )
     end
 
     it "logs a warning when roles are missing by default" do
-      expect(Rabarber::Logger).to receive(:log).with(:warn, "Missing roles: [:missing_role], context: Controller#index")
+      expect(Rabarber::Logger).to receive(:log).with(
+        :warn, "'grant_access' method called with non-existent roles: [:missing_role], context: 'Controller#index'"
+      )
       Rabarber::Configuration.instance.when_roles_missing.call(
         [:missing_role], { controller: "Controller", action: "index" }
       )
@@ -169,3 +175,4 @@ RSpec.describe Rabarber do
     end
   end
 end
+# rubocop:enable RSpec/DescribedClass

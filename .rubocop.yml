@@ -9,7 +9,7 @@ AllCops:
   TargetRubyVersion: 3.0
 
 Layout/LineLength:
-  Max: 120
+  Enabled: false
 
 Layout/SpaceInLambdaLiteral:
   EnforcedStyle: require_space
@@ -38,19 +38,11 @@ Rails/ApplicationRecord:
 RSpec/ContextWording:
   Enabled: false
 
-RSpec/DescribedClass:
-  Exclude:
-    - spec/rabarber_spec.rb
-
 RSpec/ExampleLength:
   Enabled: false
 
 RSpec/FilePath:
   Enabled: false
-
-RSpec/LetSetup:
-  Exclude:
-    - spec/rabarber/models/role_spec.rb
 
 RSpec/MessageChain:
   Enabled: false

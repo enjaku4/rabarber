@@ -1,3 +1,5 @@
+<!-- TODO: describe deprecations and audit trail feature -->
+
 ## 1.3.1
 
 - Add `Rabarber::Role.assignees_for` method

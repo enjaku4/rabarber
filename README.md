@@ -1,3 +1,5 @@
+<!-- TODO: describe deprecations and audit trail feature -->
+
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)

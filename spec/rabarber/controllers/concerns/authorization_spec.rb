@@ -176,6 +176,10 @@ RSpec.describe Rabarber::Authorization do
   end
 
   shared_examples_for "it handles missing actions and roles" do |hash|
+    before do
+      allow(Rails.configuration).to receive(:eager_load).and_return(false)
+    end
+
     it "handles missing actions and roles" do
       expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
       expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)

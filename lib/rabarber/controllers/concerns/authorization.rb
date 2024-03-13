@@ -25,8 +25,8 @@ module Rabarber
     private
 
     def verify_access
-      Rabarber::Missing::Actions.new(self.class).handle
-      Rabarber::Missing::Roles.new(self.class).handle
+      Rabarber::Missing::Actions.new(self.class).handle unless Rails.configuration.eager_load
+      Rabarber::Missing::Roles.new(self.class).handle if Rabarber::Role.table_exists?
 
       roleable = send(Rabarber::Configuration.instance.current_user_method)
 

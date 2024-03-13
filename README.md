@@ -1,3 +1,5 @@
+<!-- TODO: describe breaking changes and new features -->
+
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)

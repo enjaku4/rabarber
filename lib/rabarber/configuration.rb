@@ -4,16 +4,13 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles,
-                :when_actions_missing, :when_roles_missing, :when_unauthorized
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles, :when_unauthorized
 
     def initialize
       @audit_trail_enabled = default_audit_trail_enabled
       @cache_enabled = default_cache_enabled
       @current_user_method = default_current_user_method
       @must_have_roles = default_must_have_roles
-      @when_actions_missing = default_when_actions_missing
-      @when_roles_missing = default_when_roles_missing
       @when_unauthorized = default_when_unauthorized
     end
 
@@ -41,18 +38,6 @@ module Rabarber
       ).process
     end
 
-    def when_actions_missing=(callable)
-      @when_actions_missing = Rabarber::Input::Types::Proc.new(
-        callable, Rabarber::ConfigurationError, "Configuration 'when_actions_missing' must be a Proc"
-      ).process
-    end
-
-    def when_roles_missing=(callable)
-      @when_roles_missing = Rabarber::Input::Types::Proc.new(
-        callable, Rabarber::ConfigurationError, "Configuration 'when_roles_missing' must be a Proc"
-      ).process
-    end
-
     def when_unauthorized=(callable)
       @when_unauthorized = Rabarber::Input::Types::Proc.new(
         callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
@@ -75,20 +60,6 @@ module Rabarber
 
     def default_must_have_roles
       false
-    end
-
-    def default_when_actions_missing
-      -> (missing_actions, context) {
-        raise(Rabarber::Error, "'grant_access' method called with non-existent actions: #{missing_actions}, context: '#{context[:controller]}'")
-      }
-    end
-
-    def default_when_roles_missing
-      -> (missing_roles, context) {
-        delimiter = context[:action] ? "#" : ""
-        message = "'grant_access' method called with non-existent roles: #{missing_roles}, context: '#{context[:controller]}#{delimiter}#{context[:action]}'"
-        Rabarber::Logger.log(:warn, message)
-      }
     end
 
     def default_when_unauthorized

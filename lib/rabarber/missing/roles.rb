@@ -21,14 +21,17 @@ module Rabarber
         end
       end
 
-      def configuration_name
-        :when_roles_missing
-      end
-
       def all_roles
         @all_roles ||= Rabarber::Cache.fetch(
           Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds
         ) { Rabarber::Role.names }
+      end
+
+      def handle_missing(missing_roles, context)
+        delimiter = context[:action] ? "#" : ""
+        context = "#{context[:controller]}#{delimiter}#{context[:action]}"
+        message = "'grant_access' method called with non-existent roles: #{missing_roles}, context: '#{context}'"
+        Rabarber::Logger.log(:debug, message)
       end
     end
   end

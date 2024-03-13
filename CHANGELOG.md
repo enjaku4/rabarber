@@ -1,3 +1,5 @@
+<!-- TODO: describe breaking changes and new features -->
+
 ## 1.4.0
 
 - Add 'Audit trail' feature: Logging of role assignments, revocations, and unauthorized access attempts

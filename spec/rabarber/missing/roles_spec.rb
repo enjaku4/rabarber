@@ -3,13 +3,7 @@
 RSpec.describe Rabarber::Missing::Roles do
   subject { described_class.new(controller).handle }
 
-  let(:callable_double) { instance_double(Proc) }
-
-  before do
-    allow(Rabarber::Configuration.instance).to receive(:when_roles_missing).and_return(callable_double)
-
-    [:manager, :admin, :superadmin, :client].each { |role| Rabarber::Role.create!(name: role) }
-  end
+  before { [:manager, :admin, :superadmin, :client].each { |role| Rabarber::Role.create!(name: role) } }
 
   after do
     Rabarber::Core::Permissions.action_rules.delete(DummyAuthController)
@@ -17,8 +11,6 @@ RSpec.describe Rabarber::Missing::Roles do
   end
 
   shared_examples_for "it caches roles" do
-    before { allow(callable_double).to receive(:call).with(any_args) }
-
     it "caches roles" do
       expect(Rabarber::Cache).to receive(:fetch)
         .with(Rabarber::Cache::ALL_ROLES_KEY, expires_in: 1.day, race_condition_ttl: 10.seconds) do |&block|
@@ -37,8 +29,10 @@ RSpec.describe Rabarber::Missing::Roles do
       context "in controller rules" do
         before { Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
-        it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
+        it "logs" do
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController'"
+          )
           subject
         end
 
@@ -48,9 +42,9 @@ RSpec.describe Rabarber::Missing::Roles do
       context "in action rules" do
         before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
 
-        it "calls configuration" do
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController, action: :index }
+        it "logs" do
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController#index'"
           )
           subject
         end
@@ -64,27 +58,18 @@ RSpec.describe Rabarber::Missing::Roles do
           Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
         end
 
-        it "calls configuration twice" do
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController }
+        it "logs twice" do
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController'"
           )
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController, action: :index }
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController#index'"
           )
           subject
         end
 
         it_behaves_like "it caches roles"
       end
-    end
-
-    context "when role is not missing" do
-      it "does not call configuration" do
-        expect(callable_double).not_to receive(:call)
-        subject
-      end
-
-      it_behaves_like "it caches roles"
     end
   end
 
@@ -95,8 +80,10 @@ RSpec.describe Rabarber::Missing::Roles do
       context "in controller rules" do
         before { Rabarber::Core::Permissions.add(DummyAuthController, nil, [:missing_role], nil, nil) }
 
-        it "calls configuration" do
-          expect(callable_double).to receive(:call).with([:missing_role], { controller: DummyAuthController })
+        it "logs" do
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController'"
+          )
           subject
         end
 
@@ -107,8 +94,8 @@ RSpec.describe Rabarber::Missing::Roles do
         before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil) }
 
         it "calls configuration" do
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController, action: :index }
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController#index'"
           )
           subject
         end
@@ -122,65 +109,17 @@ RSpec.describe Rabarber::Missing::Roles do
           Rabarber::Core::Permissions.add(DummyAuthController, :index, [:missing_role], nil, nil)
         end
 
-        it "calls configuration twice" do
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController }
+        it "logs twice" do
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController'"
           )
-          expect(callable_double).to receive(:call).with(
-            [:missing_role], { controller: DummyAuthController, action: :index }
+          expect(Rabarber::Logger).to receive(:log).with(
+            :debug, "'grant_access' method called with non-existent roles: [:missing_role], context: 'DummyAuthController#index'"
           )
           subject
         end
 
         it_behaves_like "it caches roles"
-      end
-    end
-
-    context "when role is not missing" do
-      it "does not call configuration" do
-        expect(callable_double).not_to receive(:call)
-        subject
-      end
-    end
-
-    context "when role is missing in another controller" do
-      context "in controller rules" do
-        before { Rabarber::Core::Permissions.add(DummyController, nil, [:missing_role], nil, nil) }
-
-        after { Rabarber::Core::Permissions.controller_rules.delete(DummyController) }
-
-        it "does not call configuration" do
-          expect(callable_double).not_to receive(:call)
-          subject
-        end
-      end
-
-      context "in action rules" do
-        before { Rabarber::Core::Permissions.add(DummyController, :index, [:missing_role], nil, nil) }
-
-        after { Rabarber::Core::Permissions.action_rules[DummyController].pop }
-
-        it "does not call configuration" do
-          expect(callable_double).not_to receive(:call)
-          subject
-        end
-      end
-
-      context "in both controller and action rules" do
-        before do
-          Rabarber::Core::Permissions.add(DummyController, nil, [:missing_role], nil, nil)
-          Rabarber::Core::Permissions.add(DummyController, :index, [:missing_role], nil, nil)
-        end
-
-        after do
-          Rabarber::Core::Permissions.controller_rules.delete(DummyController)
-          Rabarber::Core::Permissions.action_rules[DummyController].pop
-        end
-
-        it "does not call configuration" do
-          expect(callable_double).not_to receive(:call)
-          subject
-        end
       end
     end
   end

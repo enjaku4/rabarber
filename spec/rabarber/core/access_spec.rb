@@ -71,7 +71,7 @@ RSpec.describe Rabarber::Core::Access do
         end
       end
 
-      context "if role doesn\'t have access to the controller" do
+      context "if role doesn't have access to the controller" do
         before do
           allow(permissions.controller_rules[controller]).to receive(:verify_access)
             .with([:admin], dynamic_rule_receiver).and_return(false)
@@ -97,7 +97,7 @@ RSpec.describe Rabarber::Core::Access do
         end
       end
 
-      context "if role doesn\'t have access to the controller's parent" do
+      context "if role doesn't have access to the controller's parent" do
         before do
           allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
             .with([:admin], dynamic_rule_receiver).and_return(false)
@@ -142,7 +142,7 @@ RSpec.describe Rabarber::Core::Access do
           end
         end
 
-        context "if role doesn\'t have access to the action" do
+        context "if role doesn't have access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
               .with([:admin], dynamic_rule_receiver, action).and_return(false)

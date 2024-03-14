@@ -7,12 +7,16 @@ require:
 
 AllCops:
   TargetRubyVersion: 3.0
+  NewCops: enable
 
 Layout/LineLength:
   Enabled: false
 
 Layout/SpaceInLambdaLiteral:
   EnforcedStyle: require_space
+
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: false
 
 Metrics/AbcSize:
   Enabled: false
@@ -57,6 +61,9 @@ RSpec/NamedSubject:
   Enabled: false
 
 RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/SpecFilePathFormat:
   Enabled: false
 
 Style/ClassVars:

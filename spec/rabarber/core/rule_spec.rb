@@ -239,10 +239,7 @@ RSpec.describe Rabarber::Core::Rule do
     end
 
     context "when dynamic rule is a method name" do
-      before do
-        allow(dynamic_rule_receiver).to receive(:foo).and_return(true)
-        allow(dynamic_rule_receiver).to receive(:bar).and_return(false)
-      end
+      before { allow(dynamic_rule_receiver).to receive_messages(foo: true, bar: false) }
 
       context "when negated dynamic rule is nil" do
         let(:negated_dynamic_rule) { nil }

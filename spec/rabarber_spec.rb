@@ -3,7 +3,7 @@
 # rubocop:disable RSpec/DescribedClass
 RSpec.describe Rabarber do
   it "has a version number" do
-    expect(Rabarber::VERSION).not_to be nil
+    expect(Rabarber::VERSION).not_to be_nil
   end
 
   describe ".configure" do

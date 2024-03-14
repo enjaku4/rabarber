@@ -61,7 +61,7 @@ RSpec.describe Rabarber::Core::Permissions do
       end
     end
 
-    context "if action rules don\'t exist" do
+    context "if action rules don't exist" do
       it "returns an empty array" do
         expect(permissions.action_rules.keys).to eq([])
       end

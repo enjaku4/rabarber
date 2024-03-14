@@ -36,6 +36,11 @@ module Rabarber
         rabarber_roles << new_roles
       end
 
+      user_identity = "#{model_name.human} with #{self.class.primary_key}: '#{roleable_id}'"
+      role_names = new_roles.pluck(:name).map(&:to_sym)
+
+      Rabarber::Logger.audit(:info, "[Role Assignment] #{user_identity} has been assigned the following roles: #{role_names}")
+
       roles
     end
 

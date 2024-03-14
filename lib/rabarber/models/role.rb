@@ -16,23 +16,23 @@ module Rabarber
       def add(name)
         name = process_role_name(name)
 
-        return false if exists?(name: name)
+        return false if exists?(name:)
 
         delete_roles_cache
 
-        !!create!(name: name)
+        !!create!(name:)
       end
 
       def rename(old_name, new_name, force: false)
         role = find_by(name: process_role_name(old_name))
         name = process_role_name(new_name)
 
-        return false if !role || exists?(name: name) || assigned_to_roleables(role).any? && !force
+        return false if !role || exists?(name:) || assigned_to_roleables(role).any? && !force
 
         delete_roles_cache
         delete_roleables_cache(role)
 
-        role.update!(name: name)
+        role.update!(name:)
       end
 
       def remove(name, force: false)

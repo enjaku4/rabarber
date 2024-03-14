@@ -21,7 +21,7 @@ module Rabarber
     end
 
     def has_role?(*role_names)
-      (roles & process_role_names(role_names)).any?
+      roles.intersect?(process_role_names(role_names))
     end
 
     def assign_roles(*role_names, create_new: true)

@@ -6,8 +6,8 @@ module Rabarber
 
     ALL_ROLES_KEY = "rabarber:roles"
 
-    def fetch(key, options, &block)
-      enabled? ? Rails.cache.fetch(key, options, &block) : yield
+    def fetch(key, options, &)
+      enabled? ? Rails.cache.fetch(key, options, &) : yield
     end
 
     def delete(*keys)

@@ -34,22 +34,38 @@ module Rabarber
       if new_roles.any?
         delete_roleable_cache
         rabarber_roles << new_roles
+
+        # TODO: refactor
+        user_identity = "#{model_name.human} with #{self.class.primary_key}: '#{roleable_id}'"
+        role_names = new_roles.pluck(:name).map(&:to_sym)
+
+        Rabarber::Logger.audit(
+          :info,
+          "[Role Assignment] #{user_identity} has been assigned the following roles: #{role_names}, current roles: #{roles}"
+        )
       end
-
-      user_identity = "#{model_name.human} with #{self.class.primary_key}: '#{roleable_id}'"
-      role_names = new_roles.pluck(:name).map(&:to_sym)
-
-      Rabarber::Logger.audit(:info, "[Role Assignment] #{user_identity} has been assigned the following roles: #{role_names}")
 
       roles
     end
 
     def revoke_roles(*role_names)
-      new_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
+      processed_role_names = process_role_names(role_names)
+      new_roles = rabarber_roles - Rabarber::Role.where(name: processed_role_names)
 
       if rabarber_roles != new_roles
+        # TODO: refactor
+        roles_to_revoke = processed_role_names.intersection(roles)
+
         delete_roleable_cache
         self.rabarber_roles = new_roles
+
+        # TODO: refactor
+        user_identity = "#{model_name.human} with #{self.class.primary_key}: '#{roleable_id}'"
+
+        Rabarber::Logger.audit(
+          :info,
+          "[Role Revocation] #{user_identity} has been revoked from the following roles: #{roles_to_revoke}, current roles: #{roles}"
+        )
       end
 
       roles

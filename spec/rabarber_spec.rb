@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop:disable RSpec/DescribedClass
 RSpec.describe Rabarber do
   it "has a version number" do
     expect(Rabarber::VERSION).not_to be_nil
@@ -134,4 +133,3 @@ RSpec.describe Rabarber do
     end
   end
 end
-# rubocop:enable RSpec/DescribedClass

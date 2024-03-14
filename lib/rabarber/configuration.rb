@@ -6,16 +6,23 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :cache_enabled, :current_user_method, :must_have_roles,
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles,
                 :when_actions_missing, :when_roles_missing, :when_unauthorized
 
     def initialize
+      @audit_trail_enabled = default_audit_trail_enabled
       @cache_enabled = default_cache_enabled
       @current_user_method = default_current_user_method
       @must_have_roles = default_must_have_roles
       @when_actions_missing = default_when_actions_missing
       @when_roles_missing = default_when_roles_missing
       @when_unauthorized = default_when_unauthorized
+    end
+
+    def audit_trail_enabled=(value)
+      @audit_trail_enabled = Rabarber::Input::Types::Boolean.new(
+        value, Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+      ).process
     end
 
     def cache_enabled=(value)
@@ -55,6 +62,10 @@ module Rabarber
     end
 
     private
+
+    def default_audit_trail_enabled
+      true
+    end
 
     def default_cache_enabled
       true

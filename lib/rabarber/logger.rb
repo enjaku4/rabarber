@@ -15,7 +15,7 @@ module Rabarber
       @@audit_logger.public_send(log_level, message)
     end
 
-    def roleable_identity(roleable, with_roles: true)
+    def roleable_identity(roleable, with_roles:)
       if roleable
         model_name = roleable.model_name.human
         primary_key = roleable.class.primary_key

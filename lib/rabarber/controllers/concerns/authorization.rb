@@ -36,7 +36,7 @@ module Rabarber
 
       Rabarber::Logger.audit(
         :warn,
-        "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(roleable)} attempted to access '#{request.path}'"
+        "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(roleable, with_roles: true)} attempted to access '#{request.path}'"
       )
 
       Rabarber::Configuration.instance.when_unauthorized.call(self)

@@ -35,13 +35,9 @@ module Rabarber
         delete_roleable_cache
         rabarber_roles << new_roles
 
-        # TODO: refactor
-        user_identity = "#{model_name.human} with #{self.class.primary_key}: '#{roleable_id}'"
-        role_names = new_roles.pluck(:name).map(&:to_sym)
-
         Rabarber::Logger.audit(
           :info,
-          "[Role Assignment] #{user_identity} has been assigned the following roles: #{role_names}, current roles: #{roles}"
+          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{new_roles.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
         )
       end
 

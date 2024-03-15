@@ -13,6 +13,7 @@ Layout/LineLength:
   Enabled: false
 
 Layout/SpaceInLambdaLiteral:
+  Enabled: true
   EnforcedStyle: require_space
 
 Lint/AmbiguousOperatorPrecedence:

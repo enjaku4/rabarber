@@ -11,8 +11,8 @@ module Rabarber
     def audit(log_level, message)
       return unless Rabarber::Configuration.instance.audit_trail_enabled
 
-      # TODO: Logger must not be initialized every time this method is called
-      ::Logger.new(Rails.root.join("log/rabarber_audit.log")).public_send(log_level, message)
+      @@audit_logger ||= ::Logger.new(Rails.root.join("log/rabarber_audit.log"))
+      @@audit_logger.public_send(log_level, message)
     end
   end
 end

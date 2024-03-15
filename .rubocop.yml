@@ -66,6 +66,10 @@ RSpec/NestedGroups:
 RSpec/SpecFilePathFormat:
   Enabled: false
 
+Style/BlockDelimiters:
+  Enabled: true
+  EnforcedStyle: braces_for_chaining
+
 Style/ClassVars:
   Enabled: false
 

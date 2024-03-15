@@ -95,9 +95,9 @@ RSpec.describe Rabarber do
     end
 
     it "raises an error when actions are missing by default" do
-      expect do
+      expect {
         Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" })
-      end.to raise_error(
+      }.to raise_error(
         Rabarber::Error, "'grant_access' method called with non-existent actions: [:foo], context: 'Controller'"
       )
     end

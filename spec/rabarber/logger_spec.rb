@@ -58,7 +58,7 @@ RSpec.describe Rabarber::Logger do
   end
 
   describe ".roleable_identity" do
-    subject { described_class.roleable_identity(user, with_roles: with_roles) }
+    subject { described_class.roleable_identity(user, with_roles:) }
 
     context "when roleable is present" do
       let(:user) { User.create! }

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# TODO: bump
+# TODO: bump minor or patch?
 
 module Rabarber
   VERSION = "1.3.1"

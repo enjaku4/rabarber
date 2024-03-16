@@ -3,7 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
-Rabarber is a role-based authorization library for Ruby on Rails, primarily designed for use in the web layer of your application but not limited to that. It provides a set of tools for managing user roles and defining authorization rules.
+Rabarber is a role-based authorization library for Ruby on Rails, primarily designed for use in the web layer of your application but not limited to that. It provides a set of tools for managing user roles and defining authorization rules, along with audit logging for enhanced security.
 
 ---
 
@@ -63,6 +63,7 @@ If specific customization is required, Rabarber can be configured by using `.con
 
 ```rb
 Rabarber.configure do |config|
+  config.audit_trail_enabled = true
   config.cache_enabled = true
   config.current_user_method = :current_user
   config.must_have_roles = false
@@ -75,6 +76,8 @@ Rabarber.configure do |config|
   }
 end
 ```
+
+- `audit_trail_enabled` must be a boolean determining whether the audit trail functionality is enabled. _The audit trail is enabled by default._
 
 - `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
 
@@ -353,6 +356,16 @@ The usage is straightforward:
   <p>Accountant cannot see this</p>
 <% end %>
 ```
+
+## Audit Trail
+
+Rabarber supports audit trail, which provides a record of user access control activity. This feature logs the following events:
+
+- Role assignments to users
+- Role revocations from users
+- Unauthorized access attempts
+
+The logs are written to the file `log/rabarber_audit.log` unless the `audit_trail_enabled` configuration option is set to `false`.
 
 ## Problems?
 

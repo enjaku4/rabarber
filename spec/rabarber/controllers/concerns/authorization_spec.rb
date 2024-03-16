@@ -134,14 +134,6 @@ RSpec.describe Rabarber::Authorization do
     end
   end
 
-  shared_examples_for "it logs unauthorized access" do |hash|
-    it "logs a warning to the audit trail" do
-      allow(Rabarber::Logger).to receive(:audit).and_call_original
-      send(hash.keys.first, hash.values.first, params: hash[:params])
-      expect(Rabarber::Logger).to have_received(:audit).with(:warn, "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(controller.current_user, with_roles: true)} attempted to access '#{request.path}'")
-    end
-  end
-
   shared_examples_for "it allows access" do |hash|
     it "allows access when request format is html" do
       send(hash.keys.first, hash.values.first, params: hash[:params])
@@ -151,6 +143,11 @@ RSpec.describe Rabarber::Authorization do
     it "allows access when request format is not html" do
       send(hash.keys.first, hash.values.first, format: :js, params: hash[:params])
       expect(response).to have_http_status(:success)
+    end
+
+    it "does not log a warning to the audit trail" do
+      expect(Rabarber::Logger).not_to receive(:audit)
+      send(hash.keys.first, hash.values.first, params: hash[:params])
     end
   end
 
@@ -165,7 +162,11 @@ RSpec.describe Rabarber::Authorization do
       expect(response).to have_http_status(:unauthorized)
     end
 
-    it_behaves_like "it logs unauthorized access", hash
+    it "logs a warning to the audit trail" do
+      allow(Rabarber::Logger).to receive(:audit).and_call_original
+      send(hash.keys.first, hash.values.first, params: hash[:params])
+      expect(Rabarber::Logger).to have_received(:audit).with(:warn, "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(controller.current_user, with_roles: true)} attempted to access '#{request.path}'")
+    end
   end
 
   shared_examples_for "it does not allow access when user must have roles" do |hash|

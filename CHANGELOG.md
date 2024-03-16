@@ -2,7 +2,7 @@
 
 - Add 'Audit trail' feature: Logging of role assignments, revocations, and unauthorized access attempts
 - Add `audit_trail_enabled` configuration option, allowing to enable or disable the audit trail
-- Deprecate `when_actions_missing` and `when_roles_missing` configuration options (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48)
+- Deprecate `when_actions_missing` and `when_roles_missing` configuration options (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48))
 
 ## 1.3.1
 

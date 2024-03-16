@@ -1,5 +1,3 @@
-<!-- TODO: describe deprecations and audit trail feature -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -68,9 +66,13 @@ Rabarber.configure do |config|
   config.cache_enabled = true
   config.current_user_method = :current_user
   config.must_have_roles = false
-  config.when_actions_missing = -> (missing_actions, context) { ... }
-  config.when_roles_missing = -> (missing_roles, context) { ... }
-  config.when_unauthorized = -> (controller) { ... }
+  config.when_unauthorized = -> (controller) {
+    if controller.request.format.html?
+      controller.redirect_back fallback_location: controller.root_path
+    else
+      controller.head :unauthorized
+    end
+  }
 end
 ```
 
@@ -80,11 +82,15 @@ end
 
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
 
+- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
+
+### Deprecated Configuration Options
+
+The following configuration options are deprecated and will be removed in the next major version (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48)):
+
 - `when_actions_missing` must be a proc where you can define the behaviour when the action specified in `grant_access` method cannot be found in the controller. Lambda argument `missing_actions` is an array of symbols, e.g., `[:index]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, an error is raised when action is missing._
 
 - `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database. Lambda argument `missing_roles` is an array of symbols, e.g., `[:admin]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, a warning is logged when roles are missing._
-
-- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
 
 ## Roles
 

@@ -56,4 +56,39 @@ RSpec.describe Rabarber::Logger do
       end
     end
   end
+
+  describe "#roleable_identity" do
+    subject { described_class.roleable_identity(user, with_roles: with_roles) }
+
+    context "when roleable is present" do
+      let(:user) { User.create! }
+
+      before { user.assign_roles(:foo, :bar) }
+
+      context "when with_roles is true" do
+        let(:with_roles) { true }
+
+        it "returns the formatted roleable identity with roles" do
+          expect(subject).to match(/^User with id: '#{user.id}', roles: (\[:foo, :bar\]|\[:bar, :foo\])$/)
+        end
+      end
+
+      context "when with_roles is false" do
+        let(:with_roles) { false }
+
+        it "returns the formatted roleable identity without roles" do
+          expect(subject).to eq("User with id: '#{user.id}'")
+        end
+      end
+    end
+
+    context "when roleable is nil" do
+      let(:user) { nil }
+      let(:with_roles) { false }
+
+      it "returns 'Unauthenticated user'" do
+        expect(subject).to eq("Unauthenticated user")
+      end
+    end
+  end
 end

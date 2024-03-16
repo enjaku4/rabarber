@@ -136,7 +136,7 @@ RSpec.describe Rabarber::Authorization do
 
   shared_examples_for "it logs unauthorized access" do |hash|
     it "logs a warning to the audit trail" do
-      allow(Rabarber::Logger).to receive(:audit).and
+      allow(Rabarber::Logger).to receive(:audit).and_call_original
       send(hash.keys.first, hash.values.first, params: hash[:params])
       expect(Rabarber::Logger).to have_received(:audit).with(:warn, "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(controller.current_user, with_roles: true)} attempted to access '#{request.path}'")
     end

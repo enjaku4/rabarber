@@ -7,12 +7,17 @@ require:
 
 AllCops:
   TargetRubyVersion: 3.0
+  NewCops: enable
 
 Layout/LineLength:
-  Max: 120
+  Enabled: false
 
 Layout/SpaceInLambdaLiteral:
+  Enabled: true
   EnforcedStyle: require_space
+
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: false
 
 Metrics/AbcSize:
   Enabled: false
@@ -38,19 +43,11 @@ Rails/ApplicationRecord:
 RSpec/ContextWording:
   Enabled: false
 
-RSpec/DescribedClass:
-  Exclude:
-    - spec/rabarber_spec.rb
-
 RSpec/ExampleLength:
   Enabled: false
 
 RSpec/FilePath:
   Enabled: false
-
-RSpec/LetSetup:
-  Exclude:
-    - spec/rabarber/models/role_spec.rb
 
 RSpec/MessageChain:
   Enabled: false
@@ -66,6 +63,13 @@ RSpec/NamedSubject:
 
 RSpec/NestedGroups:
   Enabled: false
+
+RSpec/SpecFilePathFormat:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: true
+  EnforcedStyle: braces_for_chaining
 
 Style/ClassVars:
   Enabled: false

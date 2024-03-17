@@ -2,12 +2,13 @@
 
 RSpec.describe Rabarber do
   it "has a version number" do
-    expect(Rabarber::VERSION).not_to be nil
+    expect(Rabarber::VERSION).not_to be_nil
   end
 
   describe ".configure" do
     it "can be configured" do
       described_class.configure do |config|
+        config.audit_trail_enabled = false
         config.cache_enabled = false
         config.current_user_method = "user"
         config.must_have_roles = true
@@ -20,12 +21,22 @@ RSpec.describe Rabarber do
 
       allow(controller).to receive(:head).with(418).and_return("I'm a teapot")
 
+      expect(Rabarber::Configuration.instance.audit_trail_enabled).to be false
       expect(Rabarber::Configuration.instance.cache_enabled).to be false
       expect(Rabarber::Configuration.instance.current_user_method).to eq(:user)
       expect(Rabarber::Configuration.instance.must_have_roles).to be true
       expect(Rabarber::Configuration.instance.when_actions_missing.call([:foo], "context")).to eq("context: [:foo]")
       expect(Rabarber::Configuration.instance.when_roles_missing.call([:admin], "context")).to eq("context: [:admin]")
       expect(Rabarber::Configuration.instance.when_unauthorized.call(controller)).to eq("I'm a teapot")
+    end
+
+    it "uses Input::Types::Boolean to process audit_trail_enabled" do
+      input_processor = instance_double(Rabarber::Input::Types::Boolean, process: false)
+      allow(Rabarber::Input::Types::Boolean).to receive(:new).with(
+        false, Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+      ).and_return(input_processor)
+      expect(input_processor).to receive(:process).with(no_args)
+      described_class.configure { |config| config.audit_trail_enabled = false }
     end
 
     it "uses Input::Types::Boolean to process cache_enabled" do
@@ -86,6 +97,7 @@ RSpec.describe Rabarber do
     end
 
     it "has default configurations" do
+      expect(Rabarber::Configuration.instance.audit_trail_enabled).to be true
       expect(Rabarber::Configuration.instance.cache_enabled).to be true
       expect(Rabarber::Configuration.instance.current_user_method).to eq(:current_user)
       expect(Rabarber::Configuration.instance.must_have_roles).to be false
@@ -95,18 +107,33 @@ RSpec.describe Rabarber do
     end
 
     it "raises an error when actions are missing by default" do
-      expect { Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" }) }
-        .to raise_error(Rabarber::Error, "Missing actions: [:foo], context: Controller")
+      expect {
+        Rabarber::Configuration.instance.when_actions_missing.call([:foo], { controller: "Controller" })
+      }.to raise_error(
+        Rabarber::Error, "'grant_access' method called with non-existent actions: [:foo], context: 'Controller'"
+      )
     end
 
     it "logs a warning when roles are missing by default" do
-      expect(Rabarber::Logger).to receive(:log).with(:warn, "Missing roles: [:missing_role], context: Controller#index")
+      expect(Rabarber::Logger).to receive(:log).with(
+        :warn, "'grant_access' method called with non-existent roles: [:missing_role], context: 'Controller#index'"
+      )
       Rabarber::Configuration.instance.when_roles_missing.call(
         [:missing_role], { controller: "Controller", action: "index" }
       )
     end
 
     context "when misconfigured" do
+      context "when audit_trail_enabled is not a boolean" do
+        subject { described_class.configure { |config| config.audit_trail_enabled = nil } }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+          )
+        end
+      end
+
       context "when cache_enabled is not a boolean" do
         subject { described_class.configure { |config| config.cache_enabled = nil } }
 

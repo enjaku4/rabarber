@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version = Rabarber::VERSION
   spec.authors = ["enjaku4", "trafium"]
   spec.email = ["rabarber_gem@icloud.com"]
-
+  spec.metadata["rubygems_mfa_required"] = "true"
   spec.summary = "Simple role-based authorization library for Ruby on Rails."
   spec.homepage = "https://github.com/enjaku4/rabarber"
   spec.license = "MIT"

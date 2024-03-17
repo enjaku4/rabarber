@@ -171,7 +171,7 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when the role exists" do
-      let!(:role) { described_class.create!(name: "admin") }
+      let!(:role) { described_class.create!(name: "admin") } # rubocop:disable RSpec/LetSetup
 
       context "when the role is not assigned to any user" do
         context "when force is false" do
@@ -332,7 +332,7 @@ RSpec.describe Rabarber::Role do
     let(:users) { [User.create!, User.create!] }
 
     context "when the role exists" do
-      let!(:role) { described_class.create!(name: "admin").name }
+      let!(:role) { described_class.create!(name: "admin").name } # rubocop:disable RSpec/LetSetup
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }

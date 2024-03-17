@@ -16,9 +16,7 @@ module Rabarber
         action_rules.each do |controller, controller_action_rules|
           controller_action_rules.each do |action_rule|
             missing_roles = action_rule.roles - all_roles
-            if missing_roles.any?
-              missing_list << Rabarber::Missing::Item.new(missing_roles, controller, action_rule.action)
-            end
+            missing_list << Rabarber::Missing::Item.new(missing_roles, controller, action_rule.action) if missing_roles.any?
           end
         end
       end

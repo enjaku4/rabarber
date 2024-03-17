@@ -1,21 +1,26 @@
 # frozen_string_literal: true
 
-require "singleton"
-
 module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :cache_enabled, :current_user_method, :must_have_roles,
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles,
                 :when_actions_missing, :when_roles_missing, :when_unauthorized
 
     def initialize
+      @audit_trail_enabled = default_audit_trail_enabled
       @cache_enabled = default_cache_enabled
       @current_user_method = default_current_user_method
       @must_have_roles = default_must_have_roles
       @when_actions_missing = default_when_actions_missing
       @when_roles_missing = default_when_roles_missing
       @when_unauthorized = default_when_unauthorized
+    end
+
+    def audit_trail_enabled=(value)
+      @audit_trail_enabled = Rabarber::Input::Types::Boolean.new(
+        value, Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+      ).process
     end
 
     def cache_enabled=(value)
@@ -56,6 +61,10 @@ module Rabarber
 
     private
 
+    def default_audit_trail_enabled
+      true
+    end
+
     def default_cache_enabled
       true
     end
@@ -70,21 +79,20 @@ module Rabarber
 
     def default_when_actions_missing
       -> (missing_actions, context) {
-        raise Rabarber::Error, "Missing actions: #{missing_actions}, context: #{context[:controller]}"
+        raise(Rabarber::Error, "'grant_access' method called with non-existent actions: #{missing_actions}, context: '#{context[:controller]}'")
       }
     end
 
     def default_when_roles_missing
       -> (missing_roles, context) {
         delimiter = context[:action] ? "#" : ""
-        message = "Missing roles: #{missing_roles}, context: #{context[:controller]}#{delimiter}#{context[:action]}"
+        message = "'grant_access' method called with non-existent roles: #{missing_roles}, context: '#{context[:controller]}#{delimiter}#{context[:action]}'"
         Rabarber::Logger.log(:warn, message)
       }
     end
 
     def default_when_unauthorized
       -> (controller) do
-        Rabarber::Logger.log(:warn, "Unauthorized attempt")
         if controller.request.format.html?
           controller.redirect_back fallback_location: controller.main_app.root_path
         else

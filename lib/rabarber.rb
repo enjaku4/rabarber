@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "singleton"
+
 require_relative "rabarber/version"
 require_relative "rabarber/logger"
 require_relative "rabarber/configuration"

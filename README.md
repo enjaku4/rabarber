@@ -3,7 +3,7 @@
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
-Rabarber is a role-based authorization library for Ruby on Rails, primarily designed for use in the web layer of your application but not limited to that. It provides a set of tools for managing user roles and defining authorization rules.
+Rabarber is a role-based authorization library for Ruby on Rails, primarily designed for use in the web layer of your application but not limited to that. It provides a set of tools for managing user roles and defining authorization rules, along with audit logging for enhanced security.
 
 ---
 
@@ -63,14 +63,21 @@ If specific customization is required, Rabarber can be configured by using `.con
 
 ```rb
 Rabarber.configure do |config|
+  config.audit_trail_enabled = true
   config.cache_enabled = true
   config.current_user_method = :current_user
   config.must_have_roles = false
-  config.when_actions_missing = -> (missing_actions, context) { ... }
-  config.when_roles_missing = -> (missing_roles, context) { ... }
-  config.when_unauthorized = -> (controller) { ... }
+  config.when_unauthorized = -> (controller) {
+    if controller.request.format.html?
+      controller.redirect_back fallback_location: controller.root_path
+    else
+      controller.head :unauthorized
+    end
+  }
 end
 ```
+
+- `audit_trail_enabled` must be a boolean determining whether the audit trail functionality is enabled. _The audit trail is enabled by default._
 
 - `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
 
@@ -78,11 +85,15 @@ end
 
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
 
+- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
+
+### Deprecated Configuration Options
+
+The following configuration options are deprecated and will be removed in the next major version (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48)):
+
 - `when_actions_missing` must be a proc where you can define the behaviour when the action specified in `grant_access` method cannot be found in the controller. Lambda argument `missing_actions` is an array of symbols, e.g., `[:index]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, an error is raised when action is missing._
 
 - `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database. Lambda argument `missing_roles` is an array of symbols, e.g., `[:admin]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, a warning is logged when roles are missing._
-
-- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
 
 ## Roles
 
@@ -97,20 +108,20 @@ end
 
 This adds the following methods:
 
-**`#assign_roles`**
+**`#assign_roles(*roles, create_new: true)`**
 
 To assign roles, use:
 
 ```rb
 user.assign_roles(:accountant, :marketer)
 ```
-By default, `#assign_roles` method will automatically create any roles that don't exist. If you want to assign only existing roles and prevent the creation of new ones, use the method with `create_new: false` argument:
+By default, it will automatically create any roles that don't exist. If you want to assign only existing roles and prevent the creation of new ones, use the method with `create_new: false` argument:
 ```rb
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```
 The method returns an array of roles assigned to the user.
 
-**`#revoke_roles`**
+**`#revoke_roles(*roles)`**
 
 To revoke roles, use:
 
@@ -121,7 +132,7 @@ If any of the specified roles doesn't exist or the user doesn't have the role yo
 
 The method returns an array of roles assigned to the user.
 
-**`#has_role?`**
+**`#has_role?(*roles)`**
 
 To check whether the user has a role, use:
 
@@ -143,7 +154,7 @@ user.roles
 
 To manipulate roles directly, you can use `Rabarber::Role` methods:
 
-**`.add`**
+**`.add(role)`**
 
 To add a new role, use:
 
@@ -153,7 +164,7 @@ Rabarber::Role.add(:admin)
 
 This will create a new role with the specified name and return `true`. If the role already exists, it will return `false`.
 
-**`.rename`**
+**`.rename(old_role_name, new_role_name, force: false)`**
 
 To rename a role, use:
 
@@ -167,7 +178,7 @@ The method won't rename the role and will return `false` if it is assigned to an
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
 
-**`.remove`**
+**`.remove(role, force: false)`**
 
 To remove a role, use:
 
@@ -190,7 +201,7 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-**`.assignees_for`**
+**`.assignees_for(role)`**
 
 To get all the users to whom the role is assigned, use:
 
@@ -208,7 +219,7 @@ class ApplicationController < ActionController::Base
   ...
 end
 ```
-This adds `.grant_access` method which allows you to define the authorization rules.
+This adds `.grant_access(action: nil, roles: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
 
 The most basic usage of the method is as follows:
 
@@ -323,7 +334,7 @@ This means that `Crm::InvoicesController` is still accessible to `admin` but is 
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
+Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, &block)` and `hidden_from(*roles, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
 
 ```rb
 module ApplicationHelper
@@ -345,6 +356,16 @@ The usage is straightforward:
   <p>Accountant cannot see this</p>
 <% end %>
 ```
+
+## Audit Trail
+
+Rabarber supports audit trail, which provides a record of user access control activity. This feature logs the following events:
+
+- Role assignments to users
+- Role revocations from users
+- Unauthorized access attempts
+
+The logs are written to the file `log/rabarber_audit.log` unless the `audit_trail_enabled` configuration option is set to `false`.
 
 ## Problems?
 

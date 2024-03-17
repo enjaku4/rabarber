@@ -5,9 +5,7 @@ module Rabarber
     extend ActiveSupport::Concern
 
     included do
-      if defined?(@@included) && @@included != name
-        raise Rabarber::Error, "Rabarber::HasRoles can only be included once"
-      end
+      raise Rabarber::Error, "Rabarber::HasRoles can only be included once" if defined?(@@included) && @@included != name
 
       @@included = name
 
@@ -27,26 +25,37 @@ module Rabarber
     end
 
     def assign_roles(*role_names, create_new: true)
-      roles_to_assign = process_role_names(role_names)
+      processed_role_names = process_role_names(role_names)
 
-      create_new_roles(roles_to_assign) if create_new
+      create_new_roles(processed_role_names) if create_new
 
-      new_roles = Rabarber::Role.where(name: roles_to_assign) - rabarber_roles
+      roles_to_assign = Rabarber::Role.where(name: processed_role_names) - rabarber_roles
 
-      if new_roles.any?
+      if roles_to_assign.any?
         delete_roleable_cache
-        rabarber_roles << new_roles
+        rabarber_roles << roles_to_assign
+
+        Rabarber::Logger.audit(
+          :info,
+          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{roles_to_assign.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
+        )
       end
 
       roles
     end
 
     def revoke_roles(*role_names)
-      new_roles = rabarber_roles - Rabarber::Role.where(name: process_role_names(role_names))
+      processed_role_names = process_role_names(role_names)
+      roles_to_revoke = Rabarber::Role.where(name: processed_role_names.intersection(roles))
 
-      if rabarber_roles != new_roles
+      if roles_to_revoke.any?
         delete_roleable_cache
-        self.rabarber_roles = new_roles
+        self.rabarber_roles -= roles_to_revoke
+
+        Rabarber::Logger.audit(
+          :info,
+          "[Role Revocation] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been revoked from the following roles: #{roles_to_revoke.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
+        )
       end
 
       roles

@@ -33,12 +33,10 @@ RSpec.configure do |config|
 
     reset_config = Rabarber::Configuration.send(:new)
 
-    Rabarber::Configuration.instance.cache_enabled = reset_config.cache_enabled
-    Rabarber::Configuration.instance.current_user_method = reset_config.current_user_method
-    Rabarber::Configuration.instance.must_have_roles = reset_config.must_have_roles
-    Rabarber::Configuration.instance.when_actions_missing = reset_config.when_actions_missing
-    Rabarber::Configuration.instance.when_roles_missing = reset_config.when_roles_missing
-    Rabarber::Configuration.instance.when_unauthorized = reset_config.when_unauthorized
+    Rabarber::Configuration.instance.instance_variables.each do |var|
+      method_name = var.to_s.delete("@").to_sym
+      Rabarber::Configuration.instance.public_send(:"#{method_name}=", reset_config.public_send(method_name))
+    end
   end
 end
 

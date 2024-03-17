@@ -28,14 +28,18 @@ module Rabarber
       Rabarber::Missing::Actions.new(self.class).handle
       Rabarber::Missing::Roles.new(self.class).handle
 
-      return if Rabarber::Core::Permissions.access_granted?(rabarber_roles, self.class, action_name.to_sym, self)
+      roleable = send(Rabarber::Configuration.instance.current_user_method)
+
+      return if Rabarber::Core::Permissions.access_granted?(
+        roleable ? roleable.roles : [], self.class, action_name.to_sym, self
+      )
+
+      Rabarber::Logger.audit(
+        :warn,
+        "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(roleable, with_roles: true)} attempted to access '#{request.path}'"
+      )
 
       Rabarber::Configuration.instance.when_unauthorized.call(self)
-    end
-
-    def rabarber_roles
-      user = send(Rabarber::Configuration.instance.current_user_method)
-      user ? user.roles : []
     end
   end
 end

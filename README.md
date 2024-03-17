@@ -108,7 +108,7 @@ end
 
 This adds the following methods:
 
-**`#assign_roles`**
+**`#assign_roles(*roles, create_new: true)`**
 
 To assign roles, use:
 
@@ -121,7 +121,7 @@ user.assign_roles(:accountant, :marketer, create_new: false)
 ```
 The method returns an array of roles assigned to the user.
 
-**`#revoke_roles`**
+**`#revoke_roles(*roles)`**
 
 To revoke roles, use:
 
@@ -132,7 +132,7 @@ If any of the specified roles doesn't exist or the user doesn't have the role yo
 
 The method returns an array of roles assigned to the user.
 
-**`#has_role?`**
+**`#has_role?(*roles)`**
 
 To check whether the user has a role, use:
 
@@ -154,7 +154,7 @@ user.roles
 
 To manipulate roles directly, you can use `Rabarber::Role` methods:
 
-**`.add`**
+**`.add(role)`**
 
 To add a new role, use:
 
@@ -164,7 +164,7 @@ Rabarber::Role.add(:admin)
 
 This will create a new role with the specified name and return `true`. If the role already exists, it will return `false`.
 
-**`.rename`**
+**`.rename(old_role_name, new_role_name, force: false)`**
 
 To rename a role, use:
 
@@ -178,7 +178,7 @@ The method won't rename the role and will return `false` if it is assigned to an
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
 
-**`.remove`**
+**`.remove(role, force: false)`**
 
 To remove a role, use:
 
@@ -201,7 +201,7 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-**`.assignees_for`**
+**`.assignees_for(role)`**
 
 To get all the users to whom the role is assigned, use:
 
@@ -219,7 +219,7 @@ class ApplicationController < ActionController::Base
   ...
 end
 ```
-This adds `.grant_access` method which allows you to define the authorization rules.
+This adds `.grant_access(action: nil, roles: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
 
 The most basic usage of the method is as follows:
 
@@ -334,7 +334,7 @@ This means that `Crm::InvoicesController` is still accessible to `admin` but is 
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to` and `hidden_from`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
+Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, &block)` and `hidden_from(*roles, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
 
 ```rb
 module ApplicationHelper

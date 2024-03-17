@@ -115,7 +115,7 @@ To assign roles, use:
 ```rb
 user.assign_roles(:accountant, :marketer)
 ```
-By default, `#assign_roles` method will automatically create any roles that don't exist. If you want to assign only existing roles and prevent the creation of new ones, use the method with `create_new: false` argument:
+By default, it will automatically create any roles that don't exist. If you want to assign only existing roles and prevent the creation of new ones, use the method with `create_new: false` argument:
 ```rb
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```

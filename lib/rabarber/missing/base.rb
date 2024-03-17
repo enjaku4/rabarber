@@ -17,10 +17,6 @@ module Rabarber
 
         missing_list.each do |item|
           context = item.action ? { controller: item.controller, action: item.action } : { controller: item.controller }
-          Rabarber::Logger.log(
-            :warn,
-            "DEPRECATION WARNING: Configuration '#{configuration_name}' is deprecated and will be removed in v2.0.0"
-          )
           Rabarber::Configuration.instance.public_send(configuration_name).call(item.missing, context)
         end
       end

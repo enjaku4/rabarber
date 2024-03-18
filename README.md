@@ -88,7 +88,6 @@ end
 The following configuration options are deprecated and will be removed in the next major version (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48)):
 
 - `when_actions_missing` must be a proc where you can define the behaviour when the action specified in `grant_access` method cannot be found in the controller. Lambda argument `missing_actions` is an array of symbols, e.g., `[:index]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, an error is raised when action is missing._
-
 - `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database. Lambda argument `missing_roles` is an array of symbols, e.g., `[:admin]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, a warning is logged when roles are missing._
 
 ## Roles

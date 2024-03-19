@@ -312,7 +312,7 @@ class InvoicesController < ApplicationController
     ...
   end
 
-  grant_access roles: :accountant, unless: -> { Invoice.find(params[:id]).sum > 10_000 }
+  grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).sum > 10_000 }
   def show
     ...
   end

@@ -222,6 +222,8 @@ The most basic usage of the method is as follows:
 class InvoicesController < ApplicationController
   grant_access action: :index, roles: [:accountant, :admin]
   def index
+    @invoices = Invoice.all
+    @invoices = @invoices.paid if current_user.has_role?(:accountant)
     ...
   end
 
@@ -284,14 +286,14 @@ For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
 class OrdersController < ApplicationController
-  grant_access if: :current_company_accountant?
-  grant_access unless: :fired?
+  grant_access roles: :manager, if: :company_manager?, unless: :fired?
+
   ...
 
   private
 
-  def current_company_accountant?
-    current_company.accountant == current_user
+  def company_manager?
+    current_company.manager == current_user
   end
 
   def fired?
@@ -300,12 +302,17 @@ class OrdersController < ApplicationController
 end
 
 class InvoicesController < ApplicationController
-  grant_access action: :index, roles: :accountant, if: -> { current_user.passed_probation_period? }
+  grant_access roles: :senior_accountant
+
+  grant_access action: :index, roles: [:secretary, :accountant], if: -> { MyInvoicePolicy.new(current_user).can_access?(:index) }
   def index
+    @invoices = Invoice.all
+    @invoices = @invoices.where("sum < 10000") if current_user.has_role?(:accountant)
+    @invoices = @invoices.unpaid if current_user.has_role?(:secretary)
     ...
   end
 
-  grant_access action: :show, roles: :client, unless: -> { current_user.banned? }
+  grant_access roles: :accountant, unless: -> { Invoice.find(params[:id]).sum > 10_000 }
   def show
     ...
   end

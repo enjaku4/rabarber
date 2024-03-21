@@ -65,7 +65,7 @@ module Rabarber
 
       def assigned_to_roleables(role)
         ActiveRecord::Base.connection.select_values(
-          "SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = #{role.id}"
+          "SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = '#{role.id}'"
         )
       end
 

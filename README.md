@@ -344,7 +344,7 @@ class ApplicationController < ActionController::Base
   private
 
   def when_unauthorized
-    render text: "I'm a teapot", status: 418
+    head :not_found # pretend the page doesn't exist
   end
 end
 ```

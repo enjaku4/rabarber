@@ -10,6 +10,8 @@ module Rabarber
 
     argument :table_name, type: :string, required: true
 
+    class_option :uuid, type: :boolean, default: false, desc: "Use UUIDs as primary keys"
+
     def create_migrations
       migration_template "create_rabarber_roles.rb.erb", "db/migrate/create_rabarber_roles.rb"
     end

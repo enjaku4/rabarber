@@ -75,13 +75,6 @@ Rabarber.configure do |config|
   config.cache_enabled = true
   config.current_user_method = :current_user
   config.must_have_roles = false
-  config.when_unauthorized = -> (controller) {
-    if controller.request.format.html?
-      controller.redirect_back fallback_location: controller.root_path
-    else
-      controller.head :unauthorized
-    end
-  }
 end
 ```
 
@@ -89,7 +82,6 @@ end
 - `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. _The default value is `:current_user`._
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
-- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
 
 ## Roles
 

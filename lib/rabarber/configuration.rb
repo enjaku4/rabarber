@@ -4,14 +4,13 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles, :when_unauthorized
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles
 
     def initialize
       @audit_trail_enabled = default_audit_trail_enabled
       @cache_enabled = default_cache_enabled
       @current_user_method = default_current_user_method
       @must_have_roles = default_must_have_roles
-      @when_unauthorized = default_when_unauthorized
     end
 
     def audit_trail_enabled=(value)
@@ -38,12 +37,6 @@ module Rabarber
       ).process
     end
 
-    def when_unauthorized=(callable)
-      @when_unauthorized = Rabarber::Input::Types::Proc.new(
-        callable, Rabarber::ConfigurationError, "Configuration 'when_unauthorized' must be a Proc"
-      ).process
-    end
-
     private
 
     def default_audit_trail_enabled
@@ -60,16 +53,6 @@ module Rabarber
 
     def default_must_have_roles
       false
-    end
-
-    def default_when_unauthorized
-      -> (controller) do
-        if controller.request.format.html?
-          controller.redirect_back fallback_location: controller.main_app.root_path
-        else
-          controller.head(:unauthorized)
-        end
-      end
     end
   end
 end

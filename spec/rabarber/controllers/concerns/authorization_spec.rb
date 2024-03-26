@@ -176,14 +176,41 @@ RSpec.describe Rabarber::Authorization do
   end
 
   shared_examples_for "it handles missing actions and roles" do |hash|
-    before do
-      allow(Rails.configuration).to receive(:eager_load).and_return(false)
+    context "when eager_load is false, table exists and logger is in debug mode" do
+      before { allow(Rails.configuration).to receive(:eager_load).and_return(false) }
+
+      it "handles missing actions and roles" do
+        expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
+        expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
+        send(hash.keys.first, hash.values.first, params: hash[:params])
+      end
     end
 
-    it "handles missing actions and roles" do
-      expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
-      expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
-      send(hash.keys.first, hash.values.first, params: hash[:params])
+    context "when eager_load is true" do
+      before { allow(Rails.configuration).to receive(:eager_load).and_return(true) }
+
+      it "does not handle missing actions" do
+        expect(Rabarber::Missing::Actions).not_to receive(:new)
+        send(hash.keys.first, hash.values.first, params: hash[:params])
+      end
+    end
+
+    context "when table does not exist" do
+      before { allow(Rabarber::Role).to receive(:table_exists?).and_return(false) }
+
+      it "does not handle missing roles" do
+        expect(Rabarber::Missing::Roles).not_to receive(:new)
+        send(hash.keys.first, hash.values.first, params: hash[:params])
+      end
+    end
+
+    context "when logger is not in debug mode" do
+      before { allow(Rails.logger).to receive(:debug?).and_return(false) }
+
+      it "does not handle missing roles" do
+        expect(Rabarber::Missing::Roles).not_to receive(:new)
+        send(hash.keys.first, hash.values.first, params: hash[:params])
+      end
     end
   end
 

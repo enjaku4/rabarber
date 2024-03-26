@@ -37,25 +37,31 @@ This means that `admin` users can access everything in `TicketsController`, whil
 
 Add the Rabarber gem to your Gemfile:
 
-```
+```rb
 gem "rabarber"
 ```
 
 Install the gem:
 
-```
+```sh
 bundle install
 ```
 
 Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
 
-```
+```sh
 rails g rabarber:roles users
+```
+
+Rabarber supports UUIDs as primary keys. If your application uses UUIDs, add `--uuid` option to the generator:
+
+```sh
+rails g rabarber:roles users --uuid
 ```
 
 Finally, run the migration to apply the changes to the database:
 
-```
+```sh
 rails db:migrate
 ```
 

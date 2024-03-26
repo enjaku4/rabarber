@@ -275,6 +275,22 @@ _Be aware that if the user is not authenticated (the method responsible for retu
 
 If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
 
+Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
+```rb
+class Crm::BaseController < ApplicationController
+  grant_access roles: :admin
+  ...
+end
+
+class Crm::InvoicesController < Crm::BaseController
+  grant_access roles: :accountant
+  ...
+end
+```
+This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
+
+## Dynamic Authorization Rules
+
 For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
@@ -311,21 +327,27 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with the same name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
 
-Rules defined in child classes don't override parent rules but rather add to them:
+## When Unauthorized
+
+By default, in the event of an unauthorized attempt, Rabarber redirects the user back if the request format is HTML (with fallback to the root path), and returns a 401 (Unauthorized) status code otherwise.
+
+This behavior can be customized by overriding private `when_unauthorized` method in the desired controller:
+
 ```rb
-class Crm::BaseController < ApplicationController
-  grant_access roles: :admin
-  ...
-end
+class ApplicationController < ActionController::Base
+  include Rabarber::Authorization
 
-class Crm::InvoicesController < Crm::BaseController
-  grant_access roles: :accountant
   ...
+
+  private
+
+  def when_unauthorized
+    render text: "I'm a teapot", status: 418
+  end
 end
 ```
-This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
 
 ## View Helpers
 

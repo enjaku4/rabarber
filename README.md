@@ -1,3 +1,5 @@
+<!-- TODO: describe breaking changes and new features, don't forget to write a migration guide -->
+
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -35,25 +37,31 @@ This means that `admin` users can access everything in `TicketsController`, whil
 
 Add the Rabarber gem to your Gemfile:
 
-```
+```rb
 gem "rabarber"
 ```
 
 Install the gem:
 
-```
+```sh
 bundle install
 ```
 
 Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
 
-```
+```sh
 rails g rabarber:roles users
+```
+
+Rabarber supports UUIDs as primary keys. If your application uses UUIDs, add `--uuid` option to the generator:
+
+```sh
+rails g rabarber:roles users --uuid
 ```
 
 Finally, run the migration to apply the changes to the database:
 
-```
+```sh
 rails db:migrate
 ```
 
@@ -67,13 +75,6 @@ Rabarber.configure do |config|
   config.cache_enabled = true
   config.current_user_method = :current_user
   config.must_have_roles = false
-  config.when_unauthorized = -> (controller) {
-    if controller.request.format.html?
-      controller.redirect_back fallback_location: controller.root_path
-    else
-      controller.head :unauthorized
-    end
-  }
 end
 ```
 
@@ -81,14 +82,6 @@ end
 - `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
 - `current_user_method` must be a symbol representing the method that returns the currently authenticated user. _The default value is `:current_user`._
 - `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
-- `when_unauthorized` must be a proc where you can define the behaviour when access is not authorized. Lambda argument `controller` is an instance of the controller where the code is executed. _By default, the user is redirected back if the request format is HTML; otherwise, a 401 Unauthorized response is sent._
-
-### Deprecated Configuration Options
-
-The following configuration options are deprecated and will be removed in the next major version (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48)):
-
-- `when_actions_missing` must be a proc where you can define the behaviour when the action specified in `grant_access` method cannot be found in the controller. Lambda argument `missing_actions` is an array of symbols, e.g., `[:index]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, an error is raised when action is missing._
-- `when_roles_missing` must be a proc where you can define the behaviour when the roles specified in `grant_access` method cannot be found in the database. Lambda argument `missing_roles` is an array of symbols, e.g., `[:admin]`, while `context` argument is a hash that looks like this: `{ controller: "InvoicesController", action: "index" }`. This check is performed when the application is initialized if `eager_load` configuration is enabled in Rails and also on every request. _By default, a warning is logged when roles are missing._
 
 ## Roles
 
@@ -282,6 +275,22 @@ _Be aware that if the user is not authenticated (the method responsible for retu
 
 If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
 
+Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
+```rb
+class Crm::BaseController < ApplicationController
+  grant_access roles: :admin
+  ...
+end
+
+class Crm::InvoicesController < Crm::BaseController
+  grant_access roles: :accountant
+  ...
+end
+```
+This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
+
+## Dynamic Authorization Rules
+
 For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
@@ -318,21 +327,27 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with the same name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
 
-Rules defined in child classes don't override parent rules but rather add to them:
+## When Unauthorized
+
+By default, in the event of an unauthorized attempt, Rabarber redirects the user back if the request format is HTML (with fallback to the root path), and returns a 401 (Unauthorized) status code otherwise.
+
+This behavior can be customized by overriding private `when_unauthorized` method in the desired controller:
+
 ```rb
-class Crm::BaseController < ApplicationController
-  grant_access roles: :admin
-  ...
-end
+class ApplicationController < ActionController::Base
+  include Rabarber::Authorization
 
-class Crm::InvoicesController < Crm::BaseController
-  grant_access roles: :accountant
   ...
+
+  private
+
+  def when_unauthorized
+    head :not_found # pretend the page doesn't exist
+  end
 end
 ```
-This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
 
 ## View Helpers
 

@@ -4,10 +4,11 @@ module Rabarber
   module Cache
     module_function
 
-    ALL_ROLES_KEY = "rabarber:roles"
+    CACHE_PREFIX = "rabarber"
+    ALL_ROLES_KEY = "#{CACHE_PREFIX}:roles".freeze
 
-    def fetch(key, options, &block)
-      enabled? ? Rails.cache.fetch(key, options, &block) : yield
+    def fetch(key, options, &)
+      enabled? ? Rails.cache.fetch(key, options, &) : yield
     end
 
     def delete(*keys)
@@ -19,11 +20,11 @@ module Rabarber
     end
 
     def key_for(id)
-      "rabarber:roles_#{id}"
+      "#{CACHE_PREFIX}:roles_#{id}"
     end
 
     def clear
-      Rails.cache.delete_matched(/^rabarber/)
+      Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
     end
   end
 end

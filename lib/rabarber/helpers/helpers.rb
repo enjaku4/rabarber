@@ -2,16 +2,16 @@
 
 module Rabarber
   module Helpers
-    def visible_to(*roles, &block)
+    def visible_to(*roles, &)
       return unless send(Rabarber::Configuration.instance.current_user_method).has_role?(*roles)
 
-      capture(&block)
+      capture(&)
     end
 
-    def hidden_from(*roles, &block)
+    def hidden_from(*roles, &)
       return if send(Rabarber::Configuration.instance.current_user_method).has_role?(*roles)
 
-      capture(&block)
+      capture(&)
     end
   end
 end

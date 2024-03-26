@@ -3,27 +3,18 @@
 RSpec.describe Rabarber::Railtie do
   subject { described_class.initializers.detect { |i| i.name == "rabarber.after_initialize" }.run(DummyApplication) }
 
-  context "when the roles table exists" do
-    before { allow(Rabarber::Role).to receive(:table_exists?).and_return(true) }
-
-    it "checks the actions and roles" do
-      expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
-      expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
-      subject
-    end
-  end
-
-  context "when the roles table does not exist" do
-    before { allow(Rabarber::Role).to receive(:table_exists?).and_return(false) }
-
+  context "when eager_load is true" do
     it "checks the actions" do
       expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
       subject
     end
+  end
 
-    it "does not check the roles" do
-      expect(Rabarber::Missing::Roles).not_to receive(:new)
-      expect_any_instance_of(Rabarber::Missing::Roles).not_to receive(:handle)
+  context "when eager_load is false" do
+    before { allow(Rails.configuration).to receive(:eager_load).and_return(false) }
+
+    it "does not check the actions" do
+      expect(Rabarber::Missing::Actions).not_to receive(:new)
       subject
     end
   end

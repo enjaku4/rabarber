@@ -17,7 +17,7 @@ module Rabarber
 
         missing_list.each do |item|
           context = item.action ? { controller: item.controller, action: item.action } : { controller: item.controller }
-          Rabarber::Configuration.instance.public_send(configuration_name).call(item.missing, context)
+          handle_missing(item.missing, context)
         end
       end
 
@@ -31,7 +31,7 @@ module Rabarber
         raise NotImplementedError
       end
 
-      def configuration_name
+      def handle_missing(missing, context)
         raise NotImplementedError
       end
 

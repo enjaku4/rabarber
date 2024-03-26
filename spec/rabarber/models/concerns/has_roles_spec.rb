@@ -99,7 +99,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#assign_roles" do
-    subject { user.assign_roles(*roles, create_new: create_new) }
+    subject { user.assign_roles(*roles, create_new:) }
 
     let(:user) { User.create! }
 

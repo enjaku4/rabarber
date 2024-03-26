@@ -2,14 +2,14 @@
 
 class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version.to_s %>]
   def change
-    create_table :rabarber_roles do |t|
+    create_table :rabarber_roles<%= ", id: :uuid" if options[:uuid] %> do |t|
       t.string :name, null: false, index: { unique: true }
       t.timestamps
     end
 
     create_table :rabarber_roles_roleables, id: false do |t|
-      t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }
-      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: <%= table_name.to_sym.inspect %> }
+      t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }<%= ", type: :uuid" if options[:uuid] %>
+      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: <%= table_name.to_sym.inspect %> }<%= ", type: :uuid" if options[:uuid] %>
     end
 
     add_index :rabarber_roles_roleables, [:role_id, :roleable_id], unique: true

@@ -16,8 +16,11 @@ module Rabarber
         end
       end
 
-      def configuration_name
-        :when_actions_missing
+      def handle_missing(missing_actions, context)
+        raise(
+          Rabarber::Error,
+          "'grant_access' method called with non-existent actions: #{missing_actions}, context: '#{context[:controller]}'"
+        )
       end
     end
   end

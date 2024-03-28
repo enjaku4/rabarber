@@ -15,9 +15,7 @@ module Rabarber
     end
 
     def roles
-      Rabarber::Cache.fetch(Rabarber::Cache.key_for(roleable_id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
-        rabarber_roles.names
-      end
+      Rabarber::Cache.fetch(roleable_id) { rabarber_roles.names }
     end
 
     def has_role?(*role_names)
@@ -35,10 +33,9 @@ module Rabarber
         delete_roleable_cache
         rabarber_roles << roles_to_assign
 
-        Rabarber::Logger.audit(
-          :info,
-          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{roles_to_assign.names}, current roles: #{roles}"
-        )
+        Rabarber::Audit::Events::RolesAssigned.new(
+          self, roles_to_assign: roles_to_assign.names, current_roles: roles
+        ).trigger
       end
 
       roles
@@ -52,10 +49,9 @@ module Rabarber
         delete_roleable_cache
         self.rabarber_roles -= roles_to_revoke
 
-        Rabarber::Logger.audit(
-          :info,
-          "[Role Revocation] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been revoked from the following roles: #{roles_to_revoke.names}, current roles: #{roles}"
-        )
+        Rabarber::Audit::Events::RolesRevoked.new(
+          self, roles_to_revoke: roles_to_revoke.names, current_roles: roles
+        ).trigger
       end
 
       roles
@@ -78,7 +74,7 @@ module Rabarber
     end
 
     def delete_roleable_cache
-      Rabarber::Cache.delete(Rabarber::Cache.key_for(roleable_id))
+      Rabarber::Cache.delete(roleable_id)
     end
 
     def roleable_id

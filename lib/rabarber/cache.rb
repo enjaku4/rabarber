@@ -5,26 +5,29 @@ module Rabarber
     module_function
 
     CACHE_PREFIX = "rabarber"
-    ALL_ROLES_KEY = "#{CACHE_PREFIX}:roles".freeze
+    private_constant :CACHE_PREFIX
 
-    def fetch(key, options, &)
-      enabled? ? Rails.cache.fetch(key, options, &) : yield
+    def fetch(roleable_id, &)
+      enabled? ? Rails.cache.fetch(key_for(roleable_id), expires_in: 1.hour, race_condition_ttl: 5.seconds, &) : yield
     end
 
-    def delete(*keys)
-      Rails.cache.delete_multi(keys) if enabled?
+    def delete(*roleable_ids)
+      keys = roleable_ids.map { |roleable_id| key_for(roleable_id) }
+      Rails.cache.delete_multi(keys) if enabled? && keys.any?
     end
 
     def enabled?
       Rabarber::Configuration.instance.cache_enabled
     end
 
-    def key_for(id)
-      "#{CACHE_PREFIX}:roles_#{id}"
-    end
-
     def clear
       Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
+    end
+
+    private
+
+    def key_for(id)
+      "#{CACHE_PREFIX}:roles_#{id}"
     end
   end
 end

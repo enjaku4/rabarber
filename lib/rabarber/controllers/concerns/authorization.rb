@@ -25,7 +25,7 @@ module Rabarber
     private
 
     def verify_access
-      Rabarber::Core::PermissionsIntegrityChecker.new(self.class).check unless Rails.configuration.eager_load
+      Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run unless Rails.configuration.eager_load
 
       roleable = send(Rabarber::Configuration.instance.current_user_method)
 

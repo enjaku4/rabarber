@@ -14,23 +14,19 @@ module Rabarber
 
         return if missing_list.empty?
 
-        raise(Rabarber::Error, "'grant_access' method called with non-existent actions: #{missing_list.inspect}")
+        raise(
+          Rabarber::Error,
+          "Following actions are passed to 'grant_access' method but are not defined in the controller: #{missing_list}"
+        )
       end
 
       private
 
       def find_missing
-        action_rules.each_with_object([]) do |controller, controller_action_rules, missing_list|
+        action_rules.each_with_object([]) do |(controller, controller_action_rules), missing_list|
           missing_actions = controller_action_rules.map(&:action) - controller.action_methods.map(&:to_sym)
           missing_list << { controller => missing_actions } if missing_actions.any?
         end
-      end
-
-      def handle_missing(missing_actions, context)
-        raise(
-          Rabarber::Error,
-          "'grant_access' method called with non-existent actions: #{missing_actions}, context: '#{context[:controller]}'"
-        )
       end
 
       def action_rules

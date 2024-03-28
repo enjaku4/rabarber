@@ -33,8 +33,6 @@ require_relative "rabarber/core/permissions_integrity_checker"
 require_relative "rabarber/railtie"
 
 module Rabarber
-  module_function
-
   class Error < StandardError; end
   class ConfigurationError < Rabarber::Error; end
   class InvalidArgumentError < Rabarber::Error; end
@@ -42,4 +40,5 @@ module Rabarber
   def configure
     yield(Rabarber::Configuration.instance)
   end
+  module_function :configure
 end

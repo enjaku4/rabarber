@@ -2,7 +2,7 @@
 
 module Rabarber
   module Cache
-    module_function
+    extend self
 
     CACHE_PREFIX = "rabarber"
     private_constant :CACHE_PREFIX

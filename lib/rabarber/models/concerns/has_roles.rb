@@ -29,7 +29,7 @@ module Rabarber
 
       create_new_roles(processed_role_names) if create_new
 
-      roles_to_assign = Rabarber::Role.where(name: processed_role_names) - rabarber_roles
+      roles_to_assign = Rabarber::Role.where(name: processed_role_names - rabarber_roles.names)
 
       if roles_to_assign.any?
         delete_roleable_cache
@@ -37,7 +37,7 @@ module Rabarber
 
         Rabarber::Logger.audit(
           :info,
-          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{roles_to_assign.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
+          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{roles_to_assign.names}, current roles: #{roles}"
         )
       end
 
@@ -54,7 +54,7 @@ module Rabarber
 
         Rabarber::Logger.audit(
           :info,
-          "[Role Revocation] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been revoked from the following roles: #{roles_to_revoke.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
+          "[Role Revocation] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been revoked from the following roles: #{roles_to_revoke.names}, current roles: #{roles}"
         )
       end
 

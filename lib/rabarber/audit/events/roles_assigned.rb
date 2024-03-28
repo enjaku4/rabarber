@@ -15,6 +15,8 @@ module Rabarber
         end
 
         def identity
+          raise Rabarber::Error, "Roleable is required for this event" unless roleable
+
           roleable_identity(with_roles: false)
         end
 

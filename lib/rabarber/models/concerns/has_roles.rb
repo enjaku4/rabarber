@@ -33,9 +33,7 @@ module Rabarber
         delete_roleable_cache
         rabarber_roles << roles_to_assign
 
-        Rabarber::Audit::Events::RolesAssigned.new(
-          self, roles_to_assign: roles_to_assign.names, current_roles: roles
-        ).trigger
+        Rabarber::Audit::Events::RolesAssigned.trigger(self, roles_to_assign: roles_to_assign.names, current_roles: roles)
       end
 
       roles
@@ -49,9 +47,7 @@ module Rabarber
         delete_roleable_cache
         self.rabarber_roles -= roles_to_revoke
 
-        Rabarber::Audit::Events::RolesRevoked.new(
-          self, roles_to_revoke: roles_to_revoke.names, current_roles: roles
-        ).trigger
+        Rabarber::Audit::Events::RolesRevoked.trigger(self, roles_to_revoke: roles_to_revoke.names, current_roles: roles)
       end
 
       roles

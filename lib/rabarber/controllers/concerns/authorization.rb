@@ -33,7 +33,7 @@ module Rabarber
         roleable ? roleable.roles : [], self.class, action_name.to_sym, self
       )
 
-      Rabarber::Audit::Events::UnauthorizedAttempt.new(roleable, path: request.path).trigger
+      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(roleable, path: request.path)
 
       when_unauthorized
     end

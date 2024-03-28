@@ -123,7 +123,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -147,7 +148,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -169,7 +171,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -224,7 +227,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -269,7 +273,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{[roles.first]}, current roles: #{[roles.first]}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: [roles.first], current_roles: [roles.first]).and_call_original
           subject
         end
 
@@ -327,7 +332,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
-        expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Revocation] User with id: '#{user.id}' has been revoked from the following roles: #{roles}, current roles: []")
+        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
+          .with(user, roles_to_revoke: roles, current_roles: []).and_call_original
         subject
       end
 
@@ -366,7 +372,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
-        expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Revocation] User with id: '#{user.id}' has been revoked from the following roles: #{roles.first(1)}, current roles: []")
+        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
+          .with(user, roles_to_revoke: roles.first(1), current_roles: []).and_call_original
         subject
       end
 

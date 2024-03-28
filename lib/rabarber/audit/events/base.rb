@@ -8,16 +8,20 @@ module Rabarber
       class Base
         attr_reader :roleable, :specifics
 
+        def self.trigger(roleable, specifics)
+          new(roleable, specifics).send(:log)
+        end
+
+        private
+
         def initialize(roleable, specifics)
           @roleable = roleable
           @specifics = specifics
         end
 
-        def trigger
+        def log
           Rabarber::Audit::Logger.log(log_level, message)
         end
-
-        private
 
         def log_level
           raise NotImplementedError
@@ -37,7 +41,7 @@ module Rabarber
 
             "#{model_name} with #{primary_key}: '#{roleable_id}'#{roles}"
           else
-            "Unauthenticated user"
+            "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
           end
         end
       end

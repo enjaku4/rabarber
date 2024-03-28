@@ -163,9 +163,9 @@ RSpec.describe Rabarber::Authorization do
     end
 
     it "logs a warning to the audit trail" do
-      allow(Rabarber::Logger).to receive(:audit).and_call_original
+      expect(Rabarber::Audit::Events::UnauthorizedAttempt).to receive(:trigger)
+        .with(controller.current_user, path: request.path).and_call_original
       send(hash.keys.first, hash.values.first, params: hash[:params])
-      expect(Rabarber::Logger).to have_received(:audit).with(:warn, "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(controller.current_user, with_roles: true)} attempted to access '#{request.path}'")
     end
   end
 

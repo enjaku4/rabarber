@@ -320,7 +320,9 @@ RSpec.describe Rabarber::Role do
     let(:users) { [User.create!, User.create!] }
 
     context "when the role exists" do
-      let!(:role) { described_class.create!(name: "admin").name } # rubocop:disable RSpec/LetSetup
+      let(:role) { "admin" }
+
+      before { described_class.create!(name: "admin") }
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }

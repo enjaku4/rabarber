@@ -84,9 +84,11 @@ RSpec.describe Rabarber::Cache do
   end
 
   describe ".delete" do
-    subject { described_class.delete(42, 13) }
+    subject { described_class.delete(*ids) }
 
     context "when cache is enabled" do
+      let(:ids) { [42, 13] }
+
       before { Rabarber.configure { |config| config.cache_enabled = true } }
 
       it "calls Rails.cache.delete_multi" do
@@ -106,6 +108,8 @@ RSpec.describe Rabarber::Cache do
     end
 
     context "when cache is disabled" do
+      let(:ids) { [42, 13] }
+
       before { Rabarber.configure { |config| config.cache_enabled = false } }
 
       it "does not call Rails.cache.delete" do
@@ -118,6 +122,24 @@ RSpec.describe Rabarber::Cache do
         expect(Rails.cache.read("rabarber:roles_42")).to be_nil
         subject
         expect(Rails.cache.read("rabarber:roles_42")).to be_nil
+      end
+    end
+
+    context "when no roleable ids are provided" do
+      let(:ids) { [] }
+
+      before { Rabarber.configure { |config| config.cache_enabled = true } }
+
+      it "does not call Rails.cache.delete" do
+        expect(Rails.cache).not_to receive(:delete)
+        subject
+      end
+
+      it "does not do anything" do
+        described_class.fetch(42, expires_in: 1.minute) { "bar" }
+        expect(Rails.cache.read("rabarber:roles_42")).to eq("bar")
+        subject
+        expect(Rails.cache.read("rabarber:roles_42")).to eq("bar")
       end
     end
   end

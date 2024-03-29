@@ -184,7 +184,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "runs Rabarber::Core::PermissionsIntegrityChecker" do
         allow(Rabarber::Core::PermissionsIntegrityChecker).to receive(:new).with(controller.class).and_return(double)
-        expect(double).to receive(:run).with(no_args)
+        expect(double).to receive(:run!).with(no_args)
         send(hash.keys.first, hash.values.first, params: hash[:params])
       end
     end
@@ -193,7 +193,7 @@ RSpec.describe Rabarber::Authorization do
       before { allow(Rails.configuration).to receive(:eager_load).and_return(true) }
 
       it "does not run Rabarber::Core::PermissionsIntegrityChecker" do
-        expect_any_instance_of(Rabarber::Core::PermissionsIntegrityChecker).not_to receive(:run)
+        expect_any_instance_of(Rabarber::Core::PermissionsIntegrityChecker).not_to receive(:run!)
         send(hash.keys.first, hash.values.first, params: hash[:params])
       end
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
-  subject { described_class.new(controller).run }
+  subject { described_class.new(controller).run! }
 
   after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
 
@@ -12,7 +12,7 @@ RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
       before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil) }
 
       it "raises error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Following actions are passed to 'grant_access' method but are not defined in the controller: [{DummyAuthController=>[:index]}]")
+        expect { subject }.to raise_error(Rabarber::Error, "Following actions are passed to 'grant_access' method, but are not defined in the controller: [{DummyAuthController=>[:index]}]")
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
       end
 
       it "raises error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Following actions are passed to 'grant_access' method but are not defined in the controller: [{DummyAuthController=>[:index, :show]}]")
+        expect { subject }.to raise_error(Rabarber::Error, "Following actions are passed to 'grant_access' method, but are not defined in the controller: [{DummyAuthController=>[:index, :show]}]")
       end
     end
 

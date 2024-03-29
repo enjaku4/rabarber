@@ -1,3 +1,10 @@
+## 2.0.0
+
+- Drop support for Ruby 3.0
+- Remove `when_actions_missing` and `when_roles_missing` configuration options
+- Remove `when_unauthorized` configuration option, and replace in with an overridable controller method
+- Add support for UUID primary keys
+
 ## 1.4.0
 
 - Add 'Audit trail' feature: Logging of role assignments, revocations, and unauthorized access attempts

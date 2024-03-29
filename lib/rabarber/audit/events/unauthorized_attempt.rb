@@ -6,6 +6,10 @@ module Rabarber
       class UnauthorizedAttempt < Base
         private
 
+        def nil_roleable_allowed?
+          true
+        end
+
         def log_level
           :warn
         end
@@ -14,8 +18,8 @@ module Rabarber
           "[Unauthorized Attempt] #{identity} attempted to access '#{path}'"
         end
 
-        def identity
-          roleable_identity(with_roles: true)
+        def identity_with_roles?
+          true
         end
 
         def path

@@ -21,6 +21,10 @@ module Rabarber
           @specifics = specifics
         end
 
+        def nil_roleable_allowed?
+          raise NotImplementedError
+        end
+
         def log
           Rabarber::Audit::Logger.log(log_level, message)
         end
@@ -33,8 +37,12 @@ module Rabarber
           raise NotImplementedError
         end
 
-        def nil_roleable_allowed?
-          true
+        def identity
+          roleable_identity(with_roles: identity_with_roles?)
+        end
+
+        def identity_with_roles?
+          raise NotImplementedError
         end
 
         def roleable_identity(with_roles:)

@@ -31,6 +31,26 @@ end
 ```
 This means that `admin` users can access everything in `TicketsController`, while `manager` role can access only `index` action.
 
+## Table of Contents
+
+**Gem usage:**
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+  - [Roles](#roles)
+  - [Authorization Rules](#authorization-rules)
+  - [Dynamic Authorization Rules](#dynamic-authorization-rules)
+  - [When Unauthorized](#when-unauthorized)
+  - [View Helpers](#view-helpers)
+  - [Audit Trail](#audit-trail)
+
+**Community Resources:**
+  - [Problems?](#problems)
+  - [Contributing](#contributing)
+  - [Code of Conduct](#code-of-conduct)
+
+**Legal:**
+  - [License](#license)
+
 ## Installation
 
 Add the Rabarber gem to your Gemfile:
@@ -397,10 +417,10 @@ Encountered a bug?
 
 Before opening an issue or creating a pull request, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
 
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
 ## Code of Conduct
 
 Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/main/CODE_OF_CONDUCT.md).
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://github.com/enjaku4/rabarber/blob/main/LICENSE.txt).

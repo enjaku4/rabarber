@@ -25,8 +25,7 @@ module Rabarber
     private
 
     def verify_access
-      Rabarber::Missing::Actions.new(self.class).handle unless Rails.configuration.eager_load
-      Rabarber::Missing::Roles.new(self.class).handle if Rabarber::Role.table_exists? && Rails.logger.debug?
+      Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
 
       roleable = send(Rabarber::Configuration.instance.current_user_method)
 
@@ -34,10 +33,7 @@ module Rabarber
         roleable ? roleable.roles : [], self.class, action_name.to_sym, self
       )
 
-      Rabarber::Logger.audit(
-        :warn,
-        "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(roleable, with_roles: true)} attempted to access '#{request.path}'"
-      )
+      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(roleable, path: request.path)
 
       when_unauthorized
     end

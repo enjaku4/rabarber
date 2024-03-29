@@ -78,11 +78,6 @@ RSpec.describe Rabarber::Role do
 
       it { is_expected.to be true }
 
-      it "clears the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
-        subject
-      end
-
       it_behaves_like "role name is processed", [:admin]
     end
 
@@ -94,11 +89,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be false }
-
-      it "does not clear the cache" do
-        expect(Rabarber::Cache).not_to receive(:delete)
-        subject
-      end
 
       it_behaves_like "role name is processed", [:admin]
     end
@@ -132,8 +122,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)) if role_assigned
+        expect(Rabarber::Cache).to receive(:delete).with(user.id) if role_assigned
         subject
       end
 
@@ -267,8 +256,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY)
-        expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)) if role_assigned
+        expect(Rabarber::Cache).to receive(:delete).with(user.id) if role_assigned
         subject
       end
 
@@ -332,7 +320,9 @@ RSpec.describe Rabarber::Role do
     let(:users) { [User.create!, User.create!] }
 
     context "when the role exists" do
-      let!(:role) { described_class.create!(name: "admin").name } # rubocop:disable RSpec/LetSetup
+      let(:role) { "admin" }
+
+      before { described_class.create!(name: "admin") }
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }

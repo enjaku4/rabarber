@@ -146,7 +146,7 @@ RSpec.describe Rabarber::Authorization do
     end
 
     it "does not log a warning to the audit trail" do
-      expect(Rabarber::Logger).not_to receive(:audit)
+      expect(Rabarber::Audit::Events::UnauthorizedAttempt).not_to receive(:trigger)
       send(hash.keys.first, hash.values.first, params: hash[:params])
     end
   end
@@ -163,9 +163,10 @@ RSpec.describe Rabarber::Authorization do
     end
 
     it "logs a warning to the audit trail" do
-      allow(Rabarber::Logger).to receive(:audit).and_call_original
+      allow(Rabarber::Audit::Events::UnauthorizedAttempt).to receive(:trigger).and_call_original
       send(hash.keys.first, hash.values.first, params: hash[:params])
-      expect(Rabarber::Logger).to have_received(:audit).with(:warn, "[Unauthorized Attempt] #{Rabarber::Logger.roleable_identity(controller.current_user, with_roles: true)} attempted to access '#{request.path}'")
+      expect(Rabarber::Audit::Events::UnauthorizedAttempt)
+        .to have_received(:trigger).with(controller.current_user, path: request.path)
     end
   end
 
@@ -175,13 +176,15 @@ RSpec.describe Rabarber::Authorization do
     it_behaves_like "it does not allow access", hash
   end
 
-  shared_examples_for "it handles missing actions and roles" do |hash|
-    context "when eager_load is false, table exists and logger is in debug mode" do
+  shared_examples_for "it checks permissions integrity" do |hash|
+    context "when eager_load is false" do
+      let(:double) { instance_double(Rabarber::Core::PermissionsIntegrityChecker) }
+
       before { allow(Rails.configuration).to receive(:eager_load).and_return(false) }
 
-      it "handles missing actions and roles" do
-        expect(Rabarber::Missing::Actions).to receive_message_chain(:new, :handle)
-        expect(Rabarber::Missing::Roles).to receive_message_chain(:new, :handle)
+      it "runs Rabarber::Core::PermissionsIntegrityChecker" do
+        allow(Rabarber::Core::PermissionsIntegrityChecker).to receive(:new).with(controller.class).and_return(double)
+        expect(double).to receive(:run!).with(no_args)
         send(hash.keys.first, hash.values.first, params: hash[:params])
       end
     end
@@ -189,26 +192,8 @@ RSpec.describe Rabarber::Authorization do
     context "when eager_load is true" do
       before { allow(Rails.configuration).to receive(:eager_load).and_return(true) }
 
-      it "does not handle missing actions" do
-        expect(Rabarber::Missing::Actions).not_to receive(:new)
-        send(hash.keys.first, hash.values.first, params: hash[:params])
-      end
-    end
-
-    context "when table does not exist" do
-      before { allow(Rabarber::Role).to receive(:table_exists?).and_return(false) }
-
-      it "does not handle missing roles" do
-        expect(Rabarber::Missing::Roles).not_to receive(:new)
-        send(hash.keys.first, hash.values.first, params: hash[:params])
-      end
-    end
-
-    context "when logger is not in debug mode" do
-      before { allow(Rails.logger).to receive(:debug?).and_return(false) }
-
-      it "does not handle missing roles" do
-        expect(Rabarber::Missing::Roles).not_to receive(:new)
+      it "does not run Rabarber::Core::PermissionsIntegrityChecker" do
+        expect_any_instance_of(Rabarber::Core::PermissionsIntegrityChecker).not_to receive(:run!)
         send(hash.keys.first, hash.values.first, params: hash[:params])
       end
     end
@@ -241,7 +226,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", get: :multiple_roles
-      it_behaves_like "it handles missing actions and roles", get: :multiple_roles
+      it_behaves_like "it checks permissions integrity", get: :multiple_roles
     end
 
     describe "when a single role is allowed" do
@@ -268,7 +253,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", post: :single_role
-      it_behaves_like "it handles missing actions and roles", post: :single_role
+      it_behaves_like "it checks permissions integrity", post: :single_role
     end
 
     describe "when everyone is allowed" do
@@ -283,7 +268,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", put: :all_access
-      it_behaves_like "it handles missing actions and roles", put: :all_access
+      it_behaves_like "it checks permissions integrity", put: :all_access
     end
 
     describe "when no one is allowed" do
@@ -298,7 +283,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", delete: :no_access
-      it_behaves_like "it handles missing actions and roles", delete: :no_access
+      it_behaves_like "it checks permissions integrity", delete: :no_access
     end
 
     describe "when multiple rules applied" do
@@ -325,7 +310,7 @@ RSpec.describe Rabarber::Authorization do
       end
 
       it_behaves_like "it does not allow access when user must have roles", post: :multiple_rules
-      it_behaves_like "it handles missing actions and roles", post: :multiple_rules
+      it_behaves_like "it checks permissions integrity", post: :multiple_rules
     end
 
     context "when dynamic rule is not negated" do
@@ -343,7 +328,7 @@ RSpec.describe Rabarber::Authorization do
         end
 
         it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
-        it_behaves_like "it handles missing actions and roles", get: :if_lambda, params: { foo: "bar" }
+        it_behaves_like "it checks permissions integrity", get: :if_lambda, params: { foo: "bar" }
       end
 
       describe "when dynamic rule is defined as a method" do
@@ -360,7 +345,7 @@ RSpec.describe Rabarber::Authorization do
         end
 
         it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
-        it_behaves_like "it handles missing actions and roles", post: :if_method, params: { bad: "baz" }
+        it_behaves_like "it checks permissions integrity", post: :if_method, params: { bad: "baz" }
       end
     end
 
@@ -380,7 +365,7 @@ RSpec.describe Rabarber::Authorization do
 
         it_behaves_like "it does not allow access when user must have roles",
                         patch: :unless_lambda, params: { foo: "bar" }
-        it_behaves_like "it handles missing actions and roles",
+        it_behaves_like "it checks permissions integrity",
                         patch: :unless_lambda, params: { foo: "bar" }
       end
 
@@ -399,7 +384,7 @@ RSpec.describe Rabarber::Authorization do
 
         it_behaves_like "it does not allow access when user must have roles",
                         delete: :unless_method, params: { bad: "baz" }
-        it_behaves_like "it handles missing actions and roles",
+        it_behaves_like "it checks permissions integrity",
                         delete: :unless_method, params: { bad: "baz" }
       end
     end
@@ -430,8 +415,8 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", put: :foo
       it_behaves_like "it does not allow access when user must have roles", delete: :bar
-      it_behaves_like "it handles missing actions and roles", put: :foo
-      it_behaves_like "it handles missing actions and roles", delete: :bar
+      it_behaves_like "it checks permissions integrity", put: :foo
+      it_behaves_like "it checks permissions integrity", delete: :bar
     end
   end
 
@@ -467,8 +452,8 @@ RSpec.describe Rabarber::Authorization do
 
       it_behaves_like "it does not allow access when user must have roles", post: :baz
       it_behaves_like "it does not allow access when user must have roles", patch: :bad
-      it_behaves_like "it handles missing actions and roles", post: :baz
-      it_behaves_like "it handles missing actions and roles", patch: :bad
+      it_behaves_like "it checks permissions integrity", post: :baz
+      it_behaves_like "it checks permissions integrity", patch: :bad
     end
   end
 
@@ -479,21 +464,21 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it does not allow access", put: :access_with_roles
 
       it_behaves_like "it does not allow access when user must have roles", put: :access_with_roles
-      it_behaves_like "it handles missing actions and roles", put: :access_with_roles
+      it_behaves_like "it checks permissions integrity", put: :access_with_roles
     end
 
     describe "when everyone is allowed" do
       it_behaves_like "it allows access", get: :all_access
 
       it_behaves_like "it does not allow access when user must have roles", get: :all_access
-      it_behaves_like "it handles missing actions and roles", get: :all_access
+      it_behaves_like "it checks permissions integrity", get: :all_access
     end
 
     describe "when no one is allowed" do
       it_behaves_like "it does not allow access", post: :no_access
 
       it_behaves_like "it does not allow access when user must have roles", post: :no_access
-      it_behaves_like "it handles missing actions and roles", post: :no_access
+      it_behaves_like "it checks permissions integrity", post: :no_access
     end
   end
 end

@@ -18,8 +18,6 @@ module Rabarber
 
         return false if exists?(name:)
 
-        delete_roles_cache
-
         !!create!(name:)
       end
 
@@ -29,7 +27,6 @@ module Rabarber
 
         return false if !role || exists?(name:) || assigned_to_roleables(role).any? && !force
 
-        delete_roles_cache
         delete_roleables_cache(role)
 
         role.update!(name:)
@@ -40,7 +37,6 @@ module Rabarber
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
-        delete_roles_cache
         delete_roleables_cache(role)
 
         !!role.destroy!
@@ -54,13 +50,8 @@ module Rabarber
 
       private
 
-      def delete_roles_cache
-        Rabarber::Cache.delete(Rabarber::Cache::ALL_ROLES_KEY)
-      end
-
       def delete_roleables_cache(role)
-        keys = assigned_to_roleables(role).map { |roleable_id| Rabarber::Cache.key_for(roleable_id) }
-        Rabarber::Cache.delete(*keys) if keys.any?
+        Rabarber::Cache.delete(*assigned_to_roleables(role))
       end
 
       def assigned_to_roleables(role)

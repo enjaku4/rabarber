@@ -3,6 +3,8 @@
 require_relative "access"
 require_relative "rule"
 
+require "singleton"
+
 module Rabarber
   module Core
     class Permissions

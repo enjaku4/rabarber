@@ -37,12 +37,11 @@ RSpec.describe Rabarber::HasRoles do
 
     shared_examples_for "it caches user roles" do
       it "caches user roles" do
-        expect(Rabarber::Cache).to receive(:fetch)
-          .with(Rabarber::Cache.key_for(user.id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
-            result = block.call
-            expect(result).to match_array(roles)
-            result
-          end
+        expect(Rabarber::Cache).to receive(:fetch).with(user.id) do |&block|
+          result = block.call
+          expect(result).to match_array(roles)
+          result
+        end
         subject
       end
     end
@@ -90,10 +89,8 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   shared_examples_for "it deletes the cache" do
-    before { allow(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original }
-
     it "deletes the cache" do
-      expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)).and_call_original
+      expect(Rabarber::Cache).to receive(:delete).with(user.id).and_call_original
       subject
     end
   end
@@ -194,7 +191,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "doesn't log the assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
@@ -252,7 +249,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not log the role assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
@@ -296,7 +293,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not log the role assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
@@ -351,7 +348,7 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "does not log the role revocation" do
-        expect(Rabarber::Logger).not_to receive(:audit)
+        expect(Rabarber::Audit::Events::RolesRevoked).not_to receive(:trigger)
         subject
       end
 

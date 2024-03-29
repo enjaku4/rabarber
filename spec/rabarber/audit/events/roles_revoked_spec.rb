@@ -19,7 +19,7 @@ RSpec.describe Rabarber::Audit::Events::RolesRevoked do
     let(:roleable) { nil }
 
     it "raises an error" do
-      expect { subject }.to raise_error(Rabarber::Error, "Roleable is required for this event")
+      expect { subject }.to raise_error(ArgumentError, "Roleable is required for Rabarber::Audit::Events::RolesRevoked event")
     end
   end
 end

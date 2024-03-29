@@ -15,6 +15,8 @@ module Rabarber
         private
 
         def initialize(roleable, specifics)
+          raise ArgumentError, "Roleable is required for #{self.class} event" if roleable.nil? && !nil_roleable_allowed?
+
           @roleable = roleable
           @specifics = specifics
         end
@@ -29,6 +31,10 @@ module Rabarber
 
         def message
           raise NotImplementedError
+        end
+
+        def nil_roleable_allowed?
+          true
         end
 
         def roleable_identity(with_roles:)

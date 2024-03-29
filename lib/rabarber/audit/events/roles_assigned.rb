@@ -15,8 +15,6 @@ module Rabarber
         end
 
         def identity
-          raise Rabarber::Error, "Roleable is required for this event" unless roleable
-
           roleable_identity(with_roles: false)
         end
 
@@ -26,6 +24,10 @@ module Rabarber
 
         def current_roles
           specifics.fetch(:current_roles)
+        end
+
+        def nil_roleable_allowed?
+          false
         end
       end
     end

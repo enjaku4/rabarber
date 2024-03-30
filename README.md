@@ -227,13 +227,13 @@ class InvoicesController < ApplicationController
     ...
   end
 
-  grant_access action: :delete, roles: :admin
-  def delete
+  grant_access action: :destroy, roles: :admin
+  def destroy
     ...
   end
 end
 ```
-This grants access to `index` action for users with `accountant` or `admin` role, and access to `delete` action for `admin` users only.
+This grants access to `index` action for users with `accountant` or `admin` role, and access to `destroy` action for `admin` users only.
 
 You can also define controller-wide rules (without `action` argument):
 
@@ -288,12 +288,14 @@ For more complex cases, Rabarber provides dynamic rules:
 class OrdersController < ApplicationController
   grant_access roles: :manager, if: :company_manager?, unless: :fired?
 
-  ...
+  def index
+    ...
+  end
 
   private
 
   def company_manager?
-    current_company.manager == current_user
+    Company.find(params[:company_id]).manager == current_user
   end
 
   def fired?
@@ -304,15 +306,15 @@ end
 class InvoicesController < ApplicationController
   grant_access roles: :senior_accountant
 
-  grant_access action: :index, roles: [:secretary, :accountant], if: -> { MyInvoicePolicy.new(current_user).can_access?(:index) }
+  grant_access action: :index, roles: [:secretary, :accountant], if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
   def index
     @invoices = Invoice.all
-    @invoices = @invoices.where("sum < 10000") if current_user.has_role?(:accountant)
+    @invoices = @invoices.where("total < 10000") if current_user.has_role?(:accountant)
     @invoices = @invoices.unpaid if current_user.has_role?(:secretary)
     ...
   end
 
-  grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).sum > 10_000 }
+  grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).total > 10_000 }
   def show
     ...
   end

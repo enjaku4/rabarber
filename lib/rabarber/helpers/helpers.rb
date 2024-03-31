@@ -3,13 +3,19 @@
 module Rabarber
   module Helpers
     def visible_to(*roles, &)
-      return unless send(Rabarber::Configuration.instance.current_user_method).has_role?(*roles)
+      roleable = send(Rabarber::Configuration.instance.current_user_method)
+      rabarber_roles = roleable ? roleable.roles : []
+
+      return unless rabarber_roles.intersect?(Rabarber::Input::Roles.new(roles).process)
 
       capture(&)
     end
 
     def hidden_from(*roles, &)
-      return if send(Rabarber::Configuration.instance.current_user_method).has_role?(*roles)
+      roleable = send(Rabarber::Configuration.instance.current_user_method)
+      rabarber_roles = roleable ? roleable.roles : []
+
+      return if rabarber_roles.intersect?(Rabarber::Input::Roles.new(roles).process)
 
       capture(&)
     end

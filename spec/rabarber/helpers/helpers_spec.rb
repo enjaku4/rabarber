@@ -6,9 +6,24 @@ RSpec.describe Rabarber::Helpers do
   before { allow(dummy_helper).to receive(:current_user).and_return(user) }
 
   describe "#visible_to" do
-    subject { dummy_helper.visible_to(:manager, :accountant) { "foo" } }
+    subject { dummy_helper.visible_to(*roles) { "foo" } }
 
     let(:user) { User.create! }
+    let(:roles) { [:manager, :accountant] }
+
+    context "when there is no current user" do
+      let(:user) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when some of the roles are invalid" do
+      let(:roles) { [:manager, :Admin] }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores")
+      end
+    end
 
     context "when the user has one of the given roles" do
       before { user.assign_roles(:admin, :client, :accountant) }
@@ -24,9 +39,24 @@ RSpec.describe Rabarber::Helpers do
   end
 
   describe "#hidden_from" do
-    subject { dummy_helper.hidden_from(:manager, :accountant) { "foo" } }
+    subject { dummy_helper.hidden_from(*roles) { "foo" } }
 
     let(:user) { User.create! }
+    let(:roles) { [:manager, :accountant] }
+
+    context "when there is no current user" do
+      let(:user) { nil }
+
+      it { is_expected.to eq("foo") }
+    end
+
+    context "when some of the roles are invalid" do
+      let(:roles) { [:manager, :Admin] }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores")
+      end
+    end
 
     context "when the user has one of the given roles" do
       before { user.assign_roles(:admin, :client, :accountant) }

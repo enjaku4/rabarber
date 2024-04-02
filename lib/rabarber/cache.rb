@@ -7,8 +7,8 @@ module Rabarber
     CACHE_PREFIX = "rabarber"
     private_constant :CACHE_PREFIX
 
-    def fetch(roleable_id, options = { expires_in: 1.hour, race_condition_ttl: 5.seconds }, &)
-      enabled? ? Rails.cache.fetch(key_for(roleable_id), **options, &) : yield
+    def fetch(roleable_id, options = { expires_in: 1.hour, race_condition_ttl: 5.seconds }, &block)
+      enabled? ? Rails.cache.fetch(key_for(roleable_id), **options, &block) : yield
     end
 
     def delete(*roleable_ids)

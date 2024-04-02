@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
-  subject { described_class.trigger(roleable, path:) }
+  subject { described_class.trigger(roleable, path: path) }
 
   let(:path) { "/admin" }
 

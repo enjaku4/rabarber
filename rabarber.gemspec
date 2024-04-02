@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Simple role-based authorization library for Ruby on Rails."
   spec.homepage = "https://github.com/enjaku4/rabarber"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.files = [
     "rabarber.gemspec", "README.md", "CHANGELOG.md", "LICENSE.txt"

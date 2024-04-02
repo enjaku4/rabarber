@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Audit::Events::RolesAssigned do
-  subject { described_class.trigger(roleable, roles_to_assign:, current_roles:) }
+  subject { described_class.trigger(roleable, roles_to_assign: roles_to_assign, current_roles: current_roles) }
 
   let(:roles_to_assign) { [:admin, :manager] }
   let(:current_roles) { [:admin, :manager, :accountant] }

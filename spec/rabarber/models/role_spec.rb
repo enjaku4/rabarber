@@ -95,7 +95,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".rename" do
-    subject { described_class.rename(:admin, :manager, force:) }
+    subject { described_class.rename(:admin, :manager, force: force) }
 
     shared_examples_for "it does nothing" do |role_exists: true|
       if role_exists
@@ -229,7 +229,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".remove" do
-    subject { described_class.remove(:admin, force:) }
+    subject { described_class.remove(:admin, force: force) }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }

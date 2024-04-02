@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Audit::Events::RolesRevoked do
-  subject { described_class.trigger(roleable, roles_to_revoke:, current_roles:) }
+  subject { described_class.trigger(roleable, roles_to_revoke: roles_to_revoke, current_roles: current_roles) }
 
   let(:roles_to_revoke) { [:admin, :manager] }
   let(:current_roles) { [:accountant] }

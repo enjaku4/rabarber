@@ -23,7 +23,7 @@ module Rabarber
       def roles_permitted?(user_roles)
         return false if Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
 
-        roles.empty? || roles.intersect?(user_roles)
+        roles.empty? || roles.intersection(user_roles).any?
       end
 
       def dynamic_rule_followed?(dynamic_rule_receiver)

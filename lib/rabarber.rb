@@ -22,6 +22,8 @@ require_relative "rabarber/audit/events/roles_assigned"
 require_relative "rabarber/audit/events/roles_revoked"
 require_relative "rabarber/audit/events/unauthorized_attempt"
 
+require_relative "rabarber/core/roleable"
+
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/models/concerns/has_roles"

@@ -1,7 +1,7 @@
 ## 2.0.0
 
 - Remove `when_actions_missing` and `when_roles_missing` configuration options
-- Remove `when_unauthorized` configuration option, and replace in with an overridable controller method
+- Remove `when_unauthorized` configuration option, and replace it with an overridable controller method
 - Rename `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
 - Add support for UUID primary keys
 

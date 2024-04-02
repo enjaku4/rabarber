@@ -1,26 +1,18 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Core::Roleable do
-  let(:dummy_class) do
-    Class.new do
-      include Rabarber::Core::Roleable
-
-      def current_user; end
-    end
-  end
-
   let(:user) { User.create! }
 
-  before { allow_any_instance_of(dummy_class).to receive(:current_user).and_return(user) }
+  before { allow_any_instance_of(DummyController).to receive(:current_user).and_return(user) }
 
   describe "#roleable" do
-    subject { dummy_class.new.roleable }
+    subject { DummyController.new.roleable }
 
     it { is_expected.to eq(user) }
   end
 
   describe "#roleable_roles" do
-    subject { dummy_class.new.roleable_roles }
+    subject { DummyController.new.roleable_roles }
 
     context "when user exists" do
       before { user.assign_roles(:admin, :manager) }

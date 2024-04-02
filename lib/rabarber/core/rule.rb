@@ -12,18 +12,18 @@ module Rabarber
         @negated_dynamic_rule = negated_dynamic_rule
       end
 
-      def verify_access(user_roles, dynamic_rule_receiver, action_name = nil)
-        action_accessible?(action_name) && roles_permitted?(user_roles) && dynamic_rule_followed?(dynamic_rule_receiver)
+      def verify_access(roleable_roles, dynamic_rule_receiver, action_name = nil)
+        action_accessible?(action_name) && roles_permitted?(roleable_roles) && dynamic_rule_followed?(dynamic_rule_receiver)
       end
 
       def action_accessible?(action_name)
         action_name.nil? || action_name == action
       end
 
-      def roles_permitted?(user_roles)
-        return false if Rabarber::Configuration.instance.must_have_roles && user_roles.empty?
+      def roles_permitted?(roleable_roles)
+        return false if Rabarber::Configuration.instance.must_have_roles && roleable_roles.empty?
 
-        roles.empty? || roles.intersection(user_roles).any?
+        roles.empty? || roles.intersection(roleable_roles).any?
       end
 
       def dynamic_rule_followed?(dynamic_rule_receiver)

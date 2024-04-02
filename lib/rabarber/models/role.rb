@@ -42,7 +42,7 @@ module Rabarber
         !!role.destroy!
       end
 
-      def assignees_for(name)
+      def assignees(name)
         Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
           rabarber_roles: { name: Rabarber::Input::Role.new(name).process }
         )

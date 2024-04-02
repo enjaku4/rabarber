@@ -314,8 +314,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".assignees_for" do
-    subject { described_class.assignees_for(role) }
+  describe ".assignees" do
+    subject { described_class.assignees(role) }
 
     let(:users) { [User.create!, User.create!] }
 

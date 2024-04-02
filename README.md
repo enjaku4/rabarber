@@ -207,12 +207,12 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-**`.assignees_for(role)`**
+**`.assignees(role)`**
 
 To get all the users to whom the role is assigned, use:
 
 ```rb
-Rabarber::Role.assignees_for(:admin)
+Rabarber::Role.assignees(:admin)
 ```
 
 ## Authorization Rules

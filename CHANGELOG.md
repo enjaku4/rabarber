@@ -4,6 +4,7 @@
 - Remove `when_unauthorized` configuration option, and replace it with an overridable controller method
 - Rename `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
 - Add support for UUID primary keys
+- Significant refactoring and code improvements
 
 ## 1.4.0
 

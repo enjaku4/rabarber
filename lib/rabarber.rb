@@ -15,7 +15,7 @@ require_relative "rabarber/input/types/boolean"
 require_relative "rabarber/input/types/proc"
 require_relative "rabarber/input/types/symbol"
 
-require_relative "rabarber/cache"
+require_relative "rabarber/core/cache"
 
 require_relative "rabarber/audit/events/base"
 require_relative "rabarber/audit/events/roles_assigned"

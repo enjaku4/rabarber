@@ -15,7 +15,7 @@ module Rabarber
     end
 
     def roles
-      Rabarber::Cache.fetch(roleable_id) { rabarber_roles.names }
+      Rabarber::Core::Cache.fetch(roleable_id) { rabarber_roles.names }
     end
 
     def has_role?(*role_names)
@@ -70,7 +70,7 @@ module Rabarber
     end
 
     def delete_roleable_cache
-      Rabarber::Cache.delete(roleable_id)
+      Rabarber::Core::Cache.delete(roleable_id)
     end
 
     def roleable_id

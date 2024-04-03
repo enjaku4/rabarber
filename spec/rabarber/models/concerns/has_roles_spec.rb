@@ -37,7 +37,7 @@ RSpec.describe Rabarber::HasRoles do
 
     shared_examples_for "it caches user roles" do
       it "caches user roles" do
-        expect(Rabarber::Cache).to receive(:fetch).with(user.id) do |&block|
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id) do |&block|
           result = block.call
           expect(result).to match_array(roles)
           result
@@ -90,7 +90,7 @@ RSpec.describe Rabarber::HasRoles do
 
   shared_examples_for "it deletes the cache" do
     it "deletes the cache" do
-      expect(Rabarber::Cache).to receive(:delete).with(user.id).and_call_original
+      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id).and_call_original
       subject
     end
   end
@@ -196,7 +196,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -254,7 +254,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -302,7 +302,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -353,7 +353,7 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "does not clear the cache" do
-        expect(Rabarber::Cache).not_to receive(:delete)
+        expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
 

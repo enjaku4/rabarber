@@ -107,7 +107,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be false }
 
       it "does not clear the cache" do
-        expect(Rabarber::Cache).not_to receive(:delete)
+        expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
 
@@ -122,7 +122,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(user.id) if role_assigned
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
         subject
       end
 
@@ -241,7 +241,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be false }
 
       it "does not clear the cache" do
-        expect(Rabarber::Cache).not_to receive(:delete)
+        expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
 
@@ -256,7 +256,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Cache).to receive(:delete).with(user.id) if role_assigned
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
         subject
       end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Cache do
+RSpec.describe Rabarber::Core::Cache do
   include ActiveSupport::Testing::TimeHelpers
 
   around do |example|
@@ -173,6 +173,12 @@ RSpec.describe Rabarber::Cache do
       keys.each { |key| expect(Rails.cache.exist?(key)).to be true }
       described_class.clear
       keys.each { |key| expect(Rails.cache.exist?(key)).to be false }
+    end
+
+    it "can be called from Rabarber::Cache" do
+      allow(described_class).to receive(:clear)
+      Rabarber::Cache.clear
+      expect(described_class).to have_received(:clear)
     end
   end
 end

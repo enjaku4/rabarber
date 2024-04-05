@@ -61,25 +61,25 @@ gem "rabarber"
 
 Install the gem:
 
-```sh
+```shell
 bundle install
 ```
 
 Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
 
-```sh
+```shell
 rails g rabarber:roles users
 ```
 
 Rabarber supports UUIDs as primary keys. If your application uses UUIDs, add `--uuid` option to the generator:
 
-```sh
+```shell
 rails g rabarber:roles users --uuid
 ```
 
 Finally, run the migration to apply the changes to the database:
 
-```sh
+```shell
 rails db:migrate
 ```
 

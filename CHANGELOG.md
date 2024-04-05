@@ -6,6 +6,8 @@
 - Replace `when_unauthorized` configuration option with an overridable controller method
 - Rename `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
 
+To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/52).
+
 ### Features:
 
 - Add support for UUID primary keys
@@ -14,7 +16,7 @@
 
 - Fix an issue where an error would be raised from view helpers when the user is not authenticated
 
-### General:
+### Misc:
 
 - Significant refactoring and code improvements
 

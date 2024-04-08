@@ -77,11 +77,13 @@ end
 class NoRolesControllerWideDynamicRuleController < ApplicationController
   grant_access if: :foo?
 
-  def index = head(:ok)
-
   private
 
   def foo?
     true
   end
+end
+
+class NoRulesController < ApplicationController
+  def no_rules = head(:ok)
 end

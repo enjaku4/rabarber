@@ -481,4 +481,16 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it checks permissions integrity", post: :no_access
     end
   end
+
+  describe NoRulesController, type: :controller do
+    before do
+      allow(controller).to receive(:current_user).and_return(user)
+      user.assign_roles(:admin)
+    end
+
+    it_behaves_like "it does not allow access", delete: :no_rules
+
+    it_behaves_like "it does not allow access when user must have roles", delete: :no_rules
+    it_behaves_like "it checks permissions integrity", delete: :no_rules
+  end
 end

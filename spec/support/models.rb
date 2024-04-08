@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-class User < ActiveRecord::Base
+class ApplicationRecord < ActiveRecord::Base
+  self.abstract_class = true
+end
+
+class User < ApplicationRecord
   include Rabarber::HasRoles
 end
 
-class Client < ActiveRecord::Base
-end
+class Client < ApplicationRecord; end

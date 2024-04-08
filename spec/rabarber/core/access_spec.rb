@@ -134,7 +134,7 @@ RSpec.describe Rabarber::Core::Access do
         context "if role has access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], dynamic_rule_receiver, action).and_return(true)
+              .with([:admin], dynamic_rule_receiver).and_return(true)
           end
 
           it "returns true" do
@@ -145,7 +145,7 @@ RSpec.describe Rabarber::Core::Access do
         context "if role doesn't have access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], dynamic_rule_receiver, action).and_return(false)
+              .with([:admin], dynamic_rule_receiver).and_return(false)
           end
 
           it "returns false" do

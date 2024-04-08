@@ -12,12 +12,8 @@ module Rabarber
         @negated_dynamic_rule = negated_dynamic_rule
       end
 
-      def verify_access(roleable_roles, dynamic_rule_receiver, action_name = nil)
-        action_accessible?(action_name) && roles_permitted?(roleable_roles) && dynamic_rule_followed?(dynamic_rule_receiver)
-      end
-
-      def action_accessible?(action_name)
-        action_name.nil? || action_name == action
+      def verify_access(roleable_roles, dynamic_rule_receiver)
+        roles_permitted?(roleable_roles) && dynamic_rule_followed?(dynamic_rule_receiver)
       end
 
       def roles_permitted?(roleable_roles)

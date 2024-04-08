@@ -21,11 +21,11 @@ class TicketsController < ApplicationController
 
   grant_access action: :index, roles: :manager
   def index
-    ...
+    # ...
   end
 
   def delete
-    ...
+    # ...
   end
 end
 ```
@@ -108,7 +108,7 @@ Include `Rabarber::HasRoles` module in your model representing users in your app
 ```rb
 class User < ApplicationRecord
   include Rabarber::HasRoles
-  ...
+  # ...
 end
 ```
 
@@ -222,7 +222,7 @@ Include `Rabarber::Authorization` module into the controller that needs authoriz
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
-  ...
+  # ...
 end
 ```
 This adds `.grant_access(action: nil, roles: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
@@ -235,12 +235,12 @@ class InvoicesController < ApplicationController
   def index
     @invoices = Invoice.all
     @invoices = @invoices.paid if current_user.has_role?(:accountant)
-    ...
+    # ...
   end
 
   grant_access action: :destroy, roles: :admin
   def destroy
-    ...
+    # ...
   end
 end
 ```
@@ -254,18 +254,18 @@ class Crm::BaseController < ApplicationController
 
   grant_access action: :dashboard, roles: :marketer
   def dashboard
-    ...
+    # ...
   end
 end
 
 class Crm::InvoicesController < Crm::BaseController
   grant_access roles: :accountant
   def index
-    ...
+    # ...
   end
 
   def delete
-    ...
+    # ...
   end
 end
 ```
@@ -276,13 +276,13 @@ Roles can also be omitted:
 ```rb
 class OrdersController < ApplicationController
   grant_access
-  ...
+  # ...
 end
 
 class InvoicesController < ApplicationController
   grant_access action: :index
   def index
-    ...
+    # ...
   end
 end
 ```
@@ -297,12 +297,12 @@ Also keep in mind that rules defined in child classes don't override parent rule
 ```rb
 class Crm::BaseController < ApplicationController
   grant_access roles: :admin
-  ...
+  # ...
 end
 
 class Crm::InvoicesController < Crm::BaseController
   grant_access roles: :accountant
-  ...
+  # ...
 end
 ```
 This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
@@ -316,7 +316,7 @@ class OrdersController < ApplicationController
   grant_access roles: :manager, if: :company_manager?, unless: :fired?
 
   def index
-    ...
+    # ...
   end
 
   private
@@ -338,28 +338,38 @@ class InvoicesController < ApplicationController
     @invoices = Invoice.all
     @invoices = @invoices.where("total < 10000") if current_user.has_role?(:accountant)
     @invoices = @invoices.unpaid if current_user.has_role?(:secretary)
-    ...
+    # ...
   end
 
   grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).total > 10_000 }
   def show
-    ...
+    # ...
   end
 end
 ```
 You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
 
+You can use only dynamic rules without specifying roles if that suits your needs:
+```rb
+class InvoicesController < ApplicationController
+  grant_access action: :index, if: -> { current_user.company == Company.find(params[:company_id]) }
+  def index
+    # ...
+  end
+end
+```
+
 ## When Unauthorized
 
 By default, in the event of an unauthorized attempt, Rabarber redirects the user back if the request format is HTML (with fallback to the root path), and returns a 401 (Unauthorized) status code otherwise.
 
-This behavior can be customized by overriding private `when_unauthorized` method in the desired controller:
+This behavior can be customized by overriding private `when_unauthorized` method:
 
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  ...
+  # ...
 
   private
 
@@ -369,6 +379,8 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+The method can be overridden in different controllers, providing flexibility in handling unauthorized access attempts.
+
 ## View Helpers
 
 Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, &block)` and `hidden_from(*roles, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
@@ -376,7 +388,7 @@ Rabarber also provides a couple of helpers that can be used in views: `visible_t
 ```rb
 module ApplicationHelper
   include Rabarber::Helpers
-  ...
+  # ...
 end
 ```
 

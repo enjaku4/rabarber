@@ -74,7 +74,7 @@ class NoUserController < ApplicationController
   def no_access = head(:ok)
 end
 
-class NoRolesControllerWideDynamicRuleController < ApplicationController
+class ControllerWideDynamicRuleController < ApplicationController
   grant_access if: :foo?
 
   private

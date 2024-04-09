@@ -15,11 +15,14 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 ### Bugs:
 
 - Fix an issue where an error would be raised from view helpers when the user is not authenticated
-- Fix an issue where an error could be raised when using controller-wide dynamic rules
 
 ### Misc:
 
 - Significant refactoring and code improvements
+
+## v1.4.1
+
+- Fix an issue where an error could be raised when using controller-wide dynamic rules
 
 ## v1.4.0
 

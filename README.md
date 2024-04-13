@@ -96,10 +96,10 @@ Rabarber.configure do |config|
 end
 ```
 
-- `audit_trail_enabled` must be a boolean determining whether the audit trail functionality is enabled. _The audit trail is enabled by default._
-- `cache_enabled` must be a boolean determining whether roles are cached. _Roles are cached by default to avoid unnecessary database queries._ If you want to disable caching, set this option to `false`. If caching is enabled and you need to clear the cache, use `Rabarber::Cache.clear` method.
-- `current_user_method` must be a symbol representing the method that returns the currently authenticated user. _The default value is `:current_user`._
-- `must_have_roles` must be a boolean determining whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access endpoints permitted to everyone)._
+- `audit_trail_enabled` determines whether the audit trail functionality is enabled. _The audit trail is enabled by default._
+- `cache_enabled` determines whether roles are cached to avoid unnecessary database queries. _Roles are cached by default._ If you need to clear the cache, use `Rabarber::Cache.clear` method.
+- `current_user_method` represents the method that returns the currently authenticated user. _The default value is `:current_user`._
+- `must_have_roles` determines whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access such endpoints)._
 
 ## Roles
 
@@ -289,11 +289,11 @@ end
 
 This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`. This extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
 
-_Be aware that if the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user with no roles assigned was authenticated._
+_If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user, who has no roles assigned, is authenticated._
 
-If you've set `must_have_roles` setting to `true`, then, only the users with at least one role can have access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
+If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles (or unauthenticated users) are not allowed to access anything.
 
-Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
+_Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:_
 ```rb
 class Crm::BaseController < ApplicationController
   grant_access roles: :admin

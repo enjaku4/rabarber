@@ -14,7 +14,7 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 
 ### Bugs:
 
-- Fix an issue where an error would be raised from view helpers when the user is not authenticated
+- Fix an issue where an error would occur when using view helpers if the user is not authenticated
 
 ### Misc:
 
@@ -22,7 +22,7 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 
 ## v1.4.1
 
-- Fix an issue where an error could be raised when using controller-wide dynamic rules
+- Fix an issue where an error could occur when using controller-wide dynamic rules
 
 ## v1.4.0
 
@@ -52,7 +52,7 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 - Cache roles to avoid unnecessary database queries
 - Introduce `cache_enabled` configuration option allowing to enable or disable role caching
 - Enhance the migration generator so that it can receive the table name of the model representing users in the application as an argument
-- Fix an issue where an error would be raised if the user is not authenticated
+- Fix an issue where an error would occur if the user is not authenticated
 - Various minor improvements
 
 ## v1.2.0

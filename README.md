@@ -96,10 +96,10 @@ Rabarber.configure do |config|
 end
 ```
 
-- `audit_trail_enabled` determines whether the audit trail functionality is enabled. _The audit trail is enabled by default._
-- `cache_enabled` determines whether roles are cached to avoid unnecessary database queries. _Roles are cached by default._ If you need to clear the cache, use `Rabarber::Cache.clear` method.
-- `current_user_method` represents the method that returns the currently authenticated user. _The default value is `:current_user`._
-- `must_have_roles` determines whether a user with no roles can access endpoints permitted to everyone. _The default value is `false` (allowing users without roles to access such endpoints)._
+- `audit_trail_enabled` determines whether the audit trail functionality is enabled. The audit trail is enabled by default.
+- `cache_enabled` determines whether roles are cached to avoid unnecessary database queries. Roles are cached by default. If you need to clear the cache, use `Rabarber::Cache.clear` method.
+- `current_user_method` represents the method that returns the currently authenticated user. The default value is `:current_user`.
+- `must_have_roles` determines whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access such endpoints).
 
 ## Roles
 
@@ -230,7 +230,7 @@ This adds `.grant_access(action: nil, roles: nil, if: nil, unless: nil)` method 
 The most basic usage of the method is as follows:
 
 ```rb
-class InvoicesController < ApplicationController
+class Crm::InvoicesController < ApplicationController
   grant_access action: :index, roles: [:accountant, :admin]
   def index
     @invoices = Invoice.all
@@ -245,6 +245,8 @@ class InvoicesController < ApplicationController
 end
 ```
 This grants access to `index` action for users with `accountant` or `admin` role, and access to `destroy` action for `admin` users only.
+
+Please note that Rabarber does not provide any built-in data scoping mechanism as it is not a part of the authorization layer and is not necessarily role specific or has anything to do with the current user. The business logic can vary drastically depending on the application, so you're encouraged to limit the data visibility yourself, for example, in the same way as in the example above, where `accountant` role can only see paid invoices.
 
 You can also define controller-wide rules (without `action` argument):
 
@@ -289,11 +291,11 @@ end
 
 This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`. This extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
 
-_If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user, who has no roles assigned, is authenticated._
+If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user, who has no roles assigned, is authenticated.
 
 If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles (or unauthenticated users) are not allowed to access anything.
 
-_Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:_
+Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
 ```rb
 class Crm::BaseController < ApplicationController
   grant_access roles: :admin
@@ -312,7 +314,7 @@ This means that `Crm::InvoicesController` is still accessible to `admin` but is 
 For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
-class OrdersController < ApplicationController
+class Crm::OrdersController < ApplicationController
   grant_access roles: :manager, if: :company_manager?, unless: :fired?
 
   def index
@@ -330,7 +332,7 @@ class OrdersController < ApplicationController
   end
 end
 
-class InvoicesController < ApplicationController
+class Crm::InvoicesController < ApplicationController
   grant_access roles: :senior_accountant
 
   grant_access action: :index, roles: [:secretary, :accountant], if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
@@ -353,6 +355,15 @@ You can use only dynamic rules without specifying roles if that suits your needs
 ```rb
 class InvoicesController < ApplicationController
   grant_access action: :index, if: -> { current_user.company == Company.find(params[:company_id]) }
+  def index
+    # ...
+  end
+end
+```
+This basically allows you to use Rabarber as a policy-based authorization library by calling your own custom policy within a dynamic rule:
+```rb
+class InvoicesController < ApplicationController
+  grant_access action: :index, if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
   def index
     # ...
   end

@@ -4,10 +4,9 @@ source "https://rubygems.org"
 
 gemspec
 
-ENV["RAILS_VERSION"] ? gem("rails", ENV["RAILS_VERSION"]) : gem("rails", ">= 6.1")
-
 gem "byebug"
 gem "database_cleaner-active_record"
+gem "rails", ENV.fetch("RAILS_VERSION", ">= 6.1")
 gem "rake"
 gem "rspec"
 gem "rspec-rails"

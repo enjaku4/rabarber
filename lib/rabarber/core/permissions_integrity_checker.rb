@@ -14,7 +14,7 @@ module Rabarber
 
         raise(
           Rabarber::Error,
-          "Following actions are passed to 'grant_access' method, but are not defined in the controller: #{missing_list}"
+          "Following actions were passed to 'grant_access' method but are not defined in the controller: #{missing_list}"
         )
       end
 

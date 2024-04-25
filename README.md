@@ -9,7 +9,7 @@ Rabarber is a role-based authorization library for Ruby on Rails, primarily desi
 
 **Example of Usage**:
 
-Consider a CRM where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `marketer` has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `marketer` has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
 
 ---
 
@@ -134,7 +134,7 @@ To revoke roles, use:
 ```rb
 user.revoke_roles(:accountant, :marketer)
 ```
-If any of the specified roles doesn't exist or the user doesn't have the role you want to revoke, it will be ignored.
+If the user doesn't have the role you want to revoke, it will be ignored.
 
 The method returns an array of roles assigned to the user.
 
@@ -150,7 +150,7 @@ It returns `true` if the user has at least one role and `false` otherwise.
 
 **`#roles`**
 
-To view all the roles assigned to the user, use:
+To get all the roles assigned to the user, use:
 
 ```rb
 user.roles
@@ -160,7 +160,7 @@ user.roles
 
 To manipulate roles directly, you can use `Rabarber::Role` methods:
 
-**`.add(role)`**
+**`.add(role_name)`**
 
 To add a new role, use:
 
@@ -177,14 +177,14 @@ To rename a role, use:
 ```rb
 Rabarber::Role.rename(:admin, :administrator)
 ```
-The first argument is the old name, and the second argument is the new name. This will rename the role and return `true`. If a role with the new name already exists, it will return `false`.
+The first argument is the old name, and the second argument is the new name. This will rename the role and return `true`. If the role with a new name already exists, it will return `false`.
 
 The method won't rename the role and will return `false` if it is assigned to any user. To force the rename, use the method with `force: true` argument:
 ```rb
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
 
-**`.remove(role, force: false)`**
+**`.remove(role_name, force: false)`**
 
 To remove a role, use:
 
@@ -207,7 +207,7 @@ If you need to list all the role names available in your application, use:
 Rabarber::Role.names
 ```
 
-**`.assignees(role)`**
+**`.assignees(role_name)`**
 
 To get all the users to whom the role is assigned, use:
 
@@ -291,7 +291,7 @@ end
 
 This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`. This extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
 
-If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will treat this situation as if the user who has no roles assigned is authenticated.
+If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will handle this situation as if the user has no roles.
 
 If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles (or unauthenticated users) are not allowed to access anything.
 
@@ -431,7 +431,7 @@ The logs are written to the file `log/rabarber_audit.log` unless the `audit_trai
 
 Facing a problem or want to suggest an enhancement?
 
-- **Open a Discussion**: If you have a question, experience difficulties using the gem, or have an improvement suggestion, feel free to use the Discussions section.
+- **Open a Discussion**: If you have a question, experience difficulties using the gem, or have a suggestion for improvements, feel free to use the Discussions section.
 
 Encountered a bug?
 
@@ -440,7 +440,7 @@ Encountered a bug?
 
 ## Contributing
 
-Before opening an issue or creating a pull request, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
+Before creating an issue or a pull request, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md).
 
 ## Code of Conduct
 

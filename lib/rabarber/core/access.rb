@@ -15,7 +15,9 @@ module Rabarber
       end
 
       def action_accessible?(roles, controller, action, dynamic_rule_receiver)
-        action_rules[controller].any? { |rule| rule.verify_access(roles, dynamic_rule_receiver, action) }
+        action_rules[controller].any? do |rule|
+          rule.action == action && rule.verify_access(roles, dynamic_rule_receiver)
+        end
       end
     end
   end

@@ -4,62 +4,42 @@ require "action_controller"
 require "action_view"
 
 class DummyPagesController < ActionController::Base
-  def home
-    head :ok
-  end
+  def home = head(:ok)
 end
 
-class DummyAuthController < ActionController::Base
+class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 end
 
-class DummyController < ActionController::Base
-  include Rabarber::Authorization
+class DummyAuthController < ApplicationController; end
 
+class DummyController < ApplicationController
   grant_access action: :multiple_roles, roles: [:admin, :superadmin]
-  def multiple_roles
-    head :ok
-  end
+  def multiple_roles = head(:ok)
 
   grant_access action: :single_role, roles: :client
-  def single_role
-    head :ok
-  end
+  def single_role = head(:ok)
 
   grant_access action: :all_access
-  def all_access
-    head :ok
-  end
+  def all_access = head(:ok)
 
-  def no_access
-    head :ok
-  end
+  def no_access = head(:ok)
 
   grant_access action: :multiple_rules, roles: [:manager]
   grant_access action: :multiple_rules, roles: [:client]
-  def multiple_rules
-    head :ok
-  end
+  def multiple_rules = head(:ok)
 
   grant_access action: :if_lambda, roles: :admin, if: -> { params[:foo] == "bar" }
-  def if_lambda
-    head :ok
-  end
+  def if_lambda = head(:ok)
 
   grant_access action: :if_method, roles: :admin, if: :foo?
-  def if_method
-    head :ok
-  end
+  def if_method = head(:ok)
 
   grant_access action: :unless_lambda, roles: :admin, unless: -> { params[:foo] == "bar" }
-  def unless_lambda
-    head :ok
-  end
+  def unless_lambda = head(:ok)
 
   grant_access action: :unless_method, roles: :admin, unless: :foo?
-  def unless_method
-    head :ok
-  end
+  def unless_method = head(:ok)
 
   private
 
@@ -68,46 +48,42 @@ class DummyController < ActionController::Base
   end
 end
 
-class DummyParentController < ActionController::Base
-  include Rabarber::Authorization
-
+class DummyParentController < ApplicationController
   grant_access roles: :manager
 
-  def foo
-    head :ok
-  end
+  def foo = head(:ok)
 
-  def bar
-    head :ok
-  end
+  def bar = head(:ok)
 end
 
 class DummyChildController < DummyParentController
   grant_access roles: :client
 
-  def baz
-    head :ok
-  end
+  def baz = head(:ok)
 
-  def bad
-    head :ok
+  def bad = head(:ok)
+end
+
+class NoUserController < ApplicationController
+  grant_access action: :access_with_roles, roles: :admin
+  def access_with_roles = head(:ok)
+
+  grant_access action: :all_access
+  def all_access = head(:ok)
+
+  def no_access = head(:ok)
+end
+
+class ControllerWideDynamicRuleController < ApplicationController
+  grant_access if: :foo?
+
+  private
+
+  def foo?
+    true
   end
 end
 
-class NoUserController < ActionController::Base
-  include Rabarber::Authorization
-
-  grant_access action: :access_with_roles, roles: :admin
-  def access_with_roles
-    head :ok
-  end
-
-  grant_access action: :all_access
-  def all_access
-    head :ok
-  end
-
-  def no_access
-    head :ok
-  end
+class NoRulesController < ApplicationController
+  def no_rules = head(:ok)
 end

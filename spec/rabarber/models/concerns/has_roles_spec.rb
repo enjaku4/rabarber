@@ -37,12 +37,11 @@ RSpec.describe Rabarber::HasRoles do
 
     shared_examples_for "it caches user roles" do
       it "caches user roles" do
-        expect(Rabarber::Cache).to receive(:fetch)
-          .with(Rabarber::Cache.key_for(user.id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do |&block|
-            result = block.call
-            expect(result).to match_array(roles)
-            result
-          end
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id) do |&block|
+          result = block.call
+          expect(result).to match_array(roles)
+          result
+        end
         subject
       end
     end
@@ -90,10 +89,8 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   shared_examples_for "it deletes the cache" do
-    before { allow(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache::ALL_ROLES_KEY).and_call_original }
-
     it "deletes the cache" do
-      expect(Rabarber::Cache).to receive(:delete).with(Rabarber::Cache.key_for(user.id)).and_call_original
+      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id).and_call_original
       subject
     end
   end
@@ -123,7 +120,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -147,7 +145,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -169,7 +168,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -191,12 +191,12 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "doesn't log the assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -224,7 +224,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{roles}, current roles: #{roles}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -248,12 +249,12 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not log the role assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -269,7 +270,8 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
-          expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Assignment] User with id: '#{user.id}' has been assigned the following roles: #{[roles.first]}, current roles: #{[roles.first]}")
+          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
+            .with(user, roles_to_assign: [roles.first], current_roles: [roles.first]).and_call_original
           subject
         end
 
@@ -291,7 +293,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not log the role assignment" do
-          expect(Rabarber::Logger).not_to receive(:audit)
+          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
           subject
         end
 
@@ -300,7 +302,7 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "does not clear the cache" do
-          expect(Rabarber::Cache).not_to receive(:delete)
+          expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
         end
 
@@ -327,7 +329,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
-        expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Revocation] User with id: '#{user.id}' has been revoked from the following roles: #{roles}, current roles: []")
+        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
+          .with(user, roles_to_revoke: roles, current_roles: []).and_call_original
         subject
       end
 
@@ -345,12 +348,12 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "does not log the role revocation" do
-        expect(Rabarber::Logger).not_to receive(:audit)
+        expect(Rabarber::Audit::Events::RolesRevoked).not_to receive(:trigger)
         subject
       end
 
       it "does not clear the cache" do
-        expect(Rabarber::Cache).not_to receive(:delete)
+        expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
 
@@ -366,7 +369,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
-        expect(Rabarber::Logger).to receive(:audit).with(:info, "[Role Revocation] User with id: '#{user.id}' has been revoked from the following roles: #{roles.first(1)}, current roles: []")
+        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
+          .with(user, roles_to_revoke: roles.first(1), current_roles: []).and_call_original
         subject
       end
 

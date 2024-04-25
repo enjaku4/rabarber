@@ -1,3 +1,25 @@
+## v2.0.0
+
+### Breaking:
+
+- Removed `when_actions_missing` and `when_roles_missing` configuration options
+- Replaced `when_unauthorized` configuration option with an overridable controller method
+- Renamed `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
+
+To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/52).
+
+### Features:
+
+- Added support for UUID primary keys
+
+### Bugs:
+
+- Fixed the issue where an error would occur if the user was not authenticated
+
+### Misc:
+
+- Significant refactoring and code improvements
+
 ## v1.4.1
 
 - Fix an issue where an error could be raised when using controller-wide dynamic rules

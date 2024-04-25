@@ -15,13 +15,11 @@ module Rabarber
     end
 
     def roles
-      Rabarber::Cache.fetch(Rabarber::Cache.key_for(roleable_id), expires_in: 1.hour, race_condition_ttl: 5.seconds) do
-        rabarber_roles.names
-      end
+      Rabarber::Core::Cache.fetch(roleable_id) { rabarber_roles.names }
     end
 
     def has_role?(*role_names)
-      (roles & process_role_names(role_names)).any?
+      roles.intersection(process_role_names(role_names)).any?
     end
 
     def assign_roles(*role_names, create_new: true)
@@ -29,16 +27,13 @@ module Rabarber
 
       create_new_roles(processed_role_names) if create_new
 
-      roles_to_assign = Rabarber::Role.where(name: processed_role_names) - rabarber_roles
+      roles_to_assign = Rabarber::Role.where(name: processed_role_names - rabarber_roles.names)
 
       if roles_to_assign.any?
         delete_roleable_cache
         rabarber_roles << roles_to_assign
 
-        Rabarber::Logger.audit(
-          :info,
-          "[Role Assignment] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been assigned the following roles: #{roles_to_assign.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
-        )
+        Rabarber::Audit::Events::RolesAssigned.trigger(self, roles_to_assign: roles_to_assign.names, current_roles: roles)
       end
 
       roles
@@ -52,10 +47,7 @@ module Rabarber
         delete_roleable_cache
         self.rabarber_roles -= roles_to_revoke
 
-        Rabarber::Logger.audit(
-          :info,
-          "[Role Revocation] #{Rabarber::Logger.roleable_identity(self, with_roles: false)} has been revoked from the following roles: #{roles_to_revoke.pluck(:name).map(&:to_sym)}, current roles: #{roles}"
-        )
+        Rabarber::Audit::Events::RolesRevoked.trigger(self, roles_to_revoke: roles_to_revoke.names, current_roles: roles)
       end
 
       roles
@@ -78,7 +70,7 @@ module Rabarber
     end
 
     def delete_roleable_cache
-      Rabarber::Cache.delete(Rabarber::Cache.key_for(roleable_id))
+      Rabarber::Core::Cache.delete(roleable_id)
     end
 
     def roleable_id

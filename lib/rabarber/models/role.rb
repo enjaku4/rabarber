@@ -18,8 +18,6 @@ module Rabarber
 
         return false if exists?(name: name)
 
-        delete_roles_cache
-
         !!create!(name: name)
       end
 
@@ -29,7 +27,6 @@ module Rabarber
 
         return false if !role || exists?(name: name) || assigned_to_roleables(role).any? && !force
 
-        delete_roles_cache
         delete_roleables_cache(role)
 
         role.update!(name: name)
@@ -40,13 +37,12 @@ module Rabarber
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
-        delete_roles_cache
         delete_roleables_cache(role)
 
         !!role.destroy!
       end
 
-      def assignees_for(name)
+      def assignees(name)
         Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
           rabarber_roles: { name: Rabarber::Input::Role.new(name).process }
         )
@@ -54,18 +50,15 @@ module Rabarber
 
       private
 
-      def delete_roles_cache
-        Rabarber::Cache.delete(Rabarber::Cache::ALL_ROLES_KEY)
-      end
-
       def delete_roleables_cache(role)
-        keys = assigned_to_roleables(role).map { |roleable_id| Rabarber::Cache.key_for(roleable_id) }
-        Rabarber::Cache.delete(*keys) if keys.any?
+        Rabarber::Core::Cache.delete(*assigned_to_roleables(role))
       end
 
       def assigned_to_roleables(role)
         ActiveRecord::Base.connection.select_values(
-          "SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = #{role.id}"
+          ActiveRecord::Base.sanitize_sql(
+            ["SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = ?", role.id]
+          )
         )
       end
 

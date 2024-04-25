@@ -2,13 +2,12 @@
 
 RSpec.describe Rabarber::Core::Rule do
   describe "#verify_access" do
-    subject { rule.verify_access(:admin, DummyController, :index) }
+    subject { rule.verify_access(:admin, DummyController) }
 
     let(:rule) { described_class.new(:index, :admin, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
-        allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
         allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
         allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
       end
@@ -18,22 +17,9 @@ RSpec.describe Rabarber::Core::Rule do
       end
     end
 
-    context "if at least one condition is not met" do
-      context "if action is not accessible" do
-        before do
-          allow(rule).to receive(:action_accessible?).with(:index).and_return(false)
-          allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
-        end
-
-        it "returns false" do
-          expect(subject).to be false
-        end
-      end
-
+    context "if one condition is not met" do
       context "if roles are not permitted" do
         before do
-          allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return(false)
           allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
         end
@@ -45,7 +31,6 @@ RSpec.describe Rabarber::Core::Rule do
 
       context "if dynamic rule is not followed" do
         before do
-          allow(rule).to receive(:action_accessible?).with(:index).and_return(true)
           allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
           allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
         end
@@ -53,36 +38,6 @@ RSpec.describe Rabarber::Core::Rule do
         it "returns false" do
           expect(subject).to be false
         end
-      end
-    end
-  end
-
-  describe "#action_accessible?" do
-    subject { rule.action_accessible?(action_name) }
-
-    let(:rule) { described_class.new(:index, [:admin], -> { true }, nil) }
-
-    context "if action is accesible" do
-      let(:action_name) { :index }
-
-      it "returns true" do
-        expect(subject).to be true
-      end
-    end
-
-    context "if action is nil" do
-      let(:action_name) { nil }
-
-      it "returns true" do
-        expect(subject).to be true
-      end
-    end
-
-    context "if action is not accesible" do
-      let(:action_name) { :show }
-
-      it "returns false" do
-        expect(subject).to be false
       end
     end
   end

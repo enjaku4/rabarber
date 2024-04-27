@@ -31,6 +31,8 @@ Use the Ruby version specified in the `rabarber.gemspec` file.
 
 To install the development dependencies, run: `bin/setup`
 
-To start the development console, run: `bin/console`
+To start the developer console, run: `bin/console`
 
-To run the tests: `bundle exec rspec`
+To run the tests: `bin/rspec`
+
+To run the linter: `bin/rubocop`

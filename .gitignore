@@ -23,3 +23,6 @@ Gemfile.lock
 
 # RubyMine
 .idea
+
+# VS Code
+.vscode

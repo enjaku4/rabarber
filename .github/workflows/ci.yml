@@ -20,8 +20,22 @@ jobs:
         with:
           ruby-version: 3.0
           bundler-cache: true
-      - name: Run rubocop
+      - name: Run RuboCop
         run: bundle exec rubocop --color
+
+  todo:
+    runs-on: ubuntu-latest
+
+    name: ToDo
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0
+          bundler-cache: true
+      - name: Run todo:check
+        run: bundle exec rake todo:check
 
   tests:
     runs-on: ubuntu-latest
@@ -49,5 +63,5 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Run tests
+      - name: Run RSpec
         run: bundle exec rspec

@@ -41,6 +41,12 @@ Rails/ApplicationController:
 Rails/ApplicationRecord:
   Enabled: false
 
+Rails/RakeEnvironment:
+  Enabled: false
+
+Rake/Desc:
+  Enabled: false
+
 RSpec/ContextWording:
   Enabled: false
 

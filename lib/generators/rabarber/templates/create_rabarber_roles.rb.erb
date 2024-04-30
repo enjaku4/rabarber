@@ -4,6 +4,7 @@ class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.
   def change
     create_table :rabarber_roles<%= ", id: :uuid" if options[:uuid] %> do |t|
       t.string :name, null: false, index: { unique: true }
+      t.belongs_to :context, polymorphic: true, index: true<%= ", type: :uuid" if options[:uuid] %>
       t.timestamps
     end
 

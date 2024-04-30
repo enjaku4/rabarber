@@ -32,6 +32,7 @@ RSpec.describe Rabarber::RolesGenerator do
           def change
             create_table :rabarber_roles do |t|
               t.string :name, null: false, index: { unique: true }
+              t.belongs_to :context, polymorphic: true, index: true
               t.timestamps
             end
 
@@ -62,6 +63,7 @@ RSpec.describe Rabarber::RolesGenerator do
           def change
             create_table :rabarber_roles, id: :uuid do |t|
               t.string :name, null: false, index: { unique: true }
+              t.belongs_to :context, polymorphic: true, index: true, type: :uuid
               t.timestamps
             end
 

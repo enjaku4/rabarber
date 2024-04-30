@@ -20,7 +20,7 @@ namespace :todo do
     puts "Checking for TODOs...\n\n"
 
     Dir.glob(File.join(root_dir, "**", "*")) do |file|
-      next if File.directory?(file) || File.basename(file) == "Rakefile"
+      next if File.directory?(file) || File.basename(file) == "Rakefile" || file.include?("vendor")
 
       total_files += 1
 

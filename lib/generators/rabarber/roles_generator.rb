@@ -2,6 +2,8 @@
 
 require "rails/generators/migration"
 
+# TODO: is seamless migration to the new table structure possible?
+
 module Rabarber
   class RolesGenerator < Rails::Generators::Base
     include Rails::Generators::Migration

@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
+require "digest/sha2"
+
 module Rabarber
   module Core
     module Cache
-      extend self
+      module_function
 
       CACHE_PREFIX = "rabarber"
       private_constant :CACHE_PREFIX
 
-      def fetch(roleable_id, options = { expires_in: 1.hour, race_condition_ttl: 5.seconds }, &block)
-        enabled? ? Rails.cache.fetch(key_for(roleable_id), **options, &block) : yield
+      def fetch(roleable_id, context:, &block)
+        default_options = { expires_in: 1.hour, race_condition_ttl: 5.seconds }
+        enabled? ? Rails.cache.fetch(key_for(roleable_id, context), **default_options, &block) : yield
       end
 
-      def delete(*roleable_ids)
-        keys = roleable_ids.map { |roleable_id| key_for(roleable_id) }
+      def delete(*roleable_ids, context:)
+        keys = roleable_ids.map { |roleable_id| key_for(roleable_id, context) }
         Rails.cache.delete_multi(keys) if enabled? && keys.any?
       end
 
@@ -25,10 +28,8 @@ module Rabarber
         Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
       end
 
-      private
-
-      def key_for(id)
-        "#{CACHE_PREFIX}:roles_#{id}"
+      def key_for(id, context)
+        "#{CACHE_PREFIX}:#{Digest::SHA256.hexdigest("#{id}#{context}")}"
       end
     end
   end

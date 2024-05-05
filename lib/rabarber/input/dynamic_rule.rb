@@ -11,10 +11,8 @@ module Rabarber
 
       def processed_value
         case value
-        when String, Symbol
-          value.to_sym
-        when Proc, nil
-          value
+        when String, Symbol then value.to_sym
+        when Proc, nil then value
         end
       end
 

@@ -2,13 +2,26 @@
 
 RSpec.describe Rabarber::Core::Context do
   describe "#initialize" do
-    subject { described_class.new(context) }
+    subject { described_class.new(context, wrap: wrap) }
 
-    let(:context) { Project.create! }
+    context "when wrap is false" do
+      let(:wrap) { false }
+      let(:context) { Project.create! }
 
-    it "processes the input context" do
-      expect(Rabarber::Input::Context).to receive(:new).with(context).and_call_original
-      subject
+      it "processes the input context" do
+        expect(Rabarber::Input::Context).to receive(:new).with(context).and_call_original
+        expect(subject.context).to eq(context_type: "Project", context_id: context.id)
+      end
+    end
+
+    context "when wrap is true" do
+      let(:wrap) { true }
+      let(:context) { { context_type: "Project", context_id: nil } }
+
+      it "does not process the input context" do
+        expect(Rabarber::Input::Context).not_to receive(:new)
+        expect(subject.context).to eq(context)
+      end
     end
   end
 

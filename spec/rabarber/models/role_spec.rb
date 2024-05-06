@@ -35,6 +35,22 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe "#context" do
+    subject { role.context }
+
+    let(:role) { described_class.create!(name: "admin", context_type: "Project", context_id: 42) }
+    let(:context_double) { instance_double(Rabarber::Core::Context) }
+
+    before do
+      allow(Rabarber::Core::Context).to receive(:new)
+        .with({ context_type: "Project", context_id: 42 }, wrap: true).and_return(context_double)
+    end
+
+    it "returns the context object" do
+      expect(subject).to eq(context_double)
+    end
+  end
+
   describe ".names" do
     subject { described_class.names }
 

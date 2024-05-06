@@ -15,6 +15,7 @@ module Rabarber
         end
 
         def message
+          # TODO: roles with context
           "[Role Revocation] #{identity} has been revoked from the following roles: #{roles_to_revoke}, current roles: #{current_roles}"
         end
 

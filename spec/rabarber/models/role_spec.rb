@@ -122,7 +122,8 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
+        # TODO: real context
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: nil) if role_assigned
         subject
       end
 
@@ -256,7 +257,8 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
+        # TODO: real context
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: nil) if role_assigned
         subject
       end
 

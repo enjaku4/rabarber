@@ -20,7 +20,7 @@ RSpec.describe Rabarber::Core::Cache do
     subject { described_class.fetch(id, context: context) { "bar" } }
 
     let(:id) { 42 }
-    let(:context) { { context_type: Project, context_id: 13 } }
+    let(:context) { Rabarber::Core::Context.new(Project) }
 
     let(:default_options) { { expires_in: 1.hour, race_condition_ttl: 5.seconds } }
 
@@ -91,7 +91,7 @@ RSpec.describe Rabarber::Core::Cache do
     subject { described_class.delete(*ids, context: context) }
 
     let(:ids) { [42, 13] }
-    let(:context) { { context_type: Project, context_id: 13 } }
+    let(:context) { Rabarber::Core::Context.new(Project.create!) }
 
     let(:key42) { described_class.key_for(42, context) }
     let(:key13) { described_class.key_for(13, context) }
@@ -168,7 +168,7 @@ RSpec.describe Rabarber::Core::Cache do
 
   describe ".clear" do
     let(:ids) { [1, 2, 42] }
-    let(:context) { { context_type: Project, context_id: 13 } }
+    let(:context) { Rabarber::Core::Context.new(nil) }
 
     let(:keys) { ids.map { |id| described_class.key_for(id, context) } }
 
@@ -194,8 +194,8 @@ RSpec.describe Rabarber::Core::Cache do
     subject { described_class.key_for(id, context) }
 
     let(:id) { 42 }
-    let(:context) { { context_type: Project, context_id: 13 } }
+    let(:context) { Rabarber::Core::Context.new(Project.create!) }
 
-    it { is_expected.to eq("rabarber:d73ef780207217a00893eb441ead77adf81846d9cc46c57991856f8b3c7f00b7") }
+    it { is_expected.to eq("rabarber:56f439b8bd1b369b59fc1412a88fd66a1c5b03844d343f0bfe0d70bd996e9ec0") }
   end
 end

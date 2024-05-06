@@ -46,6 +46,8 @@ module Rabarber
         end
 
         def roleable_identity(with_roles:)
+          # TODO: roles with context
+          # TODO: it seems the log messages will be changed significantly because of the context, worth mentioning in changelog
           if roleable
             model_name = roleable.model_name.human
             primary_key = roleable.class.primary_key

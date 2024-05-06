@@ -15,6 +15,7 @@ module Rabarber
         end
 
         def message
+          # TODO: roles with context
           "[Role Assignment] #{identity} has been assigned the following roles: #{roles_to_assign}, current roles: #{current_roles}"
         end
 

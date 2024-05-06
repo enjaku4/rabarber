@@ -1,4 +1,5 @@
 <!-- TODO: describe context feature -->
+<!-- TODO: explain that virtually every method is able to receive context -->
 
 # Rabarber: Simplified Authorization for Rails
 

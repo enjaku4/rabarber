@@ -37,7 +37,8 @@ RSpec.describe Rabarber::HasRoles do
 
     shared_examples_for "it caches user roles" do
       it "caches user roles" do
-        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id) do |&block|
+        # TODO: real context
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id, context: nil) do |&block|
           result = block.call
           expect(result).to match_array(roles)
           result
@@ -90,7 +91,8 @@ RSpec.describe Rabarber::HasRoles do
 
   shared_examples_for "it deletes the cache" do
     it "deletes the cache" do
-      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id).and_call_original
+      # TODO: real context
+      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: nil).and_call_original
       subject
     end
   end

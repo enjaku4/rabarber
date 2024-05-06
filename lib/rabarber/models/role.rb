@@ -51,7 +51,8 @@ module Rabarber
       private
 
       def delete_roleables_cache(role)
-        Rabarber::Core::Cache.delete(*assigned_to_roleables(role))
+        # TODO: real context
+        Rabarber::Core::Cache.delete(*assigned_to_roleables(role), context: nil)
       end
 
       def assigned_to_roleables(role)

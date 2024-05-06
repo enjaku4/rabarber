@@ -29,7 +29,7 @@ module Rabarber
       end
 
       def key_for(id, context)
-        "#{CACHE_PREFIX}:#{Digest::SHA256.hexdigest("#{id}#{context}")}"
+        "#{CACHE_PREFIX}:#{Digest::SHA256.hexdigest("#{id}#{context.to_s}")}" # rubocop:disable Lint/RedundantStringCoercion
       end
     end
   end

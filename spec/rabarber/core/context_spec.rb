@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+RSpec.describe Rabarber::Core::Context do
+  describe "#initialize" do
+    subject { described_class.new(context) }
+
+    let(:context) { Project.create! }
+
+    it "processes the input context" do
+      expect(Rabarber::Input::Context).to receive(:new).with(context).and_call_original
+      subject
+    end
+  end
+
+  describe "#to_h" do
+    subject { described_class.new(context).to_h }
+
+    let(:context) { Project.create! }
+
+    it "returns the processed context" do
+      expect(subject).to eq(context_type: "Project", context_id: context.id)
+    end
+  end
+
+  describe "#to_s" do
+    subject { described_class.new(context).to_s }
+
+    context "when context is global" do
+      let(:context) { nil }
+
+      it "returns 'Global'" do
+        expect(subject).to eq("Global")
+      end
+    end
+
+    context "when context is a type" do
+      let(:context) { Project }
+
+      it "returns the context type" do
+        expect(subject).to eq("Project")
+      end
+    end
+
+    context "when context is an instance" do
+      let(:context) { Project.create! }
+
+      it "returns the context type and id" do
+        expect(subject).to eq("Project##{context.id}")
+      end
+    end
+
+    context "when context is unexpected" do
+      let(:context) { 42 }
+
+      before { allow_any_instance_of(Rabarber::Input::Context).to receive(:process).and_return(42) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error("Unexpected context: 42")
+      end
+    end
+  end
+end

@@ -15,11 +15,19 @@ module Rabarber
         end
 
         def message
-          "[Unauthorized Attempt] #{identity} attempted to access '#{path}'"
+          "[Unauthorized Attempt] #{identity}#{roles}path: '#{path}'".tr('"', "'")
         end
 
-        def identity_with_roles?
-          true
+        def roles
+          if roleable
+            roles_list = roleable.rabarber_roles.group_by { |role| role.context.to_s }.transform_values { |roles|
+              roles.pluck(:name).map(&:to_sym)
+            }.sort.to_h
+
+            " | roles: #{roles_list}, "
+          else
+            " | "
+          end
         end
 
         def path

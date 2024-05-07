@@ -9,7 +9,7 @@ module Rabarber
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
     def context
-      Rabarber::Core::Context.new({ context_type: context_type, context_id: context_id }, wrap: true)
+      Rabarber::Core::Context.new(context_type: context_type, context_id: context_id)
     end
 
     class << self

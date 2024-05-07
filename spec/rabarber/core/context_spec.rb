@@ -2,10 +2,9 @@
 
 RSpec.describe Rabarber::Core::Context do
   describe "#initialize" do
-    subject { described_class.new(context, wrap: wrap) }
+    subject { described_class.new(context) }
 
-    context "when wrap is false" do
-      let(:wrap) { false }
+    context "when context is not hash" do
       let(:context) { Project.create! }
 
       it "processes the input context" do
@@ -14,8 +13,7 @@ RSpec.describe Rabarber::Core::Context do
       end
     end
 
-    context "when wrap is true" do
-      let(:wrap) { true }
+    context "when context is a hash" do
       let(:context) { { context_type: "Project", context_id: nil } }
 
       it "does not process the input context" do

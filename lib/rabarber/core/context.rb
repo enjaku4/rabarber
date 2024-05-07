@@ -5,8 +5,8 @@ module Rabarber
     class Context
       attr_reader :context
 
-      def initialize(context, wrap: false)
-        @context = wrap ? context : Rabarber::Input::Context.new(context).process
+      def initialize(context)
+        @context = context.is_a?(Hash) ? context : Rabarber::Input::Context.new(context).process
       end
 
       def to_h

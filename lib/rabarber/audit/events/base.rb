@@ -34,28 +34,16 @@ module Rabarber
         end
 
         def message
+          # TODO: it seems the log messages will be changed significantly because of the context, worth mentioning in changelog
           raise NotImplementedError
         end
 
         def identity
-          roleable_identity(with_roles: identity_with_roles?)
-        end
-
-        def identity_with_roles?
-          raise NotImplementedError
-        end
-
-        def roleable_identity(with_roles:)
-          # TODO: roles with context
-          # TODO: it seems the log messages will be changed significantly because of the context, worth mentioning in changelog
           if roleable
             model_name = roleable.model_name.human
-            primary_key = roleable.class.primary_key
-            roleable_id = roleable.public_send(primary_key)
+            roleable_id = roleable.public_send(roleable.class.primary_key)
 
-            roles = with_roles ? ", roles: #{roleable.roles}" : ""
-
-            "#{model_name} with #{primary_key}: '#{roleable_id}'#{roles}"
+            "#{model_name}##{roleable_id}"
           else
             "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
           end

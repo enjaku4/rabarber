@@ -15,12 +15,11 @@ module Rabarber
         end
 
         def message
-          # TODO: roles with context
-          "[Role Revocation] #{identity} has been revoked from the following roles: #{roles_to_revoke}, current roles: #{current_roles}"
+          "[Role Revocation] #{identity} | context: '#{context}', revoked roles: #{roles_to_revoke}, current roles: #{current_roles}"
         end
 
-        def identity_with_roles?
-          false
+        def context
+          specifics.fetch(:context).to_s
         end
 
         def roles_to_revoke

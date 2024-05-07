@@ -23,8 +23,10 @@ module Rabarber
       roles.intersection(process_role_names(role_names)).any?
     end
 
-    def assign_roles(*role_names, create_new: true)
+    def assign_roles(*role_names, context: nil, create_new: true)
+      # TODO: real context
       processed_role_names = process_role_names(role_names)
+      processed_context = Rabarber::Core::Context.new(context)
 
       create_new_roles(processed_role_names) if create_new
 
@@ -34,21 +36,27 @@ module Rabarber
         delete_roleable_cache
         rabarber_roles << roles_to_assign
 
-        Rabarber::Audit::Events::RolesAssigned.trigger(self, roles_to_assign: roles_to_assign.names, current_roles: roles)
+        Rabarber::Audit::Events::RolesAssigned.trigger(
+          self, context: processed_context, roles_to_assign: roles_to_assign.names, current_roles: roles
+        )
       end
 
       roles
     end
 
-    def revoke_roles(*role_names)
+    def revoke_roles(*role_names, context: nil)
+      # TODO: real context
       processed_role_names = process_role_names(role_names)
+      processed_context = Rabarber::Core::Context.new(context)
       roles_to_revoke = Rabarber::Role.where(name: processed_role_names.intersection(roles))
 
       if roles_to_revoke.any?
         delete_roleable_cache
         self.rabarber_roles -= roles_to_revoke
 
-        Rabarber::Audit::Events::RolesRevoked.trigger(self, roles_to_revoke: roles_to_revoke.names, current_roles: roles)
+        Rabarber::Audit::Events::RolesRevoked.trigger(
+          self, context: processed_context, roles_to_revoke: roles_to_revoke.names, current_roles: roles
+        )
       end
 
       roles

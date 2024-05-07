@@ -42,8 +42,7 @@ RSpec.describe Rabarber::Role do
     let(:context_double) { instance_double(Rabarber::Core::Context) }
 
     before do
-      allow(Rabarber::Core::Context).to receive(:new)
-        .with({ context_type: "Project", context_id: 42 }, wrap: true).and_return(context_double)
+      allow(Rabarber::Core::Context).to receive(:new).with(context_type: "Project", context_id: 42).and_return(context_double)
     end
 
     it "returns the context object" do

@@ -122,8 +122,11 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
+          # TODO: real context
+          context_double = instance_double(Rabarber::Core::Context)
+          allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(user, context: context_double, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -147,8 +150,11 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
+          # TODO: real context
+          context_double = instance_double(Rabarber::Core::Context)
+          allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(user, context: context_double, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -170,8 +176,11 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
+          # TODO: real context
+          context_double = instance_double(Rabarber::Core::Context)
+          allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(user, context: context_double, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -226,8 +235,11 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
+          # TODO: real context
+          context_double = instance_double(Rabarber::Core::Context)
+          allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(user, context: context_double, roles_to_assign: roles, current_roles: roles).and_call_original
           subject
         end
 
@@ -272,8 +284,11 @@ RSpec.describe Rabarber::HasRoles do
         end
 
         it "logs the role assignment" do
+          # TODO: real context
+          context_double = instance_double(Rabarber::Core::Context)
+          allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: [roles.first], current_roles: [roles.first]).and_call_original
+            .with(user, context: context_double, roles_to_assign: [roles.first], current_roles: [roles.first]).and_call_original
           subject
         end
 
@@ -331,8 +346,11 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
+        # TODO: real context
+        context_double = instance_double(Rabarber::Core::Context)
+        allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
         expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(user, roles_to_revoke: roles, current_roles: []).and_call_original
+          .with(user, context: context_double, roles_to_revoke: roles, current_roles: []).and_call_original
         subject
       end
 
@@ -371,8 +389,11 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "logs the role revocation" do
+        # TODO: real context
+        context_double = instance_double(Rabarber::Core::Context)
+        allow(Rabarber::Core::Context).to receive(:new).with(nil).and_return(context_double)
         expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(user, roles_to_revoke: roles.first(1), current_roles: []).and_call_original
+          .with(user, context: context_double, roles_to_revoke: roles.first(1), current_roles: []).and_call_original
         subject
       end
 

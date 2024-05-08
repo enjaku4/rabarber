@@ -14,7 +14,7 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 
 ### Bugs:
 
-- Fixed the issue where an error would occur if the user was not authenticated
+- Fixed the issue where an error would occur when using view helpers if the user was not authenticated
 
 ### Misc:
 

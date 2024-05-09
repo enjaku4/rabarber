@@ -4,6 +4,8 @@ module Rabarber
   module Helpers
     include Rabarber::Core::Roleable
 
+    # TODO: add context, also roleable_roles is now ActiveRecord::Relation
+
     def visible_to(*roles, &block)
       return unless roleable_roles.intersection(Rabarber::Input::Roles.new(roles).process).any?
 

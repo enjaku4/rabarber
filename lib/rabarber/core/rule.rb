@@ -18,9 +18,11 @@ module Rabarber
       end
 
       def roles_permitted?(roleable_roles)
-        return false if Rabarber::Configuration.instance.must_have_roles && roleable_roles.empty?
+        contextual_roles = roleable_roles.where(context.to_h).names
 
-        roles.empty? || roles.intersection(roleable_roles).any?
+        return false if Rabarber::Configuration.instance.must_have_roles && contextual_roles.empty?
+
+        roles.empty? || roles.intersection(contextual_roles).any?
       end
 
       def dynamic_rule_followed?(dynamic_rule_receiver)

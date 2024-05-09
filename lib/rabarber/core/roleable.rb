@@ -8,7 +8,8 @@ module Rabarber
       end
 
       def roleable_roles
-        roleable&.roles.to_a
+        # TODO: this will work, but the roles are no longer cached
+        roleable ? roleable.rabarber_roles : Rabarber::Role.none
       end
     end
   end

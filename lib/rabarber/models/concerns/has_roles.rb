@@ -9,6 +9,7 @@ module Rabarber
 
       @@included = name
 
+      # TODO: it looks like rabarber_roles relation has to be cached, not the role names
       has_and_belongs_to_many :rabarber_roles, class_name: "Rabarber::Role",
                                                foreign_key: "roleable_id",
                                                join_table: "rabarber_roles_roleables"

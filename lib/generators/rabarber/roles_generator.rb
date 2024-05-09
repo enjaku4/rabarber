@@ -2,7 +2,8 @@
 
 require "rails/generators/migration"
 
-# TODO: is seamless migration to the new table structure possible?
+# TODO: seamless migration to the new table structure seems to be impossible, because of the unique index on name
+# TODO: do something to help users migrate their data
 
 module Rabarber
   class RolesGenerator < Rails::Generators::Base

@@ -10,7 +10,7 @@ ActiveRecord::Schema.define do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["context_type", "context_id"], name: "index_rabarber_roles_on_context"
-    t.index ["name"], name: "index_rabarber_roles_on_name", unique: true
+    t.index ["name", "context_type", "context_id"], name: "index_rabarber_roles_on_name_and_context_type_and_context_id", unique: true
   end
 
   create_table "rabarber_roles_roleables", id: false, force: :cascade do |t|

@@ -13,6 +13,7 @@ module Rabarber
         context
       end
 
+      # TODO: perhaps this class is not needed and to_s can be moved to audit base class
       def to_s
         case context
         in { context_type: nil, context_id: nil } then "Global"

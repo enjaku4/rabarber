@@ -4,22 +4,11 @@ RSpec.describe Rabarber::Core::Context do
   describe "#initialize" do
     subject { described_class.new(context) }
 
-    context "when context is not hash" do
-      let(:context) { Project.create! }
+    let(:context) { Project.create! }
 
-      it "processes the input context" do
-        expect(Rabarber::Input::Context).to receive(:new).with(context).and_call_original
-        expect(subject.context).to eq(context_type: "Project", context_id: context.id)
-      end
-    end
-
-    context "when context is a hash" do
-      let(:context) { { context_type: "Project", context_id: nil } }
-
-      it "does not process the input context" do
-        expect(Rabarber::Input::Context).not_to receive(:new)
-        expect(subject.context).to eq(context)
-      end
+    it "processes the input context" do
+      expect(Rabarber::Input::Context).to receive(:new).with(context).and_call_original
+      expect(subject.context).to eq(context_type: "Project", context_id: context.id)
     end
   end
 

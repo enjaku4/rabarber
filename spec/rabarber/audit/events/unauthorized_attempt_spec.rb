@@ -11,7 +11,7 @@ RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
     before { roleable.assign_roles(:admin) }
 
     it "logs the unauthorized attempt" do
-      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] User##{roleable.id} | roles: {'Global'=>[:admin]}, path: '#{path}'").and_call_original
+      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] User##{roleable.id} | path: '#{path}'").and_call_original
       subject
     end
   end

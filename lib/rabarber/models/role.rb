@@ -4,7 +4,10 @@ module Rabarber
   class Role < ActiveRecord::Base
     self.table_name = "rabarber_roles"
 
-    validates :name, presence: true, uniqueness: true, format: { with: Rabarber::Input::Role::REGEX }, strict: true
+    validates :name,
+              presence: true,
+              uniqueness: { scope: [:context_type, :context_id] },
+              format: { with: Rabarber::Input::Role::REGEX }, strict: true
 
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 

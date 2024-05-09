@@ -11,7 +11,7 @@ module Rabarber
     end
 
     class_methods do
-      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
+      def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
         # TODO: this must accept context argument which is nil by default, but can also be a class or an instance
         # TODO: the context stored in memory must be represented as a hash { class_name: ..., id: ... }
         # TODO: both values in the hash can be nil
@@ -26,6 +26,7 @@ module Rabarber
           self,
           Rabarber::Input::Action.new(action).process,
           Rabarber::Input::Roles.new(roles).process,
+          Rabarber::Core::Context.new(context),
           Rabarber::Input::DynamicRule.new(dynamic_rule).process,
           Rabarber::Input::DynamicRule.new(negated_dynamic_rule).process
         )

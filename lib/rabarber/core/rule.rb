@@ -3,11 +3,12 @@
 module Rabarber
   module Core
     class Rule
-      attr_reader :action, :roles, :dynamic_rule, :negated_dynamic_rule
+      attr_reader :action, :roles, :context, :dynamic_rule, :negated_dynamic_rule
 
-      def initialize(action, roles, dynamic_rule, negated_dynamic_rule)
+      def initialize(action, roles, context, dynamic_rule, negated_dynamic_rule)
         @action = action
         @roles = Array(roles)
+        @context = context
         @dynamic_rule = dynamic_rule
         @negated_dynamic_rule = negated_dynamic_rule
       end

@@ -246,8 +246,6 @@ end
 ```
 This grants access to `index` action for users with `accountant` or `admin` role, and access to `destroy` action for `admin` users only.
 
-Please note that Rabarber does not provide any built-in data scoping mechanism as it is not a part of the authorization layer and is not necessarily role specific or has anything to do with the current user. The business logic can vary drastically depending on the application, so you're encouraged to limit the data visibility yourself, for example, in the same way as in the example above, where `accountant` role can only see paid invoices.
-
 You can also define controller-wide rules (without `action` argument):
 
 ```rb
@@ -289,11 +287,9 @@ class InvoicesController < ApplicationController
 end
 ```
 
-This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`. This extends to scenarios where there is no user present, i.e. when the method responsible for returning the currently authenticated user in your application returns `nil`.
+This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`.
 
-If the user is not authenticated (the method responsible for returning the currently authenticated user in your application returns `nil`), Rabarber will handle this situation as if the user has no roles.
-
-If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles (or unauthenticated users) are not allowed to access anything.
+If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
 
 Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
 ```rb
@@ -349,7 +345,7 @@ class Crm::InvoicesController < ApplicationController
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called. Alternatively, it can be a proc, which will be executed within the context of the controller's instance.
+You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called, or alternatively it can be a proc that will be executed within the context of the controller instance at request time.
 
 You can use only dynamic rules without specifying roles if that suits your needs:
 ```rb

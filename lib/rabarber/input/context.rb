@@ -12,8 +12,8 @@ module Rabarber
       def processed_value
         case value
         when nil then { context_type: nil, context_id: nil }
-        when Class then { context_type: value, context_id: nil }
-        when ActiveRecord::Base then { context_type: value.class, context_id: value.public_send(value.class.primary_key) }
+        when Class then { context_type: value.to_s, context_id: nil }
+        when ActiveRecord::Base then { context_type: value.class.to_s, context_id: value.public_send(value.class.primary_key) }
         end
       end
 

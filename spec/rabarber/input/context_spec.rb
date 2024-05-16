@@ -8,13 +8,13 @@ RSpec.describe Rabarber::Input::Context do
       context "when a class is given" do
         let(:context) { Project }
 
-        it { is_expected.to eq(context_type: Project, context_id: nil) }
+        it { is_expected.to eq(context_type: "Project", context_id: nil) }
       end
 
       context "when an instance of ActiveRecord::Base is given" do
         let(:context) { Project.create! }
 
-        it { is_expected.to eq(context_type: Project, context_id: context.id) }
+        it { is_expected.to eq(context_type: "Project", context_id: context.id) }
       end
 
       context "when nil is given" do

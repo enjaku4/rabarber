@@ -12,8 +12,8 @@ module Rabarber
     has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
     class << self
-      def names
-        pluck(:name).map(&:to_sym)
+      def names(context: nil)
+        where(Rabarber::Input::Context.new(context).process).pluck(:name).map(&:to_sym)
       end
 
       def add(name)

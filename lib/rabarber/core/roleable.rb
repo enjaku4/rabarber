@@ -4,6 +4,7 @@ module Rabarber
   module Core
     module Roleable
       def roleable
+        # TODO: how about NullRoleable
         send(Rabarber::Configuration.instance.current_user_method)
       end
 

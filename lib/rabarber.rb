@@ -8,6 +8,7 @@ require "active_support"
 
 require_relative "rabarber/input/base"
 require_relative "rabarber/input/action"
+require_relative "rabarber/input/context"
 require_relative "rabarber/input/dynamic_rule"
 require_relative "rabarber/input/role"
 require_relative "rabarber/input/roles"

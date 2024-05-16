@@ -34,28 +34,27 @@ module Rabarber
         end
 
         def message
+          # TODO: it seems the log messages will be changed significantly, worth mentioning in changelog
           raise NotImplementedError
         end
 
         def identity
-          roleable_identity(with_roles: identity_with_roles?)
-        end
-
-        def identity_with_roles?
-          raise NotImplementedError
-        end
-
-        def roleable_identity(with_roles:)
           if roleable
             model_name = roleable.model_name.human
-            primary_key = roleable.class.primary_key
-            roleable_id = roleable.public_send(primary_key)
+            roleable_id = roleable.public_send(roleable.class.primary_key)
 
-            roles = with_roles ? ", roles: #{roleable.roles}" : ""
-
-            "#{model_name} with #{primary_key}: '#{roleable_id}'#{roles}"
+            "#{model_name}##{roleable_id}"
           else
             "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
+          end
+        end
+
+        def human_context
+          case context
+          in { context_type: nil, context_id: nil } then "Global"
+          in { context_type: context_type, context_id: nil } then context_type
+          in { context_type: context_type, context_id: context_id } then "#{context_type}##{context_id}"
+          else raise "Unexpected context: #{context}"
           end
         end
       end

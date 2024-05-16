@@ -15,11 +15,7 @@ module Rabarber
         end
 
         def message
-          "[Unauthorized Attempt] #{identity} attempted to access '#{path}'"
-        end
-
-        def identity_with_roles?
-          true
+          "[Unauthorized Attempt] #{identity} | path: '#{path}'"
         end
 
         def path

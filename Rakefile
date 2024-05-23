@@ -13,7 +13,7 @@ task default: [:spec, :rubocop]
 
 namespace :todo do
   task :check do
-    files_with_todo = []
+    lines_with_todo = []
     total_files = 0
     root_dir = Dir.pwd
 
@@ -29,7 +29,7 @@ namespace :todo do
       File.foreach(file).with_index do |line, line_num|
         if line.include?("TODO")
           relative_file_path = Pathname.new(file).relative_path_from(Pathname.new(root_dir)).to_s
-          files_with_todo << "\e[36m#{relative_file_path}:#{line_num + 1}\e[0m: #{line.strip}"
+          lines_with_todo << "\e[36m#{relative_file_path}:#{line_num + 1}\e[0m: #{line.strip}"
           has_todo = true
         end
       end
@@ -39,13 +39,13 @@ namespace :todo do
 
     puts "\n\n"
 
-    if files_with_todo.empty?
+    if lines_with_todo.empty?
       puts "#{total_files} files checked, \e[32mno TODOs found\e[0m"
       exit(0)
     else
       puts "TODOs:\n\n"
-      puts "#{files_with_todo.join("\n")}\n\n"
-      puts "#{total_files} files checked, \e[31m#{files_with_todo.size} TODOs found\e[0m"
+      puts "#{lines_with_todo.join("\n")}\n\n"
+      puts "#{total_files} files checked, \e[31m#{lines_with_todo.size} TODO#{"s" if lines_with_todo.size > 1} found\e[0m"
       exit(1)
     end
   end

@@ -40,6 +40,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Authorization Rules](#authorization-rules)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
   - [When Unauthorized](#when-unauthorized)
+  - [Skip Authorization](#skip-authorization)
   - [View Helpers](#view-helpers)
   - [Audit Trail](#audit-trail)
 
@@ -387,6 +388,19 @@ end
 ```
 
 The method can be overridden in different controllers, providing flexibility in handling unauthorized access attempts.
+
+## Skip Authorization
+
+To skip authorization, use `.skip_authorization(options = {})` method:
+
+```rb
+class TicketsController < ApplicationController
+  skip_authorization only: :index
+  # ...
+end
+```
+
+This method accepts the same options as `skip_before_action` method in Rails.
 
 ## View Helpers
 

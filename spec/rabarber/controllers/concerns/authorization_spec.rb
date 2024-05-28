@@ -3,6 +3,13 @@
 RSpec.describe Rabarber::Authorization do
   let(:user) { User.create! }
 
+  describe ".skip_authorization" do
+    it "passes the options to skip_before_action" do
+      expect(DummyAuthController).to receive(:skip_before_action).with(:verify_access, only: [:index, :show], if: :foo?)
+      DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?)
+    end
+  end
+
   describe ".grant_access" do
     subject { DummyAuthController.grant_access(**args) }
 
@@ -492,5 +499,27 @@ RSpec.describe Rabarber::Authorization do
 
     it_behaves_like "it does not allow access when user must have roles", delete: :no_rules
     it_behaves_like "it checks permissions integrity", delete: :no_rules
+  end
+
+  describe SkipAuthorizationController, type: :controller do
+    before do
+      allow(controller).to receive(:current_user).and_return(user)
+      user.assign_roles(:manager)
+    end
+
+    describe "when action is skipped and no rules are applied" do
+      it_behaves_like "it allows access", get: :skip_no_rules
+    end
+
+    describe "when action is skipped and rules are applied" do
+      it_behaves_like "it allows access", put: :skip_rules
+    end
+
+    describe "when action is not skipped" do
+      it_behaves_like "it does not allow access", post: :no_skip
+
+      it_behaves_like "it does not allow access when user must have roles", post: :no_skip
+      it_behaves_like "it checks permissions integrity", post: :no_skip
+    end
   end
 end

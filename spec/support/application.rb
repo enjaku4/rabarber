@@ -33,4 +33,8 @@ DummyApplication.routes.draw do
   post "no_access", to: "no_user#no_access"
 
   delete "no_rules", to: "no_rules#no_rules"
+
+  get "skip_no_rules", to: "skip_authorization#skip_no_rules"
+  put "skip_rules", to: "skip_authorization#skip_rules"
+  post "no_skip", to: "skip_authorization#no_skip"
 end

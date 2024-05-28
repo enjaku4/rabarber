@@ -11,6 +11,10 @@ module Rabarber
     end
 
     class_methods do
+      def skip_authorization(options = {})
+        skip_before_action :verify_access, **options
+      end
+
       def grant_access(action: nil, roles: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 

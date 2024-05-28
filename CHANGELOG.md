@@ -1,3 +1,9 @@
+## v2.1.0
+
+### Features:
+
+- Added `Rabarber::Authorization.skip_authorization` method to skip authorization checks
+
 ## v2.0.0
 
 ### Breaking:

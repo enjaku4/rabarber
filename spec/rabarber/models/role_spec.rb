@@ -109,9 +109,11 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".add" do
-    subject { described_class.add(:admin) }
+    subject { described_class.add(:admin, context: context) }
 
     context "when the role does not exist" do
+      let(:context) { nil }
+
       it "creates the role" do
         expect { subject }.to change { described_class.where(name: "admin").count }.from(0).to(1)
       end
@@ -122,7 +124,9 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when the role exists" do
-      before { described_class.create!(name: "admin") }
+      let(:context) { Project.create! }
+
+      before { described_class.create!(name: "admin", context_type: "Project", context_id: context.id) }
 
       it "does nothing" do
         expect { subject }.not_to change(described_class, :count)
@@ -132,10 +136,26 @@ RSpec.describe Rabarber::Role do
 
       it_behaves_like "role name is processed", [:admin]
     end
+
+    context "when the role with the same name exists in a different context" do
+      let(:context) { Project }
+
+      before { described_class.create!(name: "admin") }
+
+      it "creates the role" do
+        expect { subject }.to change {
+          described_class.where(name: "admin", context_type: "Project", context_id: nil).count
+        }.from(0).to(1)
+      end
+
+      it { is_expected.to be true }
+
+      it_behaves_like "role name is processed", [:admin]
+    end
   end
 
   describe ".rename" do
-    subject { described_class.rename(:admin, :manager, force: force) }
+    subject { described_class.rename(:admin, :manager, context: context, force: force) }
 
     shared_examples_for "it does nothing" do |role_exists: true|
       if role_exists
@@ -154,7 +174,7 @@ RSpec.describe Rabarber::Role do
       it_behaves_like "role name is processed", [:admin, :manager]
     end
 
-    shared_examples_for "it renames the role" do |role_assigned: false|
+    shared_examples_for "it renames the role" do |role_assigned: false, processed_context: nil|
       it "renames the role" do
         expect { subject }.to change { role.reload.name }.from("admin").to("manager")
       end
@@ -162,7 +182,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: processed_context) if role_assigned
         subject
       end
 
@@ -170,11 +190,13 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when the role does not exist" do
+      let(:context) { Project }
+
       context "when force is false" do
         let(:force) { false }
 
         context "when the new role name is already taken" do
-          before { described_class.create!(name: "manager") }
+          before { described_class.create!(name: "manager", context_type: "Project", context_id: nil) }
 
           it_behaves_like "it does nothing", role_exists: false
         end
@@ -188,7 +210,7 @@ RSpec.describe Rabarber::Role do
         let(:force) { true }
 
         context "when the new role name is already taken" do
-          before { described_class.create!(name: "manager") }
+          before { described_class.create!(name: "manager", context_type: "Project", context_id: nil) }
 
           it_behaves_like "it does nothing", role_exists: false
         end
@@ -201,13 +223,14 @@ RSpec.describe Rabarber::Role do
 
     context "when the role exists" do
       let!(:role) { described_class.create!(name: "admin") } # rubocop:disable RSpec/LetSetup
+      let(:context) { nil }
 
       context "when the role is not assigned to any user" do
         context "when force is false" do
           let(:force) { false }
 
           context "when the new role name is already taken" do
-            before { described_class.create!(name: "manager") }
+            before { described_class.create!(name: "manager", context_type: nil, context_id: nil) }
 
             it_behaves_like "it does nothing"
           end
@@ -221,7 +244,7 @@ RSpec.describe Rabarber::Role do
           let(:force) { true }
 
           context "when the new role name is already taken" do
-            before { described_class.create!(name: "manager") }
+            before { described_class.create!(name: "manager", context_type: nil, context_id: nil) }
 
             it_behaves_like "it does nothing"
           end
@@ -241,7 +264,7 @@ RSpec.describe Rabarber::Role do
           let(:force) { false }
 
           context "when the new role name is already taken" do
-            before { described_class.create!(name: "manager") }
+            before { described_class.create!(name: "manager", context_type: nil, context_id: nil) }
 
             it_behaves_like "it does nothing"
           end
@@ -255,13 +278,13 @@ RSpec.describe Rabarber::Role do
           let(:force) { true }
 
           context "when the new role name is already taken" do
-            before { described_class.create!(name: "manager") }
+            before { described_class.create!(name: "manager", context_type: nil, context_id: nil) }
 
             it_behaves_like "it does nothing"
           end
 
           context "when the new role name is not taken" do
-            it_behaves_like "it renames the role", role_assigned: true
+            it_behaves_like "it renames the role", role_assigned: true, processed_context: { context_type: nil, context_id: nil }
           end
         end
       end
@@ -269,7 +292,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".remove" do
-    subject { described_class.remove(:admin, force: force) }
+    subject { described_class.remove(:admin, context: context, force: force) }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -288,7 +311,7 @@ RSpec.describe Rabarber::Role do
       it_behaves_like "role name is processed", [:admin]
     end
 
-    shared_examples_for "it deletes the role" do |role_assigned: false|
+    shared_examples_for "it deletes the role" do |role_assigned: false, processed_context: nil|
       it "deletes the role" do
         expect { subject }.to change(described_class.where(name: "admin"), :count).from(1).to(0)
       end
@@ -296,7 +319,7 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be true }
 
       it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id) if role_assigned
+        expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: processed_context) if role_assigned
         subject
       end
 
@@ -304,6 +327,8 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when the role does not exist" do
+      let(:context) { nil }
+
       context "when force is false" do
         let(:force) { false }
 
@@ -318,26 +343,28 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when the role exists" do
-      before { described_class.create!(name: "admin") }
+      let(:context) { Project }
+
+      before { described_class.create!(name: "admin", context_id: nil, context_type: "Project") }
 
       context "when the role is not assigned to any user" do
         context "when force is false" do
           let(:force) { false }
 
-          it_behaves_like "it deletes the role"
+          it_behaves_like "it deletes the role", processed_context: { context_type: "Project", context_id: nil }
         end
 
         context "when force is true" do
           let(:force) { true }
 
-          it_behaves_like "it deletes the role"
+          it_behaves_like "it deletes the role", processed_context: { context_type: "Project", context_id: nil }
         end
       end
 
       context "when the role is assigned to some users" do
         let(:user) { User.create! }
 
-        before { user.assign_roles(:admin) }
+        before { user.assign_roles(:admin, context: context) }
 
         context "when force is false" do
           let(:force) { false }
@@ -348,21 +375,22 @@ RSpec.describe Rabarber::Role do
         context "when force is true" do
           let(:force) { true }
 
-          it_behaves_like "it deletes the role", role_assigned: true
+          it_behaves_like "it deletes the role", role_assigned: true, processed_context: { context_type: "Project", context_id: nil }
         end
       end
     end
   end
 
   describe ".assignees" do
-    subject { described_class.assignees(role) }
+    subject { described_class.assignees(role, context: context) }
 
     let(:users) { [User.create!, User.create!] }
+    let(:context) { Project.create! }
 
     context "when the role exists" do
       let(:role) { "admin" }
 
-      before { described_class.create!(name: "admin") }
+      before { described_class.create!(name: "admin", context_type: "Project", context_id: context.id) }
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }
@@ -371,7 +399,7 @@ RSpec.describe Rabarber::Role do
       end
 
       context "when the role is assigned to some users" do
-        before { users.each { |user| user.assign_roles(:admin) } }
+        before { users.each { |user| user.assign_roles(:admin, context: context) } }
 
         it { is_expected.to match_array(users) }
 
@@ -385,6 +413,16 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be_empty }
 
       it_behaves_like "role name is processed", ["client"]
+    end
+
+    context "when the role with the same name exists in a different context" do
+      let(:role) { "admin" }
+
+      before { described_class.create!(name: "admin", context_type: "Project", context_id: nil) }
+
+      it { is_expected.to be_empty }
+
+      it_behaves_like "role name is processed", ["admin"]
     end
   end
 end

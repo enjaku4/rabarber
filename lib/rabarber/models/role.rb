@@ -16,45 +16,48 @@ module Rabarber
         where(Rabarber::Input::Context.new(context).process).pluck(:name).map(&:to_sym)
       end
 
-      def add(name)
+      def add(name, context: nil)
         name = process_role_name(name)
+        processed_context = process_context(context)
 
-        return false if exists?(name: name)
+        return false if exists?(name: name, **processed_context)
 
-        !!create!(name: name)
+        !!create!(name: name, **processed_context)
       end
 
-      def rename(old_name, new_name, force: false)
-        role = find_by(name: process_role_name(old_name))
+      def rename(old_name, new_name, context: nil, force: false)
+        processed_context = process_context(context)
+        role = find_by(name: process_role_name(old_name), **processed_context)
         name = process_role_name(new_name)
 
-        return false if !role || exists?(name: name) || assigned_to_roleables(role).any? && !force
+        return false if !role || exists?(name: name, **processed_context) || assigned_to_roleables(role).any? && !force
 
-        delete_roleables_cache(role)
+        delete_roleables_cache(role, context: processed_context)
 
         role.update!(name: name)
       end
 
-      def remove(name, force: false)
-        role = find_by(name: process_role_name(name))
+      def remove(name, context: nil, force: false)
+        processed_context = process_context(context)
+        role = find_by(name: process_role_name(name), **processed_context)
 
         return false if !role || assigned_to_roleables(role).any? && !force
 
-        delete_roleables_cache(role)
+        delete_roleables_cache(role, context: processed_context)
 
         !!role.destroy!
       end
 
-      def assignees(name)
+      def assignees(name, context: nil)
         Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
-          rabarber_roles: { name: Rabarber::Input::Role.new(name).process }
+          rabarber_roles: { name: Rabarber::Input::Role.new(name).process, **process_context(context) }
         )
       end
 
       private
 
-      def delete_roleables_cache(role)
-        Rabarber::Core::Cache.delete(*assigned_to_roleables(role))
+      def delete_roleables_cache(role, context:)
+        Rabarber::Core::Cache.delete(*assigned_to_roleables(role), context: context)
       end
 
       def assigned_to_roleables(role)
@@ -67,6 +70,10 @@ module Rabarber
 
       def process_role_name(name)
         Rabarber::Input::Role.new(name).process
+      end
+
+      def process_context(context)
+        Rabarber::Input::Context.new(context).process
       end
     end
   end

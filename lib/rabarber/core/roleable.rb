@@ -8,7 +8,7 @@ module Rabarber
       end
 
       def roleable_roles
-        roleable&.roles.to_a
+        roleable&.rabarber_roles || Rabarber::Role.none
       end
     end
   end

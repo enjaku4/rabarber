@@ -3,11 +3,12 @@
 module Rabarber
   module Core
     class Rule
-      attr_reader :action, :roles, :dynamic_rule, :negated_dynamic_rule
+      attr_reader :action, :roles, :context, :dynamic_rule, :negated_dynamic_rule
 
-      def initialize(action, roles, dynamic_rule, negated_dynamic_rule)
+      def initialize(action, roles, context, dynamic_rule, negated_dynamic_rule)
         @action = action
         @roles = Array(roles)
+        @context = context
         @dynamic_rule = dynamic_rule
         @negated_dynamic_rule = negated_dynamic_rule
       end
@@ -19,7 +20,7 @@ module Rabarber
       def roles_permitted?(roleable_roles)
         return false if Rabarber::Configuration.instance.must_have_roles && roleable_roles.empty?
 
-        roles.empty? || roles.intersection(roleable_roles).any?
+        roles.empty? || roles.intersection(roleable_roles.names(context: context)).any?
       end
 
       def dynamic_rule_followed?(dynamic_rule_receiver)

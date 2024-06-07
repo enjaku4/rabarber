@@ -15,13 +15,15 @@ module Rabarber
         skip_before_action :verify_access, **options
       end
 
-      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
+      # TODO: it is difficult or even impossible to pass an ActiveRecord object as a context, the method must be able to receive a symbol or a lambda
+      def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
         Rabarber::Core::Permissions.add(
           self,
           Rabarber::Input::Action.new(action).process,
           Rabarber::Input::Roles.new(roles).process,
+          Rabarber::Input::Context.new(context).process,
           Rabarber::Input::DynamicRule.new(dynamic_rule).process,
           Rabarber::Input::DynamicRule.new(negated_dynamic_rule).process
         )

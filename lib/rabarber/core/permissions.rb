@@ -19,8 +19,8 @@ module Rabarber
       end
 
       class << self
-        def add(controller, action, roles, dynamic_rule, negated_dynamic_rule)
-          rule = Rabarber::Core::Rule.new(action, roles, dynamic_rule, negated_dynamic_rule)
+        def add(controller, action, roles, context, dynamic_rule, negated_dynamic_rule)
+          rule = Rabarber::Core::Rule.new(action, roles, context, dynamic_rule, negated_dynamic_rule)
 
           if action
             instance.storage[:action_rules][controller] += [rule]

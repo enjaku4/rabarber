@@ -14,6 +14,7 @@ module Rabarber
           :warn
         end
 
+        # TODO: add request method to the message
         def message
           "[Unauthorized Attempt] #{identity} | path: '#{path}'"
         end

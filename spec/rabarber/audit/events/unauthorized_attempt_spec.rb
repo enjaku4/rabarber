@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
-  subject { described_class.trigger(roleable, path: path) }
-
-  let(:path) { "/admin" }
+  subject { described_class.trigger(roleable, path: "/admin", request_method: "DELETE") }
 
   context "when roleable is not nil" do
     let(:roleable) { User.create }
@@ -11,7 +9,7 @@ RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
     before { roleable.assign_roles(:admin) }
 
     it "logs the unauthorized attempt" do
-      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] User##{roleable.id} | path: '#{path}'").and_call_original
+      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] User##{roleable.id} | request: DELETE '/admin'").and_call_original
       subject
     end
   end
@@ -20,7 +18,7 @@ RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
     let(:roleable) { nil }
 
     it "logs the unauthorized attempt" do
-      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] Unauthenticated user | path: '#{path}'").and_call_original
+      expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] Unauthenticated user | request: DELETE '/admin'").and_call_original
       subject
     end
   end

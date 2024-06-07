@@ -3,19 +3,18 @@
 module Rabarber
   module Core
     module Access
-      def access_granted?(roles, controller, action, controller_instance)
-        controller_accessible?(roles, controller, controller_instance) ||
-          action_accessible?(roles, controller, action, controller_instance)
+      def access_granted?(roles, action, controller_instance)
+        controller_accessible?(roles, controller_instance) || action_accessible?(roles, action, controller_instance)
       end
 
-      def controller_accessible?(roles, controller, controller_instance)
+      def controller_accessible?(roles, controller_instance)
         controller_rules.any? do |rule_controller, rule|
-          controller <= rule_controller && rule.verify_access(roles, controller_instance)
+          controller_instance.class <= rule_controller && rule.verify_access(roles, controller_instance)
         end
       end
 
-      def action_accessible?(roles, controller, action, controller_instance)
-        action_rules[controller].any? do |rule|
+      def action_accessible?(roles, action, controller_instance)
+        action_rules[controller_instance.class].any? do |rule|
           rule.action == action && rule.verify_access(roles, controller_instance)
         end
       end

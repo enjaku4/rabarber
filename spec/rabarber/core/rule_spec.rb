@@ -109,9 +109,9 @@ RSpec.describe Rabarber::Core::Rule do
   end
 
   describe "#dynamic_rule_followed?" do
-    subject { rule.dynamic_rule_followed?(dynamic_rule_receiver) }
+    subject { rule.dynamic_rule_followed?(controller_instance) }
 
-    let(:dynamic_rule_receiver) { double }
+    let(:controller_instance) { double }
     let(:rule) { described_class.new(:index, :manager, dynamic_rule, negated_dynamic_rule) }
 
     context "both dynamic rules are empty" do
@@ -124,7 +124,7 @@ RSpec.describe Rabarber::Core::Rule do
     end
 
     context "when dynamic rule is a proc" do
-      before { allow(dynamic_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
+      before { allow(controller_instance).to receive(:params).and_return({ foo: "bar" }) }
 
       context "when negated dynamic rule is nil" do
         let(:negated_dynamic_rule) { nil }
@@ -194,7 +194,7 @@ RSpec.describe Rabarber::Core::Rule do
     end
 
     context "when dynamic rule is a method name" do
-      before { allow(dynamic_rule_receiver).to receive_messages(foo: true, bar: false) }
+      before { allow(controller_instance).to receive_messages(foo: true, bar: false) }
 
       context "when negated dynamic rule is nil" do
         let(:negated_dynamic_rule) { nil }

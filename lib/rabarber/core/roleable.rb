@@ -7,8 +7,8 @@ module Rabarber
         send(Rabarber::Configuration.instance.current_user_method)
       end
 
-      def roleable_roles
-        roleable&.rabarber_roles || Rabarber::Role.none
+      def roleable_roles(context: nil)
+        roleable&.roles(context: context) || []
       end
     end
   end

@@ -34,7 +34,7 @@ module Rabarber
     def verify_access
       Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
 
-      return if Rabarber::Core::Permissions.access_granted?(roleable_roles, action_name.to_sym, self)
+      return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 
       Rabarber::Audit::Events::UnauthorizedAttempt.trigger(
         roleable, path: request.path, request_method: request.request_method

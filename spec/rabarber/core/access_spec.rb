@@ -6,16 +6,15 @@ RSpec.describe Rabarber::Core::Access do
   before { permissions.extend(described_class) }
 
   describe ".access_granted?" do
-    subject { permissions.access_granted?([:admin, :client], DummyController, :index, controller_instance) }
+    subject { permissions.access_granted?(user, :index, controller_instance) }
 
+    let(:user) { User.create! }
     let(:controller_instance) { double }
 
     context "if controller is accessible" do
       before do
-        allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, controller_instance).and_return(true)
-        allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, controller_instance).and_return(false)
+        allow(permissions).to receive(:controller_accessible?).with(user, controller_instance).and_return(true)
+        allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(false)
       end
 
       it "returns true" do
@@ -25,10 +24,8 @@ RSpec.describe Rabarber::Core::Access do
 
     context "if action is accessible" do
       before do
-        allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, controller_instance).and_return(false)
-        allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, controller_instance).and_return(true)
+        allow(permissions).to receive(:controller_accessible?).with(user, controller_instance).and_return(false)
+        allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(true)
       end
 
       it "returns true" do
@@ -38,10 +35,8 @@ RSpec.describe Rabarber::Core::Access do
 
     context "if controller and action are not accessible" do
       before do
-        allow(permissions).to receive(:controller_accessible?)
-          .with([:admin, :client], DummyController, controller_instance).and_return(false)
-        allow(permissions).to receive(:action_accessible?)
-          .with([:admin, :client], DummyController, :index, controller_instance).and_return(false)
+        allow(permissions).to receive(:controller_accessible?).with(user, controller_instance).and_return(false)
+        allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(false)
       end
 
       it "returns false" do
@@ -51,11 +46,12 @@ RSpec.describe Rabarber::Core::Access do
   end
 
   describe ".controller_accessible?" do
-    subject { permissions.controller_accessible?([:admin], controller, controller_instance) }
+    subject { permissions.controller_accessible?(user, controller_instance) }
 
-    let(:controller_instance) { double }
+    let(:user) { User.create! }
+    let(:controller_instance) { controller.new }
 
-    before { permissions.add(DummyParentController, nil, [:admin], nil, nil) }
+    before { permissions.add(DummyParentController, nil, [:admin], nil, nil, nil) }
 
     context "if controller is in permissions" do
       let(:controller) { DummyParentController }
@@ -63,7 +59,7 @@ RSpec.describe Rabarber::Core::Access do
       context "if role has access to the controller" do
         before do
           allow(permissions.controller_rules[controller]).to receive(:verify_access)
-            .with([:admin], controller_instance).and_return(true)
+            .with(user, controller_instance).and_return(true)
         end
 
         it "returns true" do
@@ -74,7 +70,7 @@ RSpec.describe Rabarber::Core::Access do
       context "if role doesn't have access to the controller" do
         before do
           allow(permissions.controller_rules[controller]).to receive(:verify_access)
-            .with([:admin], controller_instance).and_return(false)
+            .with(user, controller_instance).and_return(false)
         end
 
         it "returns false" do
@@ -89,7 +85,7 @@ RSpec.describe Rabarber::Core::Access do
       context "if role has access to the controller's parent" do
         before do
           allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
-            .with([:admin], controller_instance).and_return(true)
+            .with(user, controller_instance).and_return(true)
         end
 
         it "returns true" do
@@ -100,7 +96,7 @@ RSpec.describe Rabarber::Core::Access do
       context "if role doesn't have access to the controller's parent" do
         before do
           allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
-            .with([:admin], controller_instance).and_return(false)
+            .with(user, controller_instance).and_return(false)
         end
 
         it "returns false" do
@@ -119,11 +115,12 @@ RSpec.describe Rabarber::Core::Access do
   end
 
   describe ".action_accessible?" do
-    subject { permissions.action_accessible?([:admin], controller, action, controller_instance) }
+    subject { permissions.action_accessible?(user, action, controller_instance) }
 
-    let(:controller_instance) { double }
+    let(:user) { User.create! }
+    let(:controller_instance) { controller.new }
 
-    before { permissions.add(DummyController, :index, [:admin], nil, nil) }
+    before { permissions.add(DummyController, :index, [:admin], nil, nil, nil) }
 
     context "if controller is in permissions" do
       let(:controller) { DummyController }
@@ -134,7 +131,7 @@ RSpec.describe Rabarber::Core::Access do
         context "if role has access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], controller_instance).and_return(true)
+              .with(user, controller_instance).and_return(true)
           end
 
           it "returns true" do
@@ -145,7 +142,7 @@ RSpec.describe Rabarber::Core::Access do
         context "if role doesn't have access to the action" do
           before do
             allow(permissions.action_rules[controller].first).to receive(:verify_access)
-              .with([:admin], controller_instance).and_return(false)
+              .with(user, controller_instance).and_return(false)
           end
 
           it "returns false" do

@@ -15,7 +15,7 @@ RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
   end
 
   context "when roleable is nil" do
-    let(:roleable) { nil }
+    let(:roleable) { Rabarber::Core::NullRoleable.new }
 
     it "logs the unauthorized attempt" do
       expect(Rabarber::Audit::Logger).to receive(:log).with(:warn, "[Unauthorized Attempt] Unauthenticated user | request: DELETE '/admin'").and_call_original

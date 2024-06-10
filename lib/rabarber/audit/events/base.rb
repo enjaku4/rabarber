@@ -39,13 +39,13 @@ module Rabarber
         end
 
         def identity
-          if roleable
+          if roleable.is_a?(Rabarber::Core::NullRoleable)
+            "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
+          else
             model_name = roleable.model_name.human
             roleable_id = roleable.public_send(roleable.class.primary_key)
 
             "#{model_name}##{roleable_id}"
-          else
-            "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
           end
         end
 

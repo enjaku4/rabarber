@@ -61,7 +61,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :index, [:admin], args[:if], args[:unless]).and_call_original
+          .with(DummyAuthController, :index, [:admin], { context_id: nil, context_type: nil }, args[:if], args[:unless]).and_call_original
         subject
       end
 
@@ -95,7 +95,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :foo, [:bar], args[:if], nil).and_call_original
+          .with(DummyAuthController, :foo, [:bar], { context_id: nil, context_type: nil }, args[:if], nil).and_call_original
         subject
       end
     end
@@ -105,7 +105,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :foo, [:bar], nil, args[:unless]).and_call_original
+          .with(DummyAuthController, :foo, [:bar], { context_id: nil, context_type: nil }, nil, args[:unless]).and_call_original
         subject
       end
     end
@@ -115,7 +115,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :foo, [:bar], nil, nil).and_call_original
+          .with(DummyAuthController, :foo, [:bar], { context_id: nil, context_type: nil }, nil, nil).and_call_original
         subject
       end
     end
@@ -125,7 +125,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :foo, [:bar], args[:if], args[:unless]).and_call_original
+          .with(DummyAuthController, :foo, [:bar], { context_id: nil, context_type: nil }, args[:if], args[:unless]).and_call_original
         subject
       end
     end
@@ -135,7 +135,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, nil, [], nil, nil).and_call_original
+          .with(DummyAuthController, nil, [], { context_id: nil, context_type: nil }, nil, nil).and_call_original
         subject
       end
     end
@@ -173,7 +173,7 @@ RSpec.describe Rabarber::Authorization do
       allow(Rabarber::Audit::Events::UnauthorizedAttempt).to receive(:trigger).and_call_original
       send(hash.keys.first, hash.values.first, params: hash[:params])
       expect(Rabarber::Audit::Events::UnauthorizedAttempt)
-        .to have_received(:trigger).with(controller.current_user, path: request.path)
+        .to have_received(:trigger).with(controller.current_user.presence || an_instance_of(Rabarber::Core::NullRoleable), path: request.path, request_method: hash.keys.first.to_s.upcase)
     end
   end
 

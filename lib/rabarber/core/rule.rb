@@ -19,10 +19,11 @@ module Rabarber
 
       def roles_permitted?(roleable, controller_instance)
         processed_context = get_context(controller_instance)
+        roleable_roles = roleable.roles(context: processed_context)
 
-        return false if Rabarber::Configuration.instance.must_have_roles && roleable.roles(context: processed_context).empty?
+        return false if Rabarber::Configuration.instance.must_have_roles && roleable_roles.empty?
 
-        roles.empty? || roles.intersection(roleable.roles(context: processed_context)).any?
+        roles.empty? || roles.intersection(roleable_roles).any?
       end
 
       def dynamic_rule_followed?(controller_instance)

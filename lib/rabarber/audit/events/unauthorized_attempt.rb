@@ -15,7 +15,7 @@ module Rabarber
         end
 
         def message
-          "[Unauthorized Attempt] #{identity} | request: #{request_method} '#{path}'"
+          "[Unauthorized Attempt] #{identity} | request: #{request_method} #{path}"
         end
 
         def path

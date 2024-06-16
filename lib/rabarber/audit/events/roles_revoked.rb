@@ -15,7 +15,7 @@ module Rabarber
         end
 
         def message
-          "[Role Revocation] #{identity} | context: '#{human_context}', revoked roles: #{roles_to_revoke}, current roles: #{current_roles}"
+          "[Role Revocation] #{identity} | context: #{human_context} | revoked: #{roles_to_revoke} | current: #{current_roles}"
         end
 
         def context

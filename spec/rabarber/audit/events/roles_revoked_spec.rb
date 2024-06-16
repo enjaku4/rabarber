@@ -12,7 +12,7 @@ RSpec.describe Rabarber::Audit::Events::RolesRevoked do
     let(:roleable) { User.create }
 
     it "logs the role revocation" do
-      expect(Rabarber::Audit::Logger).to receive(:log).with(:info, "[Role Revocation] User##{roleable.id} | context: 'Project##{project.id}', revoked roles: #{roles_to_revoke}, current roles: #{current_roles}").and_call_original
+      expect(Rabarber::Audit::Logger).to receive(:log).with(:info, "[Role Revocation] User##{roleable.id} | context: Project##{project.id} | revoked: #{roles_to_revoke} | current: #{current_roles}").and_call_original
       subject
     end
   end

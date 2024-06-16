@@ -15,7 +15,7 @@ module Rabarber
         end
 
         def message
-          "[Role Assignment] #{identity} | context: '#{human_context}', assigned roles: #{roles_to_assign}, current roles: #{current_roles}"
+          "[Role Assignment] #{identity} | context: #{human_context} | assigned: #{roles_to_assign} | current: #{current_roles}"
         end
 
         def context

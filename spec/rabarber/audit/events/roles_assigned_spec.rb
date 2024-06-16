@@ -11,7 +11,7 @@ RSpec.describe Rabarber::Audit::Events::RolesAssigned do
     let(:roleable) { User.create }
 
     it "logs the role assignment" do
-      expect(Rabarber::Audit::Logger).to receive(:log).with(:info, "[Role Assignment] User##{roleable.id} | context: 'Global', assigned roles: #{roles_to_assign}, current roles: #{current_roles}").and_call_original
+      expect(Rabarber::Audit::Logger).to receive(:log).with(:info, "[Role Assignment] User##{roleable.id} | context: Global | assigned: #{roles_to_assign} | current: #{current_roles}").and_call_original
       subject
     end
   end

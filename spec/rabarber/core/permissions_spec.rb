@@ -9,11 +9,11 @@ RSpec.describe Rabarber::Core::Permissions do
 
     context "when action is given" do
       before do
-        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], nil, :dynamic_rule, false).and_return(rule)
+        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :context, :dynamic_rule, false).and_return(rule)
       end
 
       it "adds permissions to the action rules storage" do
-        expect { permissions.add(DummyController, :index, [:admin], nil, :dynamic_rule, false) }
+        expect { permissions.add(DummyController, :index, [:admin], :context, :dynamic_rule, false) }
           .to change { permissions.instance.storage[:action_rules] }
           .to({ DummyController => [rule] })
       end

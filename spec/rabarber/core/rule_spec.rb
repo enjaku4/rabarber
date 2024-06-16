@@ -4,7 +4,7 @@ RSpec.describe Rabarber::Core::Rule do
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController) }
 
-    let(:rule) { described_class.new(:index, :admin, nil, -> { true }, nil) }
+    let(:rule) { described_class.new(:index, :admin, -> { Project }, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
@@ -46,9 +46,9 @@ RSpec.describe Rabarber::Core::Rule do
     subject { rule.roles_permitted?(user, DummyController.new) }
 
     let(:user) { User.create! }
-    let(:rule) { described_class.new(:index, roles, nil, nil, nil) }
+    let(:rule) { described_class.new(:index, roles, { context_type: "Project", context_id: nil }, nil, nil) }
 
-    before { user.assign_roles(*user_roles) }
+    before { user.assign_roles(*user_roles, context: Project) }
 
     context "if roles are permitted" do
       let(:roles) { :admin }

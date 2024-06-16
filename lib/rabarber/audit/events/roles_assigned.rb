@@ -15,11 +15,11 @@ module Rabarber
         end
 
         def message
-          "[Role Assignment] #{identity} has been assigned the following roles: #{roles_to_assign}, current roles: #{current_roles}"
+          "[Role Assignment] #{identity} | context: #{human_context} | assigned: #{roles_to_assign} | current: #{current_roles}"
         end
 
-        def identity_with_roles?
-          false
+        def context
+          specifics.fetch(:context)
         end
 
         def roles_to_assign

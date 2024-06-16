@@ -43,6 +43,6 @@ end
 load "#{File.dirname(__FILE__)}/support/schema.rb"
 
 require "#{File.dirname(__FILE__)}/support/application"
+require "#{File.dirname(__FILE__)}/support/models"
 require "#{File.dirname(__FILE__)}/support/controllers"
 require "#{File.dirname(__FILE__)}/support/helpers"
-require "#{File.dirname(__FILE__)}/support/models"

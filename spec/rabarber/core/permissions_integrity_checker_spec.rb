@@ -9,7 +9,7 @@ RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
     let(:controller) { nil }
 
     context "when action is missing" do
-      before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil) }
+      before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil, nil) }
 
       it "raises error" do
         expect { subject }.to raise_error(Rabarber::Error, "Following actions were passed to 'grant_access' method but are not defined in the controller: [{DummyAuthController=>[:index]}]")
@@ -28,8 +28,8 @@ RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
 
     context "when action is missing" do
       before do
-        Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil)
-        Rabarber::Core::Permissions.add(DummyAuthController, :show, [], nil, nil)
+        Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], Project, nil, nil)
+        Rabarber::Core::Permissions.add(DummyAuthController, :show, [], Project.create!, nil, nil)
       end
 
       it "raises error" do

@@ -9,21 +9,21 @@ RSpec.describe Rabarber::Core::Permissions do
 
     context "when action is given" do
       before do
-        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :dynamic_rule, false).and_return(rule)
+        allow(Rabarber::Core::Rule).to receive(:new).with(:index, [:admin], :context, :dynamic_rule, false).and_return(rule)
       end
 
       it "adds permissions to the action rules storage" do
-        expect { permissions.add(DummyController, :index, [:admin], :dynamic_rule, false) }
+        expect { permissions.add(DummyController, :index, [:admin], :context, :dynamic_rule, false) }
           .to change { permissions.instance.storage[:action_rules] }
           .to({ DummyController => [rule] })
       end
     end
 
     context "when no action is given" do
-      before { allow(Rabarber::Core::Rule).to receive(:new).with(nil, [:admin, :manager], nil, nil).and_return(rule) }
+      before { allow(Rabarber::Core::Rule).to receive(:new).with(nil, [:admin, :manager], nil, nil, nil).and_return(rule) }
 
       it "adds permissions to the controller rules storage" do
-        expect { permissions.add(DummyController, nil, [:admin, :manager], nil, nil) }
+        expect { permissions.add(DummyController, nil, [:admin, :manager], nil, nil, nil) }
           .to change { permissions.instance.storage[:controller_rules] }
           .to({ DummyController => rule })
       end
@@ -33,8 +33,8 @@ RSpec.describe Rabarber::Core::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.add(DummyController, nil, [:admin], -> (foo) { foo }, :bar)
-        permissions.add(DummyParentController, nil, [], nil, nil)
+        permissions.add(DummyController, nil, [:admin], nil, -> (foo) { foo }, :bar)
+        permissions.add(DummyParentController, nil, [], nil, nil, nil)
       end
 
       it "returns rules for controllers" do
@@ -52,8 +52,8 @@ RSpec.describe Rabarber::Core::Permissions do
   describe ".action_rules" do
     context "if action rules exist" do
       before do
-        permissions.add(DummyController, :index, [], nil, nil)
-        permissions.add(DummyPagesController, :show, [:manager, :admin], -> { true }, :foo)
+        permissions.add(DummyController, :index, [], nil, nil, nil)
+        permissions.add(DummyPagesController, :show, [:manager, :admin], nil, -> { true }, :foo)
       end
 
       it "returns rules for actions" do

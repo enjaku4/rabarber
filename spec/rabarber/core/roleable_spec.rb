@@ -12,12 +12,18 @@ RSpec.describe Rabarber::Core::Roleable do
   end
 
   describe "#roleable_roles" do
-    subject { DummyController.new.roleable_roles }
+    subject { DummyController.new.roleable_roles(context: Project) }
 
     context "when user exists" do
-      before { user.assign_roles(:admin, :manager) }
+      before { user.assign_roles(:admin, :manager, context: Project) }
 
       it { is_expected.to contain_exactly(:admin, :manager) }
+    end
+
+    context "when user exists and has no such roles" do
+      before { user.assign_roles(:admin, :manager, context: nil) }
+
+      it { is_expected.to be_empty }
     end
 
     context "when user does not exist" do

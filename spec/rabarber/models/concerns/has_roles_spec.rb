@@ -31,15 +31,15 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#roles" do
-    subject { user.roles }
+    subject { user.roles(context: context) }
 
     let(:user) { User.create! }
 
-    shared_examples_for "it caches user roles" do
+    shared_examples_for "it caches user roles" do |processed_context, role_names|
       it "caches user roles" do
-        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id) do |&block|
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id, context: processed_context) do |&block|
           result = block.call
-          expect(result).to match_array(roles)
+          expect(result).to match_array(role_names)
           result
         end
         subject
@@ -48,27 +48,52 @@ RSpec.describe Rabarber::HasRoles do
 
     context "when the user has no roles" do
       let(:roles) { [] }
+      let(:context) { nil }
 
       it { is_expected.to eq(roles) }
 
-      it_behaves_like "it caches user roles"
+      it_behaves_like "it caches user roles", { context_type: nil, context_id: nil }, []
     end
 
     context "when the user has some roles" do
       let(:roles) { [:admin, :manager] }
+      let(:context) { nil }
 
       before { user.assign_roles(*roles) }
 
       it { is_expected.to match_array(roles) }
 
-      it_behaves_like "it caches user roles"
+      it_behaves_like "it caches user roles", { context_type: nil, context_id: nil }, [:admin, :manager]
+    end
+
+    context "when the user has the role with the same name in different context" do
+      let(:roles) { [:admin] }
+      let(:context) { Project }
+
+      before { user.assign_roles(*roles, context: Project.create!) }
+
+      it { is_expected.to be_empty }
+
+      it_behaves_like "it caches user roles", { context_type: "Project", context_id: nil }, []
+    end
+
+    context "when the user has the role in the specified context" do
+      let(:roles) { [:admin, :developer] }
+      let(:context) { Project }
+
+      before { user.assign_roles(*roles, context: context) }
+
+      it { is_expected.to match_array(roles) }
+
+      it_behaves_like "it caches user roles", { context_type: "Project", context_id: nil }, [:admin, :developer]
     end
   end
 
   describe "#has_role?" do
-    subject { user.has_role?(*roles) }
+    subject { user.has_role?(*roles, context: context) }
 
     let(:user) { User.create! }
+    let(:context) { nil }
 
     before { user.assign_roles(:admin, :manager) }
 
@@ -86,23 +111,42 @@ RSpec.describe Rabarber::HasRoles do
 
       it { is_expected.to be false }
     end
+
+    context "when the user has the role with the same name in different context" do
+      let(:roles) { [:admin] }
+      let(:context) { Project }
+
+      before { user.assign_roles(:admin, context: Project.create!) }
+
+      it { is_expected.to be false }
+    end
+
+    context "when the user has the role in the specified context" do
+      let(:roles) { [:admin] }
+      let(:context) { Project }
+
+      before { user.assign_roles(:admin, context: context) }
+
+      it { is_expected.to be true }
+    end
   end
 
-  shared_examples_for "it deletes the cache" do
+  shared_examples_for "it deletes the cache" do |processed_context|
     it "deletes the cache" do
-      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id).and_call_original
+      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: processed_context).and_call_original
       subject
     end
   end
 
   describe "#assign_roles" do
-    subject { user.assign_roles(*roles, create_new: create_new) }
+    subject { user.assign_roles(*roles, context: context, create_new: create_new) }
 
     let(:user) { User.create! }
 
     context "when create_new is true" do
       let(:create_new) { true }
       let(:roles) { [:admin, :manager] }
+      let(:context) { Project }
 
       it_behaves_like "role names are validated"
       it_behaves_like "role names are processed"
@@ -110,18 +154,23 @@ RSpec.describe Rabarber::HasRoles do
       context "when the given roles exist" do
         before do
           roles.each do |role_name|
-            Rabarber::Role.create!(name: role_name)
+            Rabarber::Role.create!(name: role_name, context_id: nil, context_type: "Project")
           end
         end
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles).to match_array(roles)
+          expect(user.roles(context: context)).to match_array(roles)
         end
 
         it "logs the role assignment" do
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(
+              user,
+              roles_to_assign: roles,
+              current_roles: roles,
+              context: { context_type: "Project", context_id: nil }
+            ).and_call_original
           subject
         end
 
@@ -129,12 +178,14 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
 
-        it_behaves_like "it deletes the cache"
+        it_behaves_like "it deletes the cache", { context_type: "Project", context_id: nil }
 
         it { is_expected.to match_array(roles) }
       end
 
       context "when the given roles do not exist" do
+        let(:context) { nil }
+
         it "assigns the given roles to the user" do
           subject
           expect(user.roles).to match_array(roles)
@@ -146,16 +197,23 @@ RSpec.describe Rabarber::HasRoles do
 
         it "logs the role assignment" do
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(
+              user,
+              roles_to_assign: roles,
+              current_roles: roles,
+              context: { context_type: nil, context_id: nil }
+            ).and_call_original
           subject
         end
 
-        it_behaves_like "it deletes the cache"
+        it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
         it { is_expected.to match_array(roles) }
       end
 
       context "when some of the given roles exist" do
+        let(:context) { nil }
+
         before { Rabarber::Role.create!(name: roles.first) }
 
         it "assigns the given roles to the user" do
@@ -169,21 +227,28 @@ RSpec.describe Rabarber::HasRoles do
 
         it "logs the role assignment" do
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(
+              user,
+              roles_to_assign: roles,
+              current_roles: roles,
+              context: { context_type: nil, context_id: nil }
+            ).and_call_original
           subject
         end
 
-        it_behaves_like "it deletes the cache"
+        it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
         it { is_expected.to match_array(roles) }
       end
 
       context "when the user has the given roles" do
-        before { user.assign_roles(*roles) }
+        let(:context) { Project.create! }
+
+        before { user.assign_roles(*roles, context: context) }
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles).to match_array(roles)
+          expect(user.roles(context: context)).to match_array(roles)
         end
 
         it "does not create new roles" do
@@ -207,25 +272,33 @@ RSpec.describe Rabarber::HasRoles do
     context "when create_new is false" do
       let(:create_new) { false }
       let(:roles) { [:admin, :manager] }
+      let(:context) { nil }
 
       it_behaves_like "role names are validated"
       it_behaves_like "role names are processed"
 
       context "when the given roles exist" do
+        let(:context) { Project }
+
         before do
           roles.each do |role_name|
-            Rabarber::Role.create!(name: role_name)
+            Rabarber::Role.create!(name: role_name, context_id: nil, context_type: "Project")
           end
         end
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles).to match_array(roles)
+          expect(user.roles(context: context)).to match_array(roles)
         end
 
         it "logs the role assignment" do
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: roles, current_roles: roles).and_call_original
+            .with(
+              user,
+              roles_to_assign: roles,
+              current_roles: roles,
+              context: { context_type: "Project", context_id: nil }
+            ).and_call_original
           subject
         end
 
@@ -233,15 +306,17 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
 
-        it_behaves_like "it deletes the cache"
+        it_behaves_like "it deletes the cache", { context_type: "Project", context_id: nil }
 
         it { is_expected.to match_array(roles) }
       end
 
       context "when the given roles do not exist" do
+        let(:context) { Project.create! }
+
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles).to be_empty
+          expect(user.roles(context: context)).to be_empty
         end
 
         it "does not create new roles" do
@@ -262,6 +337,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       context "when some of the given roles exist" do
+        let(:context) { nil }
+
         before { Rabarber::Role.create!(name: roles.first) }
 
         it "assignes existing roles" do
@@ -271,7 +348,12 @@ RSpec.describe Rabarber::HasRoles do
 
         it "logs the role assignment" do
           expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(user, roles_to_assign: [roles.first], current_roles: [roles.first]).and_call_original
+            .with(
+              user,
+              roles_to_assign: [roles.first],
+              current_roles: [roles.first],
+              context: { context_type: nil, context_id: nil }
+            ).and_call_original
           subject
         end
 
@@ -279,17 +361,19 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.not_to change(Rabarber::Role, :count).from(1)
         end
 
-        it_behaves_like "it deletes the cache"
+        it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
         it { is_expected.to contain_exactly(roles.first) }
       end
 
       context "when the user has the given roles" do
-        before { user.assign_roles(*roles) }
+        let(:context) { Project }
+
+        before { user.assign_roles(*roles, context: context) }
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles).to match_array(roles)
+          expect(user.roles(context: context)).to match_array(roles)
         end
 
         it "does not log the role assignment" do
@@ -312,39 +396,49 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#revoke_roles" do
-    subject { user.revoke_roles(*roles) }
+    subject { user.revoke_roles(*roles, context: context) }
 
     let(:user) { User.create! }
     let(:roles) { [:admin, :manager] }
+    let(:context) { nil }
 
     it_behaves_like "role names are validated"
     it_behaves_like "role names are processed"
 
     context "when the user has the given roles" do
-      before { user.assign_roles(*roles) }
+      let(:context) { Project }
+
+      before { user.assign_roles(*roles, context: context) }
 
       it "revokes the given roles from the user" do
         subject
-        expect(user.roles).to be_empty
+        expect(user.roles(context: context)).to be_empty
       end
 
       it "logs the role revocation" do
         expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(user, roles_to_revoke: roles, current_roles: []).and_call_original
+          .with(
+            user,
+            roles_to_revoke: roles,
+            current_roles: [],
+            context: { context_type: "Project", context_id: nil }
+          ).and_call_original
         subject
       end
 
-      it_behaves_like "it deletes the cache"
+      it_behaves_like "it deletes the cache", { context_type: "Project", context_id: nil }
 
       it { is_expected.to be_empty }
     end
 
     context "when the user does not have the given roles" do
-      before { user.assign_roles(:accountant) }
+      let(:context) { Project.create! }
+
+      before { user.assign_roles(:accountant, context: context) }
 
       it "does not revoke any roles from the user" do
         subject
-        expect(user.roles).to eq([:accountant])
+        expect(user.roles(context: context)).to eq([:accountant])
       end
 
       it "does not log the role revocation" do
@@ -361,6 +455,8 @@ RSpec.describe Rabarber::HasRoles do
     end
 
     context "when the user has some of the given roles" do
+      let(:context) { nil }
+
       before { user.assign_roles(*roles.first(1)) }
 
       it "revokes these roles from the user" do
@@ -370,11 +466,16 @@ RSpec.describe Rabarber::HasRoles do
 
       it "logs the role revocation" do
         expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(user, roles_to_revoke: roles.first(1), current_roles: []).and_call_original
+          .with(
+            user,
+            roles_to_revoke: roles.first(1),
+            current_roles: [],
+            context: { context_type: nil, context_id: nil }
+          ).and_call_original
         subject
       end
 
-      it_behaves_like "it deletes the cache"
+      it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
       it { is_expected.to be_empty }
     end

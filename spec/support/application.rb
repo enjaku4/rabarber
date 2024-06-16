@@ -37,4 +37,10 @@ DummyApplication.routes.draw do
   get "skip_no_rules", to: "skip_authorization#skip_no_rules"
   put "skip_rules", to: "skip_authorization#skip_rules"
   post "no_skip", to: "skip_authorization#no_skip"
+
+  get "global_ctx", to: "context#global_ctx"
+  post "class_ctx", to: "context#class_ctx"
+  put "instance_ctx", to: "context#instance_ctx"
+  patch "symbol_ctx", to: "context#symbol_ctx"
+  delete "proc_ctx", to: "context#proc_ctx"
 end

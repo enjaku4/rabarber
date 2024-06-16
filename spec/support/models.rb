@@ -9,3 +9,5 @@ class User < ApplicationRecord
 end
 
 class Client < ApplicationRecord; end
+
+class Project < ApplicationRecord; end

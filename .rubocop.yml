@@ -44,6 +44,9 @@ Rails/ApplicationController:
 Rails/ApplicationRecord:
   Enabled: false
 
+Rails/FilePath:
+  Enabled: false
+
 Rails/RakeEnvironment:
   Enabled: false
 
@@ -54,9 +57,6 @@ RSpec/ContextWording:
   Enabled: false
 
 RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/FilePath:
   Enabled: false
 
 RSpec/IndexedLet:

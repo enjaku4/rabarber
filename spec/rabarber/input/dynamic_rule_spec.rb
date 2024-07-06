@@ -32,13 +32,15 @@ RSpec.describe Rabarber::Input::DynamicRule do
 
     context "when the given dynamic rule is invalid" do
       [1, ["rule"], "", :"", Symbol, [], {}].each do |invalid_dynamic_rule|
-        let(:dynamic_rule) { invalid_dynamic_rule }
+        context "when '#{invalid_dynamic_rule}' is given" do
+          let(:dynamic_rule) { invalid_dynamic_rule }
 
-        it "raises an error when '#{invalid_dynamic_rule}' is given as a dynamic rule" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Dynamic rule must be a Symbol, a String, or a Proc"
-          )
+          it "raises an error" do
+            expect { subject }.to raise_error(
+              Rabarber::InvalidArgumentError,
+              "Dynamic rule must be a Symbol, a String, or a Proc"
+            )
+          end
         end
       end
     end

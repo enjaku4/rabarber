@@ -26,12 +26,14 @@ RSpec.describe Rabarber::Input::Action do
 
     context "when the given action is invalid" do
       [1, ["index"], "", Symbol, {}, :""].each do |invalid_action|
-        let(:action) { invalid_action }
+        context "when '#{invalid_action}' is given" do
+          let(:action) { invalid_action }
 
-        it "raises an error when '#{invalid_action}' is given as an action name" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
-          )
+          it "raises an error" do
+            expect { subject }.to raise_error(
+              Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
+            )
+          end
         end
       end
     end

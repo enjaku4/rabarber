@@ -42,16 +42,19 @@ RSpec.describe Rabarber::Input::AuthorizationContext do
       end
     end
 
-    # context "when the given context is invalid" do
-    #   [1, ["context"], "context", "", :context, {}, :""].each do |invalid_context|
-    #     let(:context) { invalid_context }
+    context "when the given context is invalid" do
+      [1, ["context"], "", {}, :""].each do |invalid_context|
+        context "when '#{invalid_context}' is given" do
+          let(:context) { invalid_context }
 
-    #     it "raises an error when '#{invalid_context}' is given as an action name" do
-    #       expect { subject }.to raise_error(
-    #         Rabarber::InvalidArgumentError, "Context must be a Class or an instance of ActiveRecord::Base"
-    #       )
-    #     end
-    #   end
-    # end
+          it "raises an error" do
+            expect { subject }.to raise_error(
+              Rabarber::InvalidArgumentError,
+              "Context must be a Class, an instance of ActiveRecord::Base, a Symbol, a String, or a Proc"
+            )
+          end
+        end
+      end
+    end
   end
 end

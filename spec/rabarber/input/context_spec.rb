@@ -32,12 +32,15 @@ RSpec.describe Rabarber::Input::Context do
 
     context "when the given context is invalid" do
       [1, ["context"], "context", "", :context, {}, :""].each do |invalid_context|
-        let(:context) { invalid_context }
+        context "when '#{invalid_context}' is given" do
+          let(:context) { invalid_context }
 
-        it "raises an error when '#{invalid_context}' is given as an action name" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError, "Context must be a Class or an instance of ActiveRecord::Base"
-          )
+          it "raises an error" do
+            expect { subject }.to raise_error(
+              Rabarber::InvalidArgumentError,
+              "Context must be a Class or an instance of ActiveRecord::Base"
+            )
+          end
         end
       end
     end

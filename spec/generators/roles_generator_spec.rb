@@ -31,9 +31,12 @@ RSpec.describe Rabarber::RolesGenerator do
         class CreateRabarberRoles < ActiveRecord::Migration[6.2]
           def change
             create_table :rabarber_roles do |t|
-              t.string :name, null: false, index: { unique: true }
+              t.string :name, null: false
+              t.belongs_to :context, polymorphic: true, index: true
               t.timestamps
             end
+
+            add_index :rabarber_roles, [:name, :context_type, :context_id], unique: true
 
             create_table :rabarber_roles_roleables, id: false do |t|
               t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }
@@ -61,9 +64,12 @@ RSpec.describe Rabarber::RolesGenerator do
         class CreateRabarberRoles < ActiveRecord::Migration[6.2]
           def change
             create_table :rabarber_roles, id: :uuid do |t|
-              t.string :name, null: false, index: { unique: true }
+              t.string :name, null: false
+              t.belongs_to :context, polymorphic: true, index: true, type: :uuid
               t.timestamps
             end
+
+            add_index :rabarber_roles, [:name, :context_type, :context_id], unique: true
 
             create_table :rabarber_roles_roleables, id: false do |t|
               t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }, type: :uuid

@@ -1,3 +1,19 @@
+## v3.0.0
+
+### Breaking:
+
+- Changed Rabarber roles table structure
+
+To upgrade to v3.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/58)
+
+### Features:
+
+- Introduced the ability to define and authorize roles within a specific context
+
+### Misc:
+
+- Revised log messages in the audit trail for clarity and conciseness
+
 ## v2.1.0
 
 ### Features:
@@ -12,7 +28,7 @@
 - Replaced `when_unauthorized` configuration option with an overridable controller method
 - Renamed `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
 
-To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/52).
+To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/52)
 
 ### Features:
 

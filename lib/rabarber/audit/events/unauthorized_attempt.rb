@@ -15,15 +15,15 @@ module Rabarber
         end
 
         def message
-          "[Unauthorized Attempt] #{identity} attempted to access '#{path}'"
-        end
-
-        def identity_with_roles?
-          true
+          "[Unauthorized Attempt] #{identity} | request: #{request_method} #{path}"
         end
 
         def path
           specifics.fetch(:path)
+        end
+
+        def request_method
+          specifics.fetch(:request_method)
         end
       end
     end

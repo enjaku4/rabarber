@@ -20,13 +20,15 @@ RSpec.describe Rabarber::Input::Role do
 
     context "when the given role is invalid" do
       [nil, "", 1, [""], Symbol, :"a-user", :Admin, "Admin", "admin ", { manager: true }].each do |invalid_role|
-        let(:role) { invalid_role }
+        context "when '#{invalid_role}' is given" do
+          let(:role) { invalid_role }
 
-        it "raises an error when '#{invalid_role}' is given as a role name" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Role name must be a Symbol or a String and may only contain lowercase letters, numbers and underscores"
-          )
+          it "raises an error" do
+            expect { subject }.to raise_error(
+              Rabarber::InvalidArgumentError,
+              "Role name must be a Symbol or a String and may only contain lowercase letters, numbers and underscores"
+            )
+          end
         end
       end
     end

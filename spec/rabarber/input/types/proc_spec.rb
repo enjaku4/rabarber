@@ -14,10 +14,12 @@ RSpec.describe Rabarber::Input::Types::Proc do
 
     context "when the given value is invalid" do
       [nil, 1, "foo", :foo, [], {}, User].each do |invalid_value|
-        let(:value) { invalid_value }
+        context "when '#{invalid_value}' is given" do
+          let(:value) { invalid_value }
 
-        it "raises an ArgumentError when '#{invalid_value}' is given" do
-          expect { subject }.to raise_error(Rabarber::Error, "Error")
+          it "raises an error" do
+            expect { subject }.to raise_error(Rabarber::Error, "Error")
+          end
         end
       end
     end

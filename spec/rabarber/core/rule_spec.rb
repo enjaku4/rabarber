@@ -4,11 +4,11 @@ RSpec.describe Rabarber::Core::Rule do
   describe "#verify_access" do
     subject { rule.verify_access(:admin, DummyController) }
 
-    let(:rule) { described_class.new(:index, :admin, -> { true }, nil) }
+    let(:rule) { described_class.new(:index, :admin, -> { Project }, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
-        allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
+        allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
         allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
       end
 
@@ -20,7 +20,7 @@ RSpec.describe Rabarber::Core::Rule do
     context "if one condition is not met" do
       context "if roles are not permitted" do
         before do
-          allow(rule).to receive(:roles_permitted?).with(:admin).and_return(false)
+          allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(false)
           allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
         end
 
@@ -31,7 +31,7 @@ RSpec.describe Rabarber::Core::Rule do
 
       context "if dynamic rule is not followed" do
         before do
-          allow(rule).to receive(:roles_permitted?).with(:admin).and_return(true)
+          allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
           allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
         end
 
@@ -43,9 +43,12 @@ RSpec.describe Rabarber::Core::Rule do
   end
 
   describe "#roles_permitted?" do
-    subject { rule.roles_permitted?(user_roles) }
+    subject { rule.roles_permitted?(user, DummyController.new) }
 
-    let(:rule) { described_class.new(:index, roles, nil, nil) }
+    let(:user) { User.create! }
+    let(:rule) { described_class.new(:index, roles, { context_type: "Project", context_id: nil }, nil, nil) }
+
+    before { user.assign_roles(*user_roles, context: Project) }
 
     context "if roles are permitted" do
       let(:roles) { :admin }
@@ -109,10 +112,10 @@ RSpec.describe Rabarber::Core::Rule do
   end
 
   describe "#dynamic_rule_followed?" do
-    subject { rule.dynamic_rule_followed?(dynamic_rule_receiver) }
+    subject { rule.dynamic_rule_followed?(controller_instance) }
 
-    let(:dynamic_rule_receiver) { double }
-    let(:rule) { described_class.new(:index, :manager, dynamic_rule, negated_dynamic_rule) }
+    let(:controller_instance) { double }
+    let(:rule) { described_class.new(:index, :manager, nil, dynamic_rule, negated_dynamic_rule) }
 
     context "both dynamic rules are empty" do
       let(:dynamic_rule) { nil }
@@ -124,7 +127,7 @@ RSpec.describe Rabarber::Core::Rule do
     end
 
     context "when dynamic rule is a proc" do
-      before { allow(dynamic_rule_receiver).to receive(:params).and_return({ foo: "bar" }) }
+      before { allow(controller_instance).to receive(:params).and_return({ foo: "bar" }) }
 
       context "when negated dynamic rule is nil" do
         let(:negated_dynamic_rule) { nil }
@@ -194,7 +197,7 @@ RSpec.describe Rabarber::Core::Rule do
     end
 
     context "when dynamic rule is a method name" do
-      before { allow(dynamic_rule_receiver).to receive_messages(foo: true, bar: false) }
+      before { allow(controller_instance).to receive_messages(foo: true, bar: false) }
 
       context "when negated dynamic rule is nil" do
         let(:negated_dynamic_rule) { nil }

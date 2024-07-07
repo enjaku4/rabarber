@@ -15,13 +15,14 @@ module Rabarber
         skip_before_action :verify_access, **options
       end
 
-      def grant_access(action: nil, roles: nil, if: nil, unless: nil)
+      def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
         dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
 
         Rabarber::Core::Permissions.add(
           self,
           Rabarber::Input::Action.new(action).process,
           Rabarber::Input::Roles.new(roles).process,
+          Rabarber::Input::AuthorizationContext.new(context).process,
           Rabarber::Input::DynamicRule.new(dynamic_rule).process,
           Rabarber::Input::DynamicRule.new(negated_dynamic_rule).process
         )
@@ -33,9 +34,11 @@ module Rabarber
     def verify_access
       Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
 
-      return if Rabarber::Core::Permissions.access_granted?(roleable_roles, self.class, action_name.to_sym, self)
+      return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 
-      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(roleable, path: request.path)
+      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(
+        roleable, path: request.path, request_method: request.request_method
+      )
 
       when_unauthorized
     end

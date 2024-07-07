@@ -29,6 +29,9 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  Enabled: false
+
 Naming/PredicateName:
   Enabled: false
 
@@ -39,6 +42,9 @@ Rails/ApplicationController:
   Enabled: false
 
 Rails/ApplicationRecord:
+  Enabled: false
+
+Rails/FilePath:
   Enabled: false
 
 Rails/RakeEnvironment:
@@ -53,7 +59,7 @@ RSpec/ContextWording:
 RSpec/ExampleLength:
   Enabled: false
 
-RSpec/FilePath:
+RSpec/IndexedLet:
   Enabled: false
 
 RSpec/MessageChain:

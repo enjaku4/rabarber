@@ -6,10 +6,11 @@ RSpec.describe Rabarber::Helpers do
   before { allow(dummy_helper).to receive(:current_user).and_return(user) }
 
   describe "#visible_to" do
-    subject { dummy_helper.visible_to(*roles) { "foo" } }
+    subject { dummy_helper.visible_to(*roles, context: context) { "foo" } }
 
     let(:user) { User.create! }
     let(:roles) { [:manager, :accountant] }
+    let(:context) { Project }
 
     context "when there is no current user" do
       let(:user) { nil }
@@ -26,23 +27,30 @@ RSpec.describe Rabarber::Helpers do
     end
 
     context "when the user has one of the given roles" do
-      before { user.assign_roles(:admin, :client, :accountant) }
+      before { user.assign_roles(:admin, :client, :accountant, context: Project) }
 
       it { is_expected.to eq("foo") }
     end
 
     context "when the user does not have any of the given roles" do
-      before { user.assign_roles(:admin, :client) }
+      before { user.assign_roles(:admin, :client, context: Project) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the user has roles with the same name in different context" do
+      before { user.assign_roles(:manager, :accountant, context: Project.create!) }
 
       it { is_expected.to be_nil }
     end
   end
 
   describe "#hidden_from" do
-    subject { dummy_helper.hidden_from(*roles) { "foo" } }
+    subject { dummy_helper.hidden_from(*roles, context: context) { "foo" } }
 
     let(:user) { User.create! }
     let(:roles) { [:manager, :accountant] }
+    let(:context) { nil }
 
     context "when there is no current user" do
       let(:user) { nil }
@@ -66,6 +74,12 @@ RSpec.describe Rabarber::Helpers do
 
     context "when the user does not have any of the given roles" do
       before { user.assign_roles(:admin, :client) }
+
+      it { is_expected.to eq("foo") }
+    end
+
+    context "when the user has roles with the same name in different context" do
+      before { user.assign_roles(:manager, :accountant, context: Project.create!) }
 
       it { is_expected.to eq("foo") }
     end

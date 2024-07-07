@@ -34,7 +34,6 @@ module Rabarber
         end
 
         def message
-          # TODO: it seems the log messages will be changed significantly, worth mentioning in changelog
           raise NotImplementedError
         end
 

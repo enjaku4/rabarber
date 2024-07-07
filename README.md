@@ -372,7 +372,7 @@ end
 
 Rabarber supports multi-tenancy by providing a context feature. This allows you to define and authorize roles and rules within a specific context.
 
-Every Rabarber method that accepts roles can also accept a context as an additional keyword argument. By default, the context is set to nil, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles, but you can still use the context with them if needed. Apart from being global, the context can be an instance of ActiveRecord model or a class.
+Every Rabarber method that accepts roles can also accept a context as an additional keyword argument. By default, the context is set to `nil`, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles. Apart from being global, the context can be an instance of ActiveRecord model or a class.
 
 E.g., consider a model named Project, where each project has its owner and regular members. Roles can be defined like this:
 

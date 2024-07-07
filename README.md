@@ -374,7 +374,7 @@ Rabarber supports multi-tenancy by providing a context feature. This allows you 
 
 Every Rabarber method that accepts roles can also accept a context as an additional keyword argument. By default, the context is set to nil, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles, but you can still use the context with them if needed. Apart from being global, the context can be an instance of ActiveRecord model or a class.
 
-E.g., let's say we have a model named `Project`, and each project has its owner and regular members. We can define the roles like this:
+E.g., consider a model named Project, where each project has its owner and regular members. Roles can be defined like this:
 
 ```rb
   user.assign_roles(:owner, context: project)
@@ -388,13 +388,13 @@ Then the roles can be verified:
   another_user.has_role?(:member, context: project)
 ```
 
-We can also add a role using a class as a context. Let's say there are project admins who can manage all projects:
+A role can also be added using a class as a context, e.g., for project admins who can manage all projects:
 
 ```rb
   user.assign_roles(:admin, context: Project)
 ```
 
-And then verify the role:
+And then it can also be verified:
 
 ```rb
   user.has_role?(:admin, context: Project)

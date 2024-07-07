@@ -116,7 +116,7 @@ end
 
 This adds the following methods:
 
-**`#assign_roles(*roles, create_new: true)`**
+**`#assign_roles(*roles, context: nil, create_new: true)`**
 
 To assign roles, use:
 
@@ -129,7 +129,7 @@ user.assign_roles(:accountant, :marketer, create_new: false)
 ```
 The method returns an array of roles assigned to the user.
 
-**`#revoke_roles(*roles)`**
+**`#revoke_roles(*roles, context: nil)`**
 
 To revoke roles, use:
 
@@ -140,7 +140,7 @@ If the user doesn't have the role you want to revoke, it will be ignored.
 
 The method returns an array of roles assigned to the user.
 
-**`#has_role?(*roles)`**
+**`#has_role?(*roles, context: nil)`**
 
 To check whether the user has a role, use:
 
@@ -150,9 +150,9 @@ user.has_role?(:accountant, :marketer)
 
 It returns `true` if the user has at least one role and `false` otherwise.
 
-**`#roles`**
+**`#roles(context: nil)`**
 
-To get all the roles assigned to the user, use:
+To get the list of roles assigned to the user, use:
 
 ```rb
 user.roles
@@ -162,7 +162,7 @@ user.roles
 
 To manipulate roles directly, you can use `Rabarber::Role` methods:
 
-**`.add(role_name)`**
+**`.add(role_name, context: nil)`**
 
 To add a new role, use:
 
@@ -172,7 +172,7 @@ Rabarber::Role.add(:admin)
 
 This will create a new role with the specified name and return `true`. If the role already exists, it will return `false`.
 
-**`.rename(old_role_name, new_role_name, force: false)`**
+**`.rename(old_role_name, new_role_name, context: nil, force: false)`**
 
 To rename a role, use:
 
@@ -186,7 +186,7 @@ The method won't rename the role and will return `false` if it is assigned to an
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
 
-**`.remove(role_name, force: false)`**
+**`.remove(role_name, context: nil, force: false)`**
 
 To remove a role, use:
 
@@ -201,15 +201,15 @@ The method won't remove the role and will return `false` if it is assigned to an
 Rabarber::Role.remove(:admin, force: true)
 ```
 
-**`.names`**
+**`.names(context: nil)`**
 
-If you need to list all the role names available in your application, use:
+If you need to list the role names available in your application, use:
 
 ```rb
 Rabarber::Role.names
 ```
 
-**`.assignees(role_name)`**
+**`.assignees(role_name, context: nil)`**
 
 To get all the users to whom the role is assigned, use:
 
@@ -227,7 +227,7 @@ class ApplicationController < ActionController::Base
   # ...
 end
 ```
-This adds `.grant_access(action: nil, roles: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
+This adds `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
 
 The most basic usage of the method is as follows:
 
@@ -424,7 +424,19 @@ class ProjectsController < ApplicationController
 end
 ```
 
-It's important to note that role names are not unique globally but are unique within the scope of their context. E.g., `user.assign_roles(:admin, context: Project)` and `user.assign_roles(:admin)` assign different roles to the user.
+It's important to note that role names are not unique globally but are unique within the scope of their context. E.g., `user.assign_roles(:admin, context: Project)` and `user.assign_roles(:admin)` assign different roles to the user. The same as `Rabarber::Role.add(:admin, context: Project)` and `Rabarber::Role.add(:admin)` create different roles.
+
+If you want to see all the roles assigned to a user within a specific context, you can use:
+
+```rb
+  user.roles(context: project)
+```
+
+Or if you want to get all the roles available in a specific context, you can use:
+
+```rb
+  Rabarber::Role.names(context: Project)
+```
 
 ## When Unauthorized
 

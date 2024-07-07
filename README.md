@@ -1,5 +1,3 @@
-<!-- TODO: describe context feature -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -41,6 +39,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Roles](#roles)
   - [Authorization Rules](#authorization-rules)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
+  - [Context / Multitenancy](#context--multitenancy)
   - [When Unauthorized](#when-unauthorized)
   - [Skip Authorization](#skip-authorization)
   - [View Helpers](#view-helpers)
@@ -365,6 +364,62 @@ class InvoicesController < ApplicationController
   grant_access action: :index, if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
   def index
     # ...
+  end
+end
+```
+
+## Context / Multitenancy
+
+Rabarber supports multitenancy by providing a context feature. This allows you to define and authorize roles and rules within a specific context.
+
+Every Rabarber method that accepts roles can also accept a context as an additional keyword argument. By default, the context is set to nil, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles, but you can still use the context with them if needed. Apart from being global, the context can be an instance of ActiveRecord model or a class.
+
+E.g., let's say we have a model named `Project`, and each project has its owner and regular members. We can define the roles like this:
+
+```rb
+  user.assign_roles(:owner, context: project)
+  another_user.assign_roles(:member, context: project)
+```
+
+Then the roles can be verified:
+
+```rb
+  user.has_role?(:owner, context: project)
+  another_user.has_role?(:member, context: project)
+```
+
+We can also add a role using a class as a context. Let's say there are project admins who can manage all projects:
+
+```rb
+  user.assign_roles(:admin, context: Project)
+```
+
+And then verify the role:
+
+```rb
+  user.has_role?(:admin, context: Project)
+```
+
+In authorization rules, the context can be used in the same way, but it also can be a proc or a symbol (similar to dynamic rules):
+
+```rb
+class ProjectsController < ApplicationController
+  grant_access roles: :admin, context: Project
+
+  grant_access action: :show, roles: :member, context: :project
+  def show
+    # ...
+  end
+
+  grant_access action: :update, roles: :owner, context: -> { Project.find(params[:id]) }
+  def update
+    # ...
+  end
+
+  private
+
+  def project
+    Project.find(params[:id])
   end
 end
 ```

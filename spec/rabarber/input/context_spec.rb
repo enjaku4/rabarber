@@ -17,6 +17,17 @@ RSpec.describe Rabarber::Input::Context do
         it { is_expected.to eq(context_type: "Project", context_id: context.id) }
       end
 
+      context "when an instance of ActiveRecord::Base is given but not persisted" do
+        let(:context) { Project.new }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::InvalidArgumentError,
+            "Context must be a Class or an instance of ActiveRecord model"
+          )
+        end
+      end
+
       context "when nil is given" do
         let(:context) { nil }
 
@@ -38,7 +49,7 @@ RSpec.describe Rabarber::Input::Context do
           it "raises an error" do
             expect { subject }.to raise_error(
               Rabarber::InvalidArgumentError,
-              "Context must be a Class or an instance of ActiveRecord::Base"
+              "Context must be a Class or an instance of ActiveRecord model"
             )
           end
         end

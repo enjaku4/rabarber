@@ -40,7 +40,7 @@ RSpec.describe Rabarber::Authorization do
       it "raises an error" do
         expect { subject }.to raise_error(
           Rabarber::InvalidArgumentError,
-          "Context must be a Class, an instance of ActiveRecord::Base, a Symbol, a String, or a Proc"
+          "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
         )
       end
     end

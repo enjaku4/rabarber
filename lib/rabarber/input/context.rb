@@ -4,7 +4,7 @@ module Rabarber
   module Input
     class Context < Rabarber::Input::Base
       def valid?
-        value.nil? || value.is_a?(Class) || value.is_a?(ActiveRecord::Base) || already_processed?
+        value.nil? || value.is_a?(Class) || value.is_a?(ActiveRecord::Base) && value.persisted? || already_processed?
       end
 
       private
@@ -19,7 +19,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Context must be a Class or an instance of ActiveRecord::Base"
+        "Context must be a Class or an instance of ActiveRecord model"
       end
 
       def already_processed?

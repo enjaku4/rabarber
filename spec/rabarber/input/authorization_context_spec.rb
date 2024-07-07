@@ -17,6 +17,17 @@ RSpec.describe Rabarber::Input::AuthorizationContext do
         it { is_expected.to eq(context_type: "Project", context_id: context.id) }
       end
 
+      context "when an instance of ActiveRecord::Base is given but not persisted" do
+        let(:context) { Project.new }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Rabarber::InvalidArgumentError,
+            "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
+          )
+        end
+      end
+
       context "when nil is given" do
         let(:context) { nil }
 
@@ -50,7 +61,7 @@ RSpec.describe Rabarber::Input::AuthorizationContext do
           it "raises an error" do
             expect { subject }.to raise_error(
               Rabarber::InvalidArgumentError,
-              "Context must be a Class, an instance of ActiveRecord::Base, a Symbol, a String, or a Proc"
+              "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
             )
           end
         end

@@ -424,6 +424,8 @@ class ProjectsController < ApplicationController
 end
 ```
 
+It's important to note that role names are not unique globally but are unique within the scope of their context. E.g., `user.assign_roles(:admin, context: Project)` and `user.assign_roles(:admin)` assign different roles to the user.
+
 ## When Unauthorized
 
 By default, in the event of an unauthorized attempt, Rabarber redirects the user back if the request format is HTML (with fallback to the root path), and returns a 401 (Unauthorized) status code otherwise.

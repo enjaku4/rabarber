@@ -39,7 +39,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Roles](#roles)
   - [Authorization Rules](#authorization-rules)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
-  - [Context / Multitenancy](#context--multitenancy)
+  - [Context / Multi-tenancy](#context--multi-tenancy)
   - [When Unauthorized](#when-unauthorized)
   - [Skip Authorization](#skip-authorization)
   - [View Helpers](#view-helpers)
@@ -368,9 +368,9 @@ class InvoicesController < ApplicationController
 end
 ```
 
-## Context / Multitenancy
+## Context / Multi-tenancy
 
-Rabarber supports multitenancy by providing a context feature. This allows you to define and authorize roles and rules within a specific context.
+Rabarber supports multi-tenancy by providing a context feature. This allows you to define and authorize roles and rules within a specific context.
 
 Every Rabarber method that accepts roles can also accept a context as an additional keyword argument. By default, the context is set to nil, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles, but you can still use the context with them if needed. Apart from being global, the context can be an instance of ActiveRecord model or a class.
 

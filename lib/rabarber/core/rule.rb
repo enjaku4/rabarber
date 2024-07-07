@@ -37,11 +37,11 @@ module Rabarber
 
         return true if rule.nil?
 
-        result = !!if rule.is_a?(Proc)
-                     controller_instance.instance_exec(&rule)
-                   else
-                     controller_instance.send(rule)
-                   end
+        result = if rule.is_a?(Proc)
+                   controller_instance.instance_exec(&rule)
+                 else
+                   controller_instance.send(rule)
+                 end
 
         is_negated ? !result : result
       end

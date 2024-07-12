@@ -43,4 +43,6 @@ DummyApplication.routes.draw do
   put "instance_ctx", to: "context#instance_ctx"
   patch "symbol_ctx", to: "context#symbol_ctx"
   delete "proc_ctx", to: "context#proc_ctx"
+
+  get "api_action", to: "api#api_action"
 end

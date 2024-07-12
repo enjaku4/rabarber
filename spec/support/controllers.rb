@@ -120,3 +120,10 @@ class ContextController < ApplicationController
 
   def project = Project.create!
 end
+
+class ApiController < ActionController::API
+  include Rabarber::Authorization
+
+  grant_access action: :api_action, roles: :client
+  def api_action = head(:ok)
+end

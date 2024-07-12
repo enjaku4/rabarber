@@ -647,4 +647,25 @@ RSpec.describe Rabarber::Authorization do
       it_behaves_like "it checks permissions integrity", delete: :proc_ctx
     end
   end
+
+  describe ApiController, type: :controller do
+    before { allow(controller).to receive(:current_user).and_return(user) }
+
+    describe "it works with ActionController::API" do
+      context "when the user's role allows access" do
+        before { user.assign_roles(:client) }
+
+        it_behaves_like "it allows access", get: :api_action
+      end
+
+      context "when the user's role does not allow access" do
+        before { user.assign_roles(:admin) }
+
+        it_behaves_like "it does not allow access", get: :api_action
+      end
+
+      it_behaves_like "it does not allow access when user must have roles", get: :api_action
+      it_behaves_like "it checks permissions integrity", get: :api_action
+    end
+  end
 end

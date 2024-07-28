@@ -6,7 +6,7 @@ gemspec
 
 gem "byebug"
 gem "database_cleaner-active_record"
-gem "grepfruit", github: "enjaku4/grepfruit"
+gem "grepfruit"
 gem "rails", ENV.fetch("RAILS_VERSION", ">= 6.1")
 gem "rake"
 gem "rspec"

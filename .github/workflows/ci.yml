@@ -35,7 +35,7 @@ jobs:
           ruby-version: 3.0
           bundler-cache: true
       - name: Run grepfruit
-        run: bundle exec grepfruit
+        run: bundle exec grepfruit -r TODO -e 'vendor,.git,ci.yml:38' --search-hidden
 
   tests:
     runs-on: ubuntu-latest

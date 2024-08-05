@@ -1,3 +1,10 @@
+## v3.0.1
+
+### Misc:
+
+- Added support for Rails 7.2
+- Dropped support for Ruby 3.0
+
 ## v3.0.0
 
 ### Breaking:

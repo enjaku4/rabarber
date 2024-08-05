@@ -4,6 +4,7 @@
 
 - Added support for Rails 7.2
 - Dropped support for Ruby 3.0
+- Updated gemspec file to include missing metadata
 
 ## v3.0.0
 

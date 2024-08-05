@@ -31,7 +31,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#roles" do
-    subject { user.roles(context: context) }
+    subject { user.roles(context:) }
 
     let(:user) { User.create! }
 
@@ -81,7 +81,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:admin, :developer] }
       let(:context) { Project }
 
-      before { user.assign_roles(*roles, context: context) }
+      before { user.assign_roles(*roles, context:) }
 
       it { is_expected.to match_array(roles) }
 
@@ -90,7 +90,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#has_role?" do
-    subject { user.has_role?(*roles, context: context) }
+    subject { user.has_role?(*roles, context:) }
 
     let(:user) { User.create! }
     let(:context) { nil }
@@ -125,7 +125,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:admin] }
       let(:context) { Project }
 
-      before { user.assign_roles(:admin, context: context) }
+      before { user.assign_roles(:admin, context:) }
 
       it { is_expected.to be true }
     end
@@ -139,7 +139,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#assign_roles" do
-    subject { user.assign_roles(*roles, context: context, create_new: create_new) }
+    subject { user.assign_roles(*roles, context:, create_new:) }
 
     let(:user) { User.create! }
 
@@ -160,7 +160,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles(context: context)).to match_array(roles)
+          expect(user.roles(context:)).to match_array(roles)
         end
 
         it "logs the role assignment" do
@@ -244,11 +244,11 @@ RSpec.describe Rabarber::HasRoles do
       context "when the user has the given roles" do
         let(:context) { Project.create! }
 
-        before { user.assign_roles(*roles, context: context) }
+        before { user.assign_roles(*roles, context:) }
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles(context: context)).to match_array(roles)
+          expect(user.roles(context:)).to match_array(roles)
         end
 
         it "does not create new roles" do
@@ -288,7 +288,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "assigns the given roles to the user" do
           subject
-          expect(user.roles(context: context)).to match_array(roles)
+          expect(user.roles(context:)).to match_array(roles)
         end
 
         it "logs the role assignment" do
@@ -316,7 +316,7 @@ RSpec.describe Rabarber::HasRoles do
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles(context: context)).to be_empty
+          expect(user.roles(context:)).to be_empty
         end
 
         it "does not create new roles" do
@@ -369,11 +369,11 @@ RSpec.describe Rabarber::HasRoles do
       context "when the user has the given roles" do
         let(:context) { Project }
 
-        before { user.assign_roles(*roles, context: context) }
+        before { user.assign_roles(*roles, context:) }
 
         it "does not assign any roles to the user" do
           subject
-          expect(user.roles(context: context)).to match_array(roles)
+          expect(user.roles(context:)).to match_array(roles)
         end
 
         it "does not log the role assignment" do
@@ -396,7 +396,7 @@ RSpec.describe Rabarber::HasRoles do
   end
 
   describe "#revoke_roles" do
-    subject { user.revoke_roles(*roles, context: context) }
+    subject { user.revoke_roles(*roles, context:) }
 
     let(:user) { User.create! }
     let(:roles) { [:admin, :manager] }
@@ -408,11 +408,11 @@ RSpec.describe Rabarber::HasRoles do
     context "when the user has the given roles" do
       let(:context) { Project }
 
-      before { user.assign_roles(*roles, context: context) }
+      before { user.assign_roles(*roles, context:) }
 
       it "revokes the given roles from the user" do
         subject
-        expect(user.roles(context: context)).to be_empty
+        expect(user.roles(context:)).to be_empty
       end
 
       it "logs the role revocation" do
@@ -434,11 +434,11 @@ RSpec.describe Rabarber::HasRoles do
     context "when the user does not have the given roles" do
       let(:context) { Project.create! }
 
-      before { user.assign_roles(:accountant, context: context) }
+      before { user.assign_roles(:accountant, context:) }
 
       it "does not revoke any roles from the user" do
         subject
-        expect(user.roles(context: context)).to eq([:accountant])
+        expect(user.roles(context:)).to eq([:accountant])
       end
 
       it "does not log the role revocation" do

@@ -36,7 +36,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".names" do
-    subject { described_class.names(context: context) }
+    subject { described_class.names(context:) }
 
     let(:context) { nil }
 
@@ -109,7 +109,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".add" do
-    subject { described_class.add(:admin, context: context) }
+    subject { described_class.add(:admin, context:) }
 
     context "when the role does not exist" do
       let(:context) { nil }
@@ -155,7 +155,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".rename" do
-    subject { described_class.rename(:admin, :manager, context: context, force: force) }
+    subject { described_class.rename(:admin, :manager, context:, force:) }
 
     shared_examples_for "it does nothing" do |role_exists: true|
       if role_exists
@@ -292,7 +292,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".remove" do
-    subject { described_class.remove(:admin, context: context, force: force) }
+    subject { described_class.remove(:admin, context:, force:) }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -364,7 +364,7 @@ RSpec.describe Rabarber::Role do
       context "when the role is assigned to some users" do
         let(:user) { User.create! }
 
-        before { user.assign_roles(:admin, context: context) }
+        before { user.assign_roles(:admin, context:) }
 
         context "when force is false" do
           let(:force) { false }
@@ -382,7 +382,7 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".assignees" do
-    subject { described_class.assignees(role, context: context) }
+    subject { described_class.assignees(role, context:) }
 
     let(:users) { [User.create!, User.create!] }
     let(:context) { Project.create! }
@@ -399,7 +399,7 @@ RSpec.describe Rabarber::Role do
       end
 
       context "when the role is assigned to some users" do
-        before { users.each { |user| user.assign_roles(:admin, context: context) } }
+        before { users.each { |user| user.assign_roles(:admin, context:) } }
 
         it { is_expected.to match_array(users) }
 

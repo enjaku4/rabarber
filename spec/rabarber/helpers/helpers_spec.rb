@@ -6,7 +6,7 @@ RSpec.describe Rabarber::Helpers do
   before { allow(dummy_helper).to receive(:current_user).and_return(user) }
 
   describe "#visible_to" do
-    subject { dummy_helper.visible_to(*roles, context: context) { "foo" } }
+    subject { dummy_helper.visible_to(*roles, context:) { "foo" } }
 
     let(:user) { User.create! }
     let(:roles) { [:manager, :accountant] }
@@ -46,7 +46,7 @@ RSpec.describe Rabarber::Helpers do
   end
 
   describe "#hidden_from" do
-    subject { dummy_helper.hidden_from(*roles, context: context) { "foo" } }
+    subject { dummy_helper.hidden_from(*roles, context:) { "foo" } }
 
     let(:user) { User.create! }
     let(:roles) { [:manager, :accountant] }

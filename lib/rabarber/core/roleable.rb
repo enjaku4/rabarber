@@ -8,7 +8,7 @@ module Rabarber
       end
 
       def roleable_roles(context: nil)
-        roleable.roles(context: context)
+        roleable.roles(context:)
       end
     end
 

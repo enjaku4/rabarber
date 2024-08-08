@@ -18,7 +18,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.1
           bundler-cache: true
       - name: Run RuboCop
         run: bundle exec rubocop --color
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0
+          ruby-version: 3.1
           bundler-cache: true
       - name: Run grepfruit
         run: bundle exec grepfruit -r TODO -e 'vendor,.git,ci.yml:38' --search-hidden
@@ -44,7 +44,6 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - "3.0"
           - "3.1"
           - "3.2"
           - "3.3"
@@ -52,6 +51,7 @@ jobs:
           - "~> 6.1.0"
           - "~> 7.0.0"
           - "~> 7.1.0"
+          - "7.2.0.rc1" # TODO: replace with "~> 7.2.0" when released
 
     env:
       RAILS_VERSION: "${{ matrix.rails }}"

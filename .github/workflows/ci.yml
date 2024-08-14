@@ -53,6 +53,9 @@ jobs:
           - "~> 7.0.0"
           - "~> 7.1.0"
           - "~> 7.2.0"
+        exclude:
+          - ruby: "3.0"
+            rails: "~> 7.2.0"
 
     env:
       RAILS_VERSION: "${{ matrix.rails }}"

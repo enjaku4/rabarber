@@ -7,9 +7,12 @@ Gem::Specification.new do |spec|
   spec.version = Rabarber::VERSION
   spec.authors = ["enjaku4", "trafium"]
   spec.email = ["rabarber_gem@icloud.com"]
-  spec.metadata["rubygems_mfa_required"] = "true"
-  spec.summary = "Simple role-based authorization library for Ruby on Rails."
   spec.homepage = "https://github.com/enjaku4/rabarber"
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
+  spec.metadata["rubygems_mfa_required"] = "true"
+  spec.summary = "Simple role-based authorization library for Ruby on Rails"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0", "< 3.4"
 
@@ -19,5 +22,5 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rails", ">= 6.1", "< 7.2"
+  spec.add_dependency "rails", ">= 6.1", "< 7.3"
 end

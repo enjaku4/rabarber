@@ -1,3 +1,10 @@
+## v3.0.1
+
+### Misc:
+
+- Added support for Rails 7.2
+- Updated gemspec file to include missing metadata
+
 ## v3.0.0
 
 ### Breaking:

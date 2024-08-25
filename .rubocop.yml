@@ -14,7 +14,6 @@ Layout/LineLength:
   Enabled: false
 
 Layout/SpaceInLambdaLiteral:
-  Enabled: true
   EnforcedStyle: require_space
 
 Lint/AmbiguousOperatorPrecedence:
@@ -81,7 +80,6 @@ RSpec/SpecFilePathFormat:
   Enabled: false
 
 Style/BlockDelimiters:
-  Enabled: true
   EnforcedStyle: braces_for_chaining
 
 Style/ClassVars:
@@ -94,24 +92,19 @@ Style/Documentation:
   Enabled: false
 
 Style/Lambda:
-  Enabled: true
   EnforcedStyle: literal
 
 Style/ParallelAssignment:
   Enabled: false
 
 Style/StringLiterals:
-  Enabled: true
   EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
-  Enabled: true
   EnforcedStyle: double_quotes
 
 Style/SymbolArray:
-  Enabled: true
   EnforcedStyle: brackets
 
 Style/WordArray:
-  Enabled: true
   EnforcedStyle: brackets

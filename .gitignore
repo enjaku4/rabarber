@@ -28,4 +28,4 @@ Gemfile.lock
 .vscode
 
 # solargraph
-.solargraph
+.solargraph.yml

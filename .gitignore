@@ -26,3 +26,6 @@ Gemfile.lock
 
 # VS Code
 .vscode
+
+# solargraph
+.solargraph

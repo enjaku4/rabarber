@@ -2,14 +2,12 @@
 
 require_relative "access"
 require_relative "rule"
-
 require "singleton"
 
 module Rabarber
   module Core
     class Permissions
       include Singleton
-
       extend Access
 
       attr_reader :storage
@@ -21,12 +19,7 @@ module Rabarber
       class << self
         def add(controller, action, roles, context, dynamic_rule, negated_dynamic_rule)
           rule = Rabarber::Core::Rule.new(action, roles, context, dynamic_rule, negated_dynamic_rule)
-
-          if action
-            instance.storage[:action_rules][controller] += [rule]
-          else
-            instance.storage[:controller_rules][controller] = rule
-          end
+          action ? action_rules[controller] += [rule] : controller_rules[controller] = rule
         end
 
         def controller_rules

@@ -3,12 +3,9 @@
 module Rabarber
   module Authorization
     extend ActiveSupport::Concern
-
     include Rabarber::Core::Roleable
 
-    included do
-      before_action :verify_access
-    end
+    included { before_action :verify_access }
 
     class_methods do
       def skip_authorization(options = {})
@@ -16,15 +13,13 @@ module Rabarber
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
-        dynamic_rule, negated_dynamic_rule = binding.local_variable_get(:if), binding.local_variable_get(:unless)
-
         Rabarber::Core::Permissions.add(
           self,
           Rabarber::Input::Action.new(action).process,
           Rabarber::Input::Roles.new(roles).process,
           Rabarber::Input::AuthorizationContext.new(context).process,
-          Rabarber::Input::DynamicRule.new(dynamic_rule).process,
-          Rabarber::Input::DynamicRule.new(negated_dynamic_rule).process
+          Rabarber::Input::DynamicRule.new(binding.local_variable_get(:if)).process,
+          Rabarber::Input::DynamicRule.new(binding.local_variable_get(:unless)).process
         )
       end
     end
@@ -36,9 +31,7 @@ module Rabarber
 
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 
-      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(
-        roleable, path: request.path, request_method: request.request_method
-      )
+      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(roleable, path: request.path, request_method: request.request_method)
 
       when_unauthorized
     end

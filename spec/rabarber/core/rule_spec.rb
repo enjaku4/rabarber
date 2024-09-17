@@ -29,10 +29,10 @@ RSpec.describe Rabarber::Core::Rule do
         end
       end
 
-      context "if dynamic rule is not followed" do
+      context "if dynamic rules are not followed" do
         before do
           allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
+          allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(false)
         end
 
         it "returns false" do
@@ -111,8 +111,8 @@ RSpec.describe Rabarber::Core::Rule do
     end
   end
 
-  describe "#dynamic_rule_followed?" do
-    subject { rule.dynamic_rule_followed?(controller_instance) }
+  describe "#dynamic_rules_followed?" do
+    subject { rule.dynamic_rules_followed?(controller_instance) }
 
     let(:controller_instance) { double }
     let(:rule) { described_class.new(:index, :manager, nil, dynamic_rule, negated_dynamic_rule) }

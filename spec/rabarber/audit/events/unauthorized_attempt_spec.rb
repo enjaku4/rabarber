@@ -3,7 +3,7 @@
 RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
   subject { described_class.trigger(roleable, path: "/admin", request_method: "DELETE") }
 
-  context "when roleable is not nil" do
+  context "when roleable is not null" do
     let(:roleable) { User.create }
 
     before { roleable.assign_roles(:admin) }
@@ -14,7 +14,7 @@ RSpec.describe Rabarber::Audit::Events::UnauthorizedAttempt do
     end
   end
 
-  context "when roleable is nil" do
+  context "when roleable is null" do
     let(:roleable) { Rabarber::Core::NullRoleable.new }
 
     it "logs the unauthorized attempt" do

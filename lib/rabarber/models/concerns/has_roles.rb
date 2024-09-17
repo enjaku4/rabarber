@@ -72,6 +72,10 @@ module Rabarber
       roles(context: processed_context)
     end
 
+    def log_identity
+      "#{model_name.human}##{roleable_id}"
+    end
+
     def roleable_class
       @@included.constantize
     end

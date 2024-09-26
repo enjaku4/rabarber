@@ -5,10 +5,10 @@ module Rabarber
     class Base
       attr_reader :value, :error_type, :error_message
 
-      def initialize(value, error_type = Rabarber::InvalidArgumentError, error_message = default_error_message)
+      def initialize(value, error_type = Rabarber::InvalidArgumentError, error_message = nil)
         @value = value
         @error_type = error_type
-        @error_message = error_message
+        @error_message = error_message || default_error_message
       end
 
       def process

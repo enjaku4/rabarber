@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Audit::Logger do
+  let(:logger) { described_class.instance.logger }
+
   describe "#logger" do
-    subject { described_class.instance.logger }
+    subject { logger }
 
     it { is_expected.to be_an_instance_of(Logger) }
 
@@ -13,8 +15,6 @@ RSpec.describe Rabarber::Audit::Logger do
 
   describe ".log" do
     subject { described_class.log(:info, "bar") }
-
-    let(:logger) { described_class.instance.logger }
 
     context "when audit trail is enabled" do
       before { allow(Rabarber::Configuration.instance).to receive(:audit_trail_enabled).and_return(true) }
@@ -29,7 +29,7 @@ RSpec.describe Rabarber::Audit::Logger do
       before { allow(Rabarber::Configuration.instance).to receive(:audit_trail_enabled).and_return(false) }
 
       it "does not log the message" do
-        expect_any_instance_of(Logger).not_to receive(:info)
+        expect(logger).not_to receive(:info)
         subject
       end
     end

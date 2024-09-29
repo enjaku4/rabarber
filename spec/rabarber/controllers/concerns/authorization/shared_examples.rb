@@ -48,11 +48,11 @@ shared_examples_for "it checks permissions integrity" do |hash|
 
   before do
     allow(Rabarber::Core::PermissionsIntegrityChecker).to receive(:new).with(controller.class).and_return(double)
-    allow(Rails.configuration).to receive(:eager_load).and_return(eager_load_enabled)
+    allow(Rails.configuration).to receive(:eager_load).and_return(is_eager_load_enabled)
   end
 
   context "when eager loading is disabled" do
-    let(:eager_load_enabled) { false }
+    let(:is_eager_load_enabled) { false }
 
     it "runs Rabarber::Core::PermissionsIntegrityChecker" do
       expect(double).to receive(:run!)
@@ -61,7 +61,7 @@ shared_examples_for "it checks permissions integrity" do |hash|
   end
 
   context "when eager loading is enabled" do
-    let(:eager_load_enabled) { true }
+    let(:is_eager_load_enabled) { true }
 
     it "does not run Rabarber::Core::PermissionsIntegrityChecker" do
       expect(double).not_to receive(:run!)
@@ -71,8 +71,8 @@ shared_examples_for "it checks permissions integrity" do |hash|
 end
 
 shared_examples_for "it does not check permissions integrity whatsoever" do |hash|
-  [true, false].each do |eager_load_enabled|
-    context "when eager loading is #{eager_load_enabled ? "enabled" : "disabled"}" do
+  [true, false].each do |is_eager_load_enabled|
+    context "when eager loading is #{is_eager_load_enabled ? "enabled" : "disabled"}" do
       it "does not run Rabarber::Core::PermissionsIntegrityChecker" do
         expect_any_instance_of(Rabarber::Core::PermissionsIntegrityChecker).not_to receive(:run!)
         send(hash.keys.first, hash.values.first, params: hash[:params])

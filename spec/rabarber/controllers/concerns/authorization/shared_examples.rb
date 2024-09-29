@@ -70,7 +70,7 @@ shared_examples_for "it checks permissions integrity" do |hash|
   end
 end
 
-shared_examples_for "it doesn't check permissions integrity whatsoever" do |hash|
+shared_examples_for "it does not check permissions integrity whatsoever" do |hash|
   [true, false].each do |eager_load_enabled|
     context "when eager loading is #{eager_load_enabled ? "enabled" : "disabled"}" do
       it "does not run Rabarber::Core::PermissionsIntegrityChecker" do

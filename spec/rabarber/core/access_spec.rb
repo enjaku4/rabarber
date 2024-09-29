@@ -17,9 +17,7 @@ RSpec.describe Rabarber::Core::Access do
         allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(false)
       end
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "if action is accessible" do
@@ -28,9 +26,7 @@ RSpec.describe Rabarber::Core::Access do
         allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(true)
       end
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "if controller and action are not accessible" do
@@ -39,9 +35,7 @@ RSpec.describe Rabarber::Core::Access do
         allow(permissions).to receive(:action_accessible?).with(user, :index, controller_instance).and_return(false)
       end
 
-      it "returns false" do
-        expect(subject).to be false
-      end
+      it { is_expected.to be false }
     end
   end
 
@@ -62,9 +56,7 @@ RSpec.describe Rabarber::Core::Access do
             .with(user, controller_instance).and_return(true)
         end
 
-        it "returns true" do
-          expect(subject).to be true
-        end
+        it { is_expected.to be true }
       end
 
       context "if role doesn't have access to the controller" do
@@ -73,9 +65,7 @@ RSpec.describe Rabarber::Core::Access do
             .with(user, controller_instance).and_return(false)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
     end
 
@@ -88,9 +78,7 @@ RSpec.describe Rabarber::Core::Access do
             .with(user, controller_instance).and_return(true)
         end
 
-        it "returns true" do
-          expect(subject).to be true
-        end
+        it { is_expected.to be true }
       end
 
       context "if role doesn't have access to the controller's parent" do
@@ -99,18 +87,14 @@ RSpec.describe Rabarber::Core::Access do
             .with(user, controller_instance).and_return(false)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
     end
 
     context "if controller is not in permissions" do
       let(:controller) { DummyPagesController }
 
-      it "returns false" do
-        expect(subject).to be false
-      end
+      it { is_expected.to be false }
     end
   end
 
@@ -134,9 +118,7 @@ RSpec.describe Rabarber::Core::Access do
               .with(user, controller_instance).and_return(true)
           end
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
 
         context "if role doesn't have access to the action" do
@@ -145,18 +127,14 @@ RSpec.describe Rabarber::Core::Access do
               .with(user, controller_instance).and_return(false)
           end
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be false }
         end
       end
 
       context "if action is not in permissions" do
         let(:action) { :show }
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
     end
 
@@ -164,9 +142,7 @@ RSpec.describe Rabarber::Core::Access do
       let(:action) { :index }
       let(:controller) { DummyPagesController }
 
-      it "returns false" do
-        expect(subject).to be false
-      end
+      it { is_expected.to be false }
     end
   end
 end

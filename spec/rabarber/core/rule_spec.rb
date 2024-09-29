@@ -9,24 +9,20 @@ RSpec.describe Rabarber::Core::Rule do
     context "if all conditions are met" do
       before do
         allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
-        allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
+        allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(true)
       end
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "if one condition is not met" do
       context "if roles are not permitted" do
         before do
           allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(false)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
+          allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(true)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
 
       context "if dynamic rules are not followed" do
@@ -35,9 +31,7 @@ RSpec.describe Rabarber::Core::Rule do
           allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(false)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
     end
   end
@@ -54,9 +48,7 @@ RSpec.describe Rabarber::Core::Rule do
       let(:roles) { :admin }
       let(:user_roles) { [:manager, :admin] }
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "if roles are empty" do
@@ -66,17 +58,13 @@ RSpec.describe Rabarber::Core::Rule do
         context "if user has roles" do
           let(:user_roles) { [:manager] }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
 
         context "if user does not have roles" do
           let(:user_roles) { [] }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
       end
 
@@ -86,17 +74,13 @@ RSpec.describe Rabarber::Core::Rule do
         context "if user has roles" do
           let(:user_roles) { [:manager] }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
+          it { is_expected.to be true }
         end
 
         context "if user does not have roles" do
           let(:user_roles) { [] }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be false }
         end
       end
     end
@@ -105,9 +89,7 @@ RSpec.describe Rabarber::Core::Rule do
       let(:roles) { :admin }
       let(:user_roles) { [:accountant, :manager] }
 
-      it "returns false" do
-        expect(subject).to be false
-      end
+      it { is_expected.to be false }
     end
   end
 
@@ -121,9 +103,7 @@ RSpec.describe Rabarber::Core::Rule do
       let(:dynamic_rule) { nil }
       let(:negated_dynamic_rule) { nil }
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "when dynamic rule is a proc" do

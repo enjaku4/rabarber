@@ -77,7 +77,7 @@ RSpec.describe Rabarber do
   def expect_input_processor(type, value, error_message)
     input_processor = instance_double(type, process: value)
     allow(type).to receive(:new).with(value, Rabarber::ConfigurationError, error_message).and_return(input_processor)
-    expect(input_processor).to receive(:process).with(no_args)
+    expect(input_processor).to receive(:process)
   end
 
   def expect_configuration_error(attribute, value, error_message)

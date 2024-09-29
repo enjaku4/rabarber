@@ -91,7 +91,7 @@ RSpec.describe Rabarber::Role do
       it "uses Input::Context to process the given context" do
         input_processor = instance_double(Rabarber::Input::Context)
         allow(Rabarber::Input::Context).to receive(:new).with(project).and_return(input_processor)
-        expect(input_processor).to receive(:process).with(no_args)
+        expect(input_processor).to receive(:process)
         subject
       end
     end
@@ -102,7 +102,7 @@ RSpec.describe Rabarber::Role do
       roles.each do |role|
         input_processor = instance_double(Rabarber::Input::Role, process: role)
         allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
-        expect(input_processor).to receive(:process).with(no_args)
+        expect(input_processor).to receive(:process)
       end
       subject
     end

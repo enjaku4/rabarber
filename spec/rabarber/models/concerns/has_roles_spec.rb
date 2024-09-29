@@ -25,7 +25,7 @@ RSpec.describe Rabarber::HasRoles do
     it "uses Input::Roles to process the given roles" do
       input_processor = instance_double(Rabarber::Input::Roles, process: roles)
       allow(Rabarber::Input::Roles).to receive(:new).with(roles).and_return(input_processor)
-      expect(input_processor).to receive(:process).with(no_args)
+      expect(input_processor).to receive(:process)
       subject
     end
   end

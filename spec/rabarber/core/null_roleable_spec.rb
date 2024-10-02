@@ -9,6 +9,12 @@ RSpec.describe Rabarber::Core::NullRoleable do
     it { is_expected.to be_empty }
   end
 
+  describe "#has_role?" do
+    subject { null_roleable.has_role?("admin", context: "whatever") }
+
+    it { is_expected.to be false }
+  end
+
   describe "#log_identity" do
     subject { null_roleable.log_identity }
 

@@ -20,7 +20,9 @@ module Rabarber
     end
 
     def has_role?(*role_names, context: nil)
-      roles(context: process_context(context)).intersection(process_role_names(role_names)).any?
+      processed_context = process_context(context)
+      processed_roles = process_role_names(role_names)
+      roles(context: processed_context).any? { |role_name| processed_roles.include?(role_name) }
     end
 
     def assign_roles(*role_names, context: nil, create_new: true)

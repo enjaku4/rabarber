@@ -1,3 +1,10 @@
+## v3.0.2
+
+### Misc:
+
+- Improved performance for authorization checks
+- Refactored codebase for better maintainability
+
 ## v3.0.1
 
 ### Misc:

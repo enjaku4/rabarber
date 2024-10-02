@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-class DummyApplication < Rails::Application; end
-
-DummyApplication.configure do
+class DummyApplication < Rails::Application
   config.eager_load = true
   config.cache_store = :null_store
 end
@@ -12,37 +10,63 @@ DummyApplication.initialize!
 DummyApplication.routes.draw do
   root to: "dummy_pages#home"
 
-  get "multiple_roles", to: "dummy#multiple_roles"
-  post "single_role", to: "dummy#single_role"
-  put "all_access", to: "dummy#all_access"
-  delete "no_access", to: "dummy#no_access"
-  post "multiple_rules", to: "dummy#multiple_rules"
-  get "if_lambda", to: "dummy#if_lambda"
-  post "if_method", to: "dummy#if_method"
-  patch "unless_lambda", to: "dummy#unless_lambda"
-  delete "unless_method", to: "dummy#unless_method"
+  resources :dummy, only: [] do
+    collection do
+      get :multiple_roles
+      post :single_role
+      put :all_access
+      delete :no_access
+      post :multiple_rules
+      get :if_lambda
+      post :if_method
+      patch :unless_lambda
+      delete :unless_method
+    end
+  end
 
-  put "foo", to: "dummy_parent#foo"
-  delete "bar", to: "dummy_parent#bar"
+  resources :dummy_parent, only: [] do
+    collection do
+      put :foo
+      delete :bar
+    end
+  end
 
-  post "baz", to: "dummy_child#baz"
-  patch "bad", to: "dummy_child#bad"
+  resources :dummy_child, only: [] do
+    collection do
+      post :baz
+      patch :bad
+    end
+  end
 
-  put "access_with_roles", to: "no_user#access_with_roles"
-  get "all_access", to: "no_user#all_access"
-  post "no_access", to: "no_user#no_access"
+  resources :no_user, only: [] do
+    collection do
+      put :access_with_roles
+      get :all_access
+      post :no_access
+    end
+  end
 
-  delete "no_rules", to: "no_rules#no_rules"
+  resources :no_rules, only: [] do
+    delete :no_rules, on: :collection
+  end
 
-  get "skip_no_rules", to: "skip_authorization#skip_no_rules"
-  put "skip_rules", to: "skip_authorization#skip_rules"
-  post "no_skip", to: "skip_authorization#no_skip"
+  resources :skip_authorization, only: [] do
+    collection do
+      get :skip_no_rules
+      put :skip_rules
+      post :no_skip
+    end
+  end
 
-  get "global_ctx", to: "context#global_ctx"
-  post "class_ctx", to: "context#class_ctx"
-  put "instance_ctx", to: "context#instance_ctx"
-  patch "symbol_ctx", to: "context#symbol_ctx"
-  delete "proc_ctx", to: "context#proc_ctx"
+  resources :context, only: [] do
+    collection do
+      get :global_ctx
+      post :class_ctx
+      put :instance_ctx
+      patch :symbol_ctx
+      delete :proc_ctx
+    end
+  end
 
   get "api_action", to: "api#api_action"
 end

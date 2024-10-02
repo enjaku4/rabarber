@@ -21,7 +21,8 @@ module Rabarber
 
     def has_role?(*role_names, context: nil)
       processed_context = process_context(context)
-      roles(context: processed_context).intersection(process_role_names(role_names)).any?
+      processed_roles = process_role_names(role_names)
+      roles(context: processed_context).any? { |role_name| processed_roles.include?(role_name) }
     end
 
     def assign_roles(*role_names, context: nil, create_new: true)
@@ -70,6 +71,10 @@ module Rabarber
       end
 
       roles(context: processed_context)
+    end
+
+    def log_identity
+      "#{model_name.human}##{roleable_id}"
     end
 
     def roleable_class

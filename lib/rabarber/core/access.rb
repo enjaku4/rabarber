@@ -9,7 +9,7 @@ module Rabarber
 
       def controller_accessible?(roleable, controller_instance)
         controller_rules.any? do |rule_controller, rule|
-          controller_instance.class <= rule_controller && rule.verify_access(roleable, controller_instance)
+          controller_instance.is_a?(rule_controller) && rule.verify_access(roleable, controller_instance)
         end
       end
 

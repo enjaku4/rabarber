@@ -33,7 +33,7 @@ RSpec.describe Rabarber::Core::Permissions do
   describe ".controller_rules" do
     context "if controller rules exist" do
       before do
-        permissions.add(DummyController, nil, [:admin], nil, -> (foo) { foo }, :bar)
+        permissions.add(DummyController, nil, [:admin], nil, -> { false }, :bar)
         permissions.add(DummyParentController, nil, [], nil, nil, nil)
       end
 

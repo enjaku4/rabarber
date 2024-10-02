@@ -13,7 +13,7 @@ module Rabarber
 
     class << self
       def names(context: nil)
-        where(Rabarber::Input::Context.new(context).process).pluck(:name).map(&:to_sym)
+        where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
       def add(name, context: nil)
@@ -50,7 +50,7 @@ module Rabarber
 
       def assignees(name, context: nil)
         Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
-          rabarber_roles: { name: Rabarber::Input::Role.new(name).process, **process_context(context) }
+          rabarber_roles: { name: process_role_name(name), **process_context(context) }
         )
       end
 

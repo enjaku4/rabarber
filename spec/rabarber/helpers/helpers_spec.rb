@@ -22,7 +22,7 @@ RSpec.describe Rabarber::Helpers do
       let(:roles) { [:manager, :Admin] }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores")
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores")
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Rabarber::Helpers do
       let(:roles) { [:manager, :Admin] }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores")
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores")
       end
     end
 

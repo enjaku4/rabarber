@@ -6,10 +6,6 @@ module Rabarber
       class RolesRevoked < Base
         private
 
-        def nil_roleable_allowed?
-          false
-        end
-
         def log_level
           :info
         end

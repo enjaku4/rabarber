@@ -5,15 +5,11 @@ module Rabarber
     include Rabarber::Core::Roleable
 
     def visible_to(*roles, context: nil, &block)
-      return if roleable_roles(context: Rabarber::Input::Context.new(context).process).intersection(Rabarber::Input::Roles.new(roles).process).none?
-
-      capture(&block)
+      capture(&block) if roleable.has_role?(*roles, context: context)
     end
 
     def hidden_from(*roles, context: nil, &block)
-      return if roleable_roles(context: Rabarber::Input::Context.new(context).process).intersection(Rabarber::Input::Roles.new(roles).process).any?
-
-      capture(&block)
+      capture(&block) unless roleable.has_role?(*roles, context: context)
     end
   end
 end

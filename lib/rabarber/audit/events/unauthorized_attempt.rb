@@ -6,10 +6,6 @@ module Rabarber
       class UnauthorizedAttempt < Base
         private
 
-        def nil_roleable_allowed?
-          true
-        end
-
         def log_level
           :warn
         end

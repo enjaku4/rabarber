@@ -2,117 +2,127 @@
 
 RSpec.describe Rabarber::Core::Rule do
   describe "#verify_access" do
-    subject { rule.verify_access(:admin, DummyController) }
+    subject { rule.verify_access(roleable, DummyController) }
 
+    let(:roleable) { double }
     let(:rule) { described_class.new(:index, :admin, -> { Project }, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
-        allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
-        allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
+        allow(rule).to receive(:roles_permitted?).with(roleable, DummyController).and_return(true)
+        allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(true)
       end
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "if one condition is not met" do
       context "if roles are not permitted" do
         before do
-          allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(false)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(true)
+          allow(rule).to receive(:roles_permitted?).with(roleable, DummyController).and_return(false)
+          allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(true)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
 
-      context "if dynamic rule is not followed" do
+      context "if dynamic rules are not followed" do
         before do
-          allow(rule).to receive(:roles_permitted?).with(:admin, DummyController).and_return(true)
-          allow(rule).to receive(:dynamic_rule_followed?).with(DummyController).and_return(false)
+          allow(rule).to receive(:roles_permitted?).with(roleable, DummyController).and_return(true)
+          allow(rule).to receive(:dynamic_rules_followed?).with(DummyController).and_return(false)
         end
 
-        it "returns false" do
-          expect(subject).to be false
-        end
+        it { is_expected.to be false }
       end
     end
   end
 
   describe "#roles_permitted?" do
-    subject { rule.roles_permitted?(user, DummyController.new) }
+    subject { rule.roles_permitted?(roleable, DummyController.new) }
 
-    let(:user) { User.create! }
     let(:rule) { described_class.new(:index, roles, { context_type: "Project", context_id: nil }, nil, nil) }
 
-    before { user.assign_roles(*user_roles, context: Project) }
+    context "when roleable is a User" do
+      let(:roleable) { User.create! }
 
-    context "if roles are permitted" do
-      let(:roles) { :admin }
-      let(:user_roles) { [:manager, :admin] }
+      before { roleable.assign_roles(*user_roles, context: Project) }
 
-      it "returns true" do
-        expect(subject).to be true
+      context "if roles are permitted" do
+        let(:roles) { :admin }
+        let(:user_roles) { [:manager, :admin] }
+
+        it { is_expected.to be true }
+      end
+
+      context "if roles are empty" do
+        let(:roles) { [] }
+
+        context "if must_have_roles is false" do
+          context "if user has roles" do
+            let(:user_roles) { [:manager] }
+
+            it { is_expected.to be true }
+          end
+
+          context "if user does not have roles" do
+            let(:user_roles) { [] }
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context "if must_have_roles is true" do
+          before { Rabarber::Configuration.instance.must_have_roles = true }
+
+          context "if user has roles" do
+            let(:user_roles) { [:manager] }
+
+            it { is_expected.to be true }
+          end
+
+          context "if user does not have roles" do
+            let(:user_roles) { [] }
+
+            it { is_expected.to be false }
+          end
+        end
+      end
+
+      context "if roles are not permitted" do
+        let(:roles) { :admin }
+        let(:user_roles) { [:accountant, :manager] }
+
+        it { is_expected.to be false }
       end
     end
 
-    context "if roles are empty" do
-      let(:roles) { [] }
+    context "when roleable is NullRoleable" do
+      let(:roleable) { Rabarber::Core::NullRoleable.new }
 
-      context "if user is not required to have roles" do
-        context "if user has roles" do
-          let(:user_roles) { [:manager] }
+      context "if rule has roles" do
+        let(:roles) { :admin }
 
-          it "returns true" do
-            expect(subject).to be true
-          end
-        end
-
-        context "if user does not have roles" do
-          let(:user_roles) { [] }
-
-          it "returns true" do
-            expect(subject).to be true
-          end
-        end
+        it { is_expected.to be false }
       end
 
-      context "if user is required to have roles" do
-        before { Rabarber::Configuration.instance.must_have_roles = true }
+      context "if rule doesn't have roles" do
+        let(:roles) { [] }
 
-        context "if user has roles" do
-          let(:user_roles) { [:manager] }
-
-          it "returns true" do
-            expect(subject).to be true
-          end
+        context "if must_have_roles is false" do
+          it { is_expected.to be true }
         end
 
-        context "if user does not have roles" do
-          let(:user_roles) { [] }
+        context "if must_have_roles is true" do
+          before { Rabarber::Configuration.instance.must_have_roles = true }
 
-          it "returns false" do
-            expect(subject).to be false
-          end
+          it { is_expected.to be false }
         end
-      end
-    end
-
-    context "if roles are not permitted" do
-      let(:roles) { :admin }
-      let(:user_roles) { [:accountant, :manager] }
-
-      it "returns false" do
-        expect(subject).to be false
       end
     end
   end
 
-  describe "#dynamic_rule_followed?" do
-    subject { rule.dynamic_rule_followed?(controller_instance) }
+  describe "#dynamic_rules_followed?" do
+    subject { rule.dynamic_rules_followed?(controller_instance) }
 
     let(:controller_instance) { double }
     let(:rule) { described_class.new(:index, :manager, nil, dynamic_rule, negated_dynamic_rule) }
@@ -121,9 +131,7 @@ RSpec.describe Rabarber::Core::Rule do
       let(:dynamic_rule) { nil }
       let(:negated_dynamic_rule) { nil }
 
-      it "returns true" do
-        expect(subject).to be true
-      end
+      it { is_expected.to be true }
     end
 
     context "when dynamic rule is a proc" do

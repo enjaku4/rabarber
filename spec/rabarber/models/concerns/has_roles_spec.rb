@@ -14,7 +14,7 @@ RSpec.describe Rabarber::HasRoles do
     it "raises an error when the given roles are invalid" do
       expect { subject }.to raise_error(
         Rabarber::InvalidArgumentError,
-        "Role names must be Symbols or Strings and may only contain lowercase letters, numbers and underscores"
+        "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores"
       )
     end
   end
@@ -25,7 +25,7 @@ RSpec.describe Rabarber::HasRoles do
     it "uses Input::Roles to process the given roles" do
       input_processor = instance_double(Rabarber::Input::Roles, process: roles)
       allow(Rabarber::Input::Roles).to receive(:new).with(roles).and_return(input_processor)
-      expect(input_processor).to receive(:process).with(no_args)
+      expect(input_processor).to receive(:process)
       subject
     end
   end
@@ -481,7 +481,15 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
-  describe "#roleable_class" do
+  describe "#log_identity" do
+    subject { user.log_identity }
+
+    let(:user) { User.create! }
+
+    it { is_expected.to eq("User##{user.id}") }
+  end
+
+  describe ".roleable_class" do
     subject { described_class.roleable_class }
 
     it { is_expected.to eq(User) }

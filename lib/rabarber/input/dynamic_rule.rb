@@ -10,10 +10,7 @@ module Rabarber
       private
 
       def processed_value
-        case value
-        when String, Symbol then value.to_sym
-        when Proc, nil then value
-        end
+        value.is_a?(String) ? value.to_sym : value
       end
 
       def default_error_message

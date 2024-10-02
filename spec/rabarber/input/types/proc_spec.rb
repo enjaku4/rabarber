@@ -5,11 +5,9 @@ RSpec.describe Rabarber::Input::Types::Proc do
     subject { described_class.new(value, Rabarber::Error, "Error").process }
 
     context "when the given value is valid" do
-      context "when a proc is given" do
-        let(:value) { -> { :foo } }
+      let(:value) { -> { :foo } }
 
-        it { is_expected.to eq(value) }
-      end
+      it { is_expected.to eq(value) }
     end
 
     context "when the given value is invalid" do

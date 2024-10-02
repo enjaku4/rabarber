@@ -28,11 +28,8 @@ module Rabarber
       end
 
       def action_rules
-        if controller
-          Rabarber::Core::Permissions.action_rules.slice(controller)
-        else
-          Rabarber::Core::Permissions.action_rules
-        end
+        rules = Rabarber::Core::Permissions.action_rules
+        controller ? rules.slice(controller) : rules
       end
     end
   end

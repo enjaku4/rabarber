@@ -2,8 +2,6 @@
 
 RSpec.describe Rabarber::Role do
   describe "validations" do
-    subject { role }
-
     describe "presence of name" do
       subject { described_class.create(name: "") }
 
@@ -47,25 +45,15 @@ RSpec.describe Rabarber::Role do
     context "when there are some roles" do
       let(:role_names) { [:admin, :accountant, :manager] }
 
-      before do
-        role_names.each do |role_name|
-          described_class.create!(name: role_name)
-        end
-      end
+      before { role_names.each { |role_name| described_class.create!(name: role_name) } }
 
-      it "returns an array of role names" do
-        expect(subject).to match_array(role_names)
-      end
+      it { is_expected.to match_array(role_names) }
     end
 
     context "when there are some roles but in a different context" do
       let(:role_names) { [:admin, :manager] }
 
-      before do
-        role_names.each do |role_name|
-          described_class.create!(name: role_name, context_type: "Project")
-        end
-      end
+      before { role_names.each { |role_name| described_class.create!(name: role_name, context_type: "Project") } }
 
       it { is_expected.to eq([]) }
     end
@@ -76,22 +64,18 @@ RSpec.describe Rabarber::Role do
       let(:context) { project }
 
       before do
-        role_names.each do |role_name|
-          described_class.create!(name: role_name, context_type: "Project", context_id: project.id)
-        end
+        role_names.each { |role_name| described_class.create!(name: role_name, context_type: "Project", context_id: project.id) }
 
         described_class.create!(name: :accountant)
         described_class.create!(name: :manager, context_type: "Project")
       end
 
-      it "returns an array of role names in the given context" do
-        expect(subject).to match_array(role_names)
-      end
+      it { is_expected.to match_array(role_names) }
 
       it "uses Input::Context to process the given context" do
         input_processor = instance_double(Rabarber::Input::Context)
         allow(Rabarber::Input::Context).to receive(:new).with(project).and_return(input_processor)
-        expect(input_processor).to receive(:process).with(no_args)
+        expect(input_processor).to receive(:process)
         subject
       end
     end
@@ -102,7 +86,7 @@ RSpec.describe Rabarber::Role do
       roles.each do |role|
         input_processor = instance_double(Rabarber::Input::Role, process: role)
         allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
-        expect(input_processor).to receive(:process).with(no_args)
+        expect(input_processor).to receive(:process)
       end
       subject
     end

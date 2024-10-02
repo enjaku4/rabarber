@@ -11,8 +11,8 @@ module Rabarber
 
       def processed_value
         case value
-        when Symbol, String then value.to_sym
-        when Proc then value
+        when String then value.to_sym
+        when Symbol, Proc then value
         else Rabarber::Input::Context.new(value).process
         end
       end

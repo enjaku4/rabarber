@@ -31,7 +31,9 @@ module Rabarber
 
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 
-      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(roleable, path: request.path, request_method: request.request_method)
+      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(
+        roleable, path: request.path, request_method: request.request_method
+      )
 
       when_unauthorized
     end

@@ -20,9 +20,9 @@ module Rabarber
         name = process_role_name(name)
         processed_context = process_context(context)
 
-        return false if exists?(name: name, **processed_context)
+        return false if exists?(name:, **processed_context)
 
-        !!create!(name: name, **processed_context)
+        !!create!(name:, **processed_context)
       end
 
       def rename(old_name, new_name, context: nil, force: false)
@@ -30,11 +30,11 @@ module Rabarber
         role = find_by(name: process_role_name(old_name), **processed_context)
         name = process_role_name(new_name)
 
-        return false if !role || exists?(name: name, **processed_context) || assigned_to_roleables(role).any? && !force
+        return false if !role || exists?(name:, **processed_context) || assigned_to_roleables(role).any? && !force
 
         delete_roleables_cache(role, context: processed_context)
 
-        role.update!(name: name)
+        role.update!(name:)
       end
 
       def remove(name, context: nil, force: false)
@@ -57,7 +57,7 @@ module Rabarber
       private
 
       def delete_roleables_cache(role, context:)
-        Rabarber::Core::Cache.delete(*assigned_to_roleables(role), context: context)
+        Rabarber::Core::Cache.delete(*assigned_to_roleables(role), context:)
       end
 
       def assigned_to_roleables(role)

@@ -7,7 +7,7 @@ gemspec
 gem "byebug"
 gem "database_cleaner-active_record"
 gem "grepfruit"
-gem "rails", ENV.fetch("RAILS_VERSION", ">= 6.1")
+gem "rails", ENV.fetch("RAILS_VERSION", ">= 7.0")
 gem "rake"
 gem "rspec"
 gem "rspec-rails"

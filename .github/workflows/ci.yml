@@ -51,10 +51,10 @@ jobs:
           - "~> 7.0.0"
           - "~> 7.1.0"
           - "~> 7.2.0"
-          - "8.0.0.rc1" # TODO: replace with "~> 8.0.0" when released
+          - "8.0.0.rc2" # TODO: replace with "~> 8.0.0" when released
         exclude:
           - ruby: "3.1"
-            rails: "8.0.0.rc1" # TODO: replace with "~> 8.0.0" when released
+            rails: "8.0.0.rc2" # TODO: replace with "~> 8.0.0" when released
 
     env:
       RAILS_VERSION: "${{ matrix.rails }}"

@@ -92,6 +92,9 @@ Style/DoubleNegation:
 Style/Documentation:
   Enabled: false
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: always
+
 Style/Lambda:
   EnforcedStyle: literal
 

@@ -1,3 +1,14 @@
+## v4.0.0
+
+### Breaking:
+
+- Dropped support for Ruby 3.0
+- Dropped support for Rails 6.1
+
+### Misc:
+
+- Added support for Rails 8.0
+
 ## v3.0.2
 
 ### Misc:

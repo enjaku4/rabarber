@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.summary = "Simple role-based authorization library for Ruby on Rails"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0", "< 3.4"
+  spec.required_ruby_version = ">= 3.1", "< 3.4"
 
   spec.files = [
     "rabarber.gemspec", "README.md", "CHANGELOG.md", "LICENSE.txt"
@@ -22,5 +22,5 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rails", ">= 6.1", "< 7.3"
+  spec.add_dependency "rails", ">= 7.0", "< 8.1"
 end

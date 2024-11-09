@@ -85,7 +85,7 @@ module Rabarber
     private
 
     def create_new_roles(role_names, context:)
-      new_roles = role_names - Rabarber::Role.names(context: context)
+      new_roles = role_names - Rabarber::Role.names(context:)
       new_roles.each { |role_name| Rabarber::Role.create!(name: role_name, **context) }
     end
 
@@ -98,7 +98,7 @@ module Rabarber
     end
 
     def delete_roleable_cache(context:)
-      Rabarber::Core::Cache.delete(roleable_id, context: context)
+      Rabarber::Core::Cache.delete(roleable_id, context:)
     end
 
     def roleable_id

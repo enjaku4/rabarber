@@ -17,7 +17,7 @@ RSpec.describe Rabarber::Core::Cache do
   end
 
   describe ".fetch" do
-    subject { described_class.fetch(id, context: context) { "bar" } }
+    subject { described_class.fetch(id, context:) { "bar" } }
 
     let(:id) { 42 }
     let(:context) { { context_type: Project, context_id: 13 } }
@@ -45,14 +45,14 @@ RSpec.describe Rabarber::Core::Cache do
 
       it "returns the cached value on subsequent calls" do
         subject
-        expect(described_class.fetch(id, context: context) { "baz" }).to eq("bar")
+        expect(described_class.fetch(id, context:) { "baz" }).to eq("bar")
       end
 
       it "calls the provided block again when the cache expires" do
         subject
-        expect(described_class.fetch(id, context: context) { "baz" }).to eq("bar")
+        expect(described_class.fetch(id, context:) { "baz" }).to eq("bar")
         travel_to(2.hours.from_now)
-        expect(described_class.fetch(id, context: context) { "baz" }).to eq("baz")
+        expect(described_class.fetch(id, context:) { "baz" }).to eq("baz")
       end
     end
 
@@ -75,20 +75,20 @@ RSpec.describe Rabarber::Core::Cache do
 
       it "calls the provided block again on subsequent calls" do
         subject
-        expect(described_class.fetch(id, context: context) { "baz" }).to eq("baz")
+        expect(described_class.fetch(id, context:) { "baz" }).to eq("baz")
       end
 
       it "doesn't do anything when the cache expires" do
         subject
-        expect(described_class.fetch(42, context: context) { "baz" }).to eq("baz")
+        expect(described_class.fetch(42, context:) { "baz" }).to eq("baz")
         travel_to(2.hours.from_now)
-        expect(described_class.fetch(42, context: context) { "bad" }).to eq("bad")
+        expect(described_class.fetch(42, context:) { "bad" }).to eq("bad")
       end
     end
   end
 
   describe ".delete" do
-    subject { described_class.delete(*ids, context: context) }
+    subject { described_class.delete(*ids, context:) }
 
     let(:ids) { [42, 13] }
     let(:context) { { context_type: Project, context_id: 13 } }
@@ -105,8 +105,8 @@ RSpec.describe Rabarber::Core::Cache do
       end
 
       it "deletes the cached value" do
-        described_class.fetch(42, context: context) { "bar" }
-        described_class.fetch(13, context: context) { "baz" }
+        described_class.fetch(42, context:) { "bar" }
+        described_class.fetch(13, context:) { "baz" }
         expect(Rails.cache.read(key42)).to eq("bar")
         expect(Rails.cache.read(key13)).to eq("baz")
         subject
@@ -124,7 +124,7 @@ RSpec.describe Rabarber::Core::Cache do
       end
 
       it "does not do anything" do
-        described_class.fetch(42, context: context) { "bar" }
+        described_class.fetch(42, context:) { "bar" }
         expect(Rails.cache.read(key42)).to be_nil
         subject
         expect(Rails.cache.read(key42)).to be_nil
@@ -142,7 +142,7 @@ RSpec.describe Rabarber::Core::Cache do
       end
 
       it "does not do anything" do
-        described_class.fetch(42, context: context) { "bar" }
+        described_class.fetch(42, context:) { "bar" }
         expect(Rails.cache.read(key42)).to eq("bar")
         subject
         expect(Rails.cache.read(key42)).to eq("bar")
@@ -174,7 +174,7 @@ RSpec.describe Rabarber::Core::Cache do
 
     before do
       Rabarber.configure { |config| config.cache_enabled = true }
-      ids.each { |id| described_class.fetch(id, context: context) { "foo" } }
+      ids.each { |id| described_class.fetch(id, context:) { "foo" } }
     end
 
     it "deletes all keys that start with 'rabarber'" do

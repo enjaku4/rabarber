@@ -38,8 +38,8 @@ module Rabarber
         def human_context
           case context
           in { context_type: nil, context_id: nil } then "Global"
-          in { context_type: context_type, context_id: nil } then context_type
-          in { context_type: context_type, context_id: context_id } then "#{context_type}##{context_id}"
+          in { context_type:, context_id: nil } then context_type
+          in { context_type:, context_id: } then "#{context_type}##{context_id}"
           else raise "Unexpected context: #{context}"
           end
         end

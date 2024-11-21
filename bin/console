@@ -7,4 +7,6 @@ require "rabarber"
 require_relative "../spec/spec_helper.rb"
 
 require "irb"
+
+ActiveRecord::Base.logger = Logger.new(STDOUT)
 IRB.start(__FILE__)

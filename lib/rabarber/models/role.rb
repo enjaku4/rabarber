@@ -9,7 +9,7 @@ module Rabarber
                      format: { with: Rabarber::Input::Role::REGEX },
                      strict: true
 
-    has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
+    before_destroy :delete_assignments
 
     class << self
       def names(context: nil)
@@ -75,6 +75,12 @@ module Rabarber
       def process_context(context)
         Rabarber::Input::Context.new(context).process
       end
+    end
+
+    private
+
+    def delete_assignments
+      ActiveRecord::Base.connection.execute("DELETE FROM rabarber_roles_roleables WHERE role_id = #{id}")
     end
   end
 end

@@ -80,7 +80,11 @@ module Rabarber
     private
 
     def delete_assignments
-      ActiveRecord::Base.connection.execute("DELETE FROM rabarber_roles_roleables WHERE role_id = #{id}")
+      ActiveRecord::Base.connection.execute(
+        ActiveRecord::Base.sanitize_sql(
+          ["DELETE FROM rabarber_roles_roleables WHERE role_id = ?", id]
+        )
+      )
     end
   end
 end

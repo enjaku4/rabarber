@@ -1,3 +1,9 @@
+## v4.0.1
+
+### Bugs:
+
+- Resolved an issue preventing the gem from being used with rbs_rails
+
 ## v4.0.0
 
 ### Breaking:

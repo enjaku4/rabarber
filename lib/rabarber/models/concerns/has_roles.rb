@@ -9,10 +9,9 @@ module Rabarber
 
       @@included = name
 
-      has_many :rabarber_roles_roleables, class_name: "Rabarber::RolesRoleable",
-                                          foreign_key: "roleable_id",
-                                          dependent: :destroy
-      has_many :rabarber_roles, through: :rabarber_roles_roleables, source: :role
+      has_and_belongs_to_many :rabarber_roles, class_name: "Rabarber::Role",
+                                               foreign_key: "roleable_id",
+                                               join_table: "rabarber_roles_roleables"
     end
 
     def roles(context: nil)

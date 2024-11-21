@@ -9,7 +9,7 @@ module Rabarber
                      format: { with: Rabarber::Input::Role::REGEX },
                      strict: true
 
-    has_many :roles_roleables, class_name: "Rabarber::RolesRoleable", dependent: :destroy
+    has_and_belongs_to_many :roleables, join_table: "rabarber_roles_roleables"
 
     class << self
       def names(context: nil)

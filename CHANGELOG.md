@@ -2,7 +2,7 @@
 
 ### Bugs:
 
-- Resolved an issue preventing the gem from being used with rbs_rails
+- Resolved an issue preventing Rabarber from being used with the RBS Rails gem
 
 ## v4.0.0
 

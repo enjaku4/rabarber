@@ -475,7 +475,7 @@ This method accepts the same options as `skip_before_action` method in Rails.
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, &block)` and `hidden_from(*roles, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
+Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, context: nil, &block)` and `hidden_from(*roles, context: nil, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
 
 ```rb
 module ApplicationHelper

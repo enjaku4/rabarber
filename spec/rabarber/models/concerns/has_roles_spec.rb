@@ -89,6 +89,28 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
+  describe "#roles_grouped_by_context" do
+    subject { user.roles_grouped_by_context }
+
+    let(:user) { User.create! }
+
+    context "when the user has no roles" do
+      it { is_expected.to eq({}) }
+    end
+
+    context "when the user has some roles" do
+      let(:project) { Project.create! }
+
+      before do
+        user.assign_roles(:admin, :manager)
+        user.assign_roles(:viewer, context: User)
+        user.assign_roles(:manager, context: project)
+      end
+
+      it { is_expected.to eq(nil => [:admin, :manager], User => [:viewer], project => [:manager]) }
+    end
+  end
+
   describe "#has_role?" do
     subject { user.has_role?(*roles, context:) }
 

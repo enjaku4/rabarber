@@ -81,6 +81,31 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe ".names_grouped_by_context" do
+    subject { described_class.names_grouped_by_context }
+
+    context "when there are no roles" do
+      it { is_expected.to eq({}) }
+    end
+
+    context "when there are some roles" do
+      let(:project1) { Project.create! }
+      let(:project2) { Project.create! }
+
+      before do
+        described_class.add(:admin)
+        described_class.add(:accountant)
+        described_class.add(:admin, context: Project)
+        described_class.add(:manager, context: Project)
+        described_class.add(:manager, context: project1)
+        described_class.add(:viewer, context: project2)
+        described_class.add(:manager, context: project2)
+      end
+
+      it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager]) }
+    end
+  end
+
   shared_examples_for "role name is processed" do |roles|
     it "uses Input::Role to process the given roles" do
       roles.each do |role|
@@ -407,6 +432,55 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be_empty }
 
       it_behaves_like "role name is processed", ["admin"]
+    end
+  end
+
+  describe "#context" do
+    subject { role.context }
+
+    context "when the context is global" do
+      let(:role) { described_class.create!(name: :admin) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the context is an instance" do
+      let(:project) { Project.create! }
+      let(:role) { described_class.create!(name: :admin, context_type: Project, context_id: project.id) }
+
+      it { is_expected.to eq(project) }
+    end
+
+    context "when the context is a class" do
+      let(:role) { described_class.create!(name: :admin, context_type: Project, context_id: nil) }
+
+      it { is_expected.to eq(Project) }
+    end
+
+    context "when the context is an unexpected value" do
+      let(:role) { described_class.create!(name: :admin) }
+
+      before { allow(role).to receive_messages(context_type: { foo: "bar" }, context_id: [:baz, :bad]) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Unexpected context data: {:foo=>\"bar\"}#[:baz, :bad]")
+      end
+    end
+
+    context "when the context type is unknown" do
+      let(:role) { described_class.create!(name: :admin, context_type: "Unknown") }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Context not found: Unknown")
+      end
+    end
+
+    context "when the context instance is not found" do
+      let(:role) { described_class.create!(name: :admin, context_type: Project, context_id: 42) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Context not found: Project#42")
+      end
     end
   end
 end

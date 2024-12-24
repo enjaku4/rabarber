@@ -19,6 +19,10 @@ module Rabarber
       Rabarber::Core::Cache.fetch(roleable_id, context: processed_context) { rabarber_roles.names(context: processed_context) }
     end
 
+    def roles_grouped_by_context
+      rabarber_roles.names_grouped_by_context
+    end
+
     def has_role?(*role_names, context: nil)
       processed_context = process_context(context)
       processed_roles = process_role_names(role_names)

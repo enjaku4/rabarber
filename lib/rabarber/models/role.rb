@@ -16,6 +16,10 @@ module Rabarber
         where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
+      def names_grouped_by_context
+        all.group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
+      end
+
       def add(name, context: nil)
         name = process_role_name(name)
         processed_context = process_context(context)
@@ -75,6 +79,17 @@ module Rabarber
       def process_context(context)
         Rabarber::Input::Context.new(context).process
       end
+    end
+
+    def context
+      case [context_type, context_id]
+      in [NilClass, NilClass] then nil
+      in [String, NilClass] then context_type.constantize
+      in [String, String | Integer] then context_type.constantize.find(context_id)
+      else raise Rabarber::Error, "Unexpected context data: #{context_type.inspect} #{context_id.inspect}"
+      end
+    rescue ActiveRecord::RecordNotFound, NameError
+      raise Rabarber::Error, "Context not found: #{context_type}#{"##{context_id}" if context_id}"
     end
 
     private

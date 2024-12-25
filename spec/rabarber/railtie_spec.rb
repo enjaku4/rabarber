@@ -14,8 +14,9 @@ RSpec.describe Rabarber::Railtie do
   context "when eager_load is true" do
     let(:is_eager_load_enabled) { true }
 
-    it "checks the integrity" do
+    it "checks the integrity and clears the cache" do
       expect(double).to receive(:run!)
+      expect(Rabarber::Core::Cache).to receive(:clear)
       subject
     end
   end
@@ -23,8 +24,9 @@ RSpec.describe Rabarber::Railtie do
   context "when eager_load is false" do
     let(:is_eager_load_enabled) { false }
 
-    it "does not check the actions" do
+    it "does not check the actions and clears the cache" do
       expect(double).not_to receive(:run!)
+      expect(Rabarber::Core::Cache).to receive(:clear)
       subject
     end
   end

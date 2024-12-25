@@ -6,9 +6,14 @@ gemspec
 
 rails_version = ENV.fetch("RAILS_VERSION", ">= 7.0")
 
+# TODO: base64, bigdecimal, drb and mutex_m are likely not needed, wait for Rails patch release
+gem "base64"
+gem "bigdecimal"
 gem "byebug"
 gem "database_cleaner-active_record"
+gem "drb"
 gem "grepfruit"
+gem "mutex_m"
 gem "rails", rails_version
 gem "rake"
 gem "rspec"

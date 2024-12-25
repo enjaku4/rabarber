@@ -32,7 +32,7 @@ module Rabarber
       end
 
       def key_for(id, context)
-        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest("#{id}#{context}")}"
+        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest("#{id}#{context.fetch(:context_type)}#{context.fetch(:context_id)}")}"
       end
     end
   end

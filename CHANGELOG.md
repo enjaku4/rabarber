@@ -3,6 +3,7 @@
 ### Misc:
 
 - Added support for Ruby 3.4
+- Updated some error messages for clarity
 
 ## v4.0.1
 

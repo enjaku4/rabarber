@@ -81,8 +81,7 @@ RSpec.describe Rabarber do
   end
 
   def expect_configuration_error(attribute, value, error_message)
-    expect {
-      described_class.configure { |config| config.send(:"#{attribute}=", value) }
-    }.to raise_error(Rabarber::ConfigurationError, error_message)
+    expect { described_class.configure { |config| config.send(:"#{attribute}=", value) } }
+      .to raise_error(Rabarber::ConfigurationError, error_message)
   end
 end

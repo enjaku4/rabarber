@@ -1,3 +1,9 @@
+## v4.0.2
+
+### Misc:
+
+- Added support for Ruby 3.4
+
 ## v4.0.1
 
 ### Bugs:

@@ -14,7 +14,7 @@ module Rabarber
 
         raise(
           Rabarber::Error,
-          "Following actions were passed to 'grant_access' method but are not defined:\n#{missing_list.to_yaml}"
+          "Following actions were passed to 'grant_access' method but are not defined in the controller:\n#{missing_list.to_yaml}"
         )
       end
 

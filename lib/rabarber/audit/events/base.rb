@@ -40,7 +40,7 @@ module Rabarber
           in { context_type: nil, context_id: nil } then "Global"
           in { context_type:, context_id: nil } then context_type
           in { context_type:, context_id: } then "#{context_type}##{context_id}"
-          else raise "Unexpected context: #{context}"
+          else raise Rabarber::Error, "Unexpected context: #{context.inspect}"
           end
         end
       end

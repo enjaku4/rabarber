@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gemspec
 
-rails_version = ENV.fetch("RAILS_VERSION", ">= 7.0")
+rails_version = ENV.fetch("RAILS_VERSION", "~> 7")
 
 gem "byebug"
 gem "database_cleaner-active_record"

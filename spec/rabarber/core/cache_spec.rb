@@ -196,6 +196,6 @@ RSpec.describe Rabarber::Core::Cache do
     let(:id) { 42 }
     let(:context) { { context_type: Project, context_id: 13 } }
 
-    it { is_expected.to eq("rabarber:d73ef780207217a00893eb441ead77adf81846d9cc46c57991856f8b3c7f00b7") }
+    it { is_expected.to eq("rabarber:49a17fb2af2a6bcbbcd42d48191046ebb48c999a1dc50b3426409793d790b4f8") }
   end
 end

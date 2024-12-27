@@ -17,7 +17,19 @@ module Rabarber
       end
 
       def all_names
-        all.group_by(&:raw_context).transform_values { |roles| roles.map { _1.name.to_sym } }
+        all
+          .group_by { |role| [role.context_type, role.context_id] }
+          .transform_values { |roles| roles.map { _1.name.to_sym } }
+          .transform_keys do |context_type, context_id|
+            case [context_type, context_id]
+            in [NilClass, NilClass] then nil
+            in [String, NilClass] then context_type.constantize
+            in [String, String | Integer] then context_type.constantize.find(context_id)
+            else raise Rabarber::Error, "Unexpected context data:\n#{{ context_type:, context_id: }.to_yaml}"
+            end
+          rescue ActiveRecord::RecordNotFound, NameError
+            raise Rabarber::Error, "Context not found: #{context_type}#{"##{context_id}" if context_id}"
+          end
       end
 
       def add(name, context: nil)
@@ -79,17 +91,6 @@ module Rabarber
       def process_context(context)
         Rabarber::Input::Context.new(context).process
       end
-    end
-
-    def raw_context
-      case [context_type, context_id]
-      in [NilClass, NilClass] then nil
-      in [String, NilClass] then context_type.constantize
-      in [String, String | Integer] then context_type.constantize.find(context_id)
-      else raise Rabarber::Error, "Unexpected context data:\n#{{ context_type:, context_id: }.to_yaml}"
-      end
-    rescue ActiveRecord::RecordNotFound, NameError
-      raise Rabarber::Error, "Context not found: #{context_type}#{"##{context_id}" if context_id}"
     end
 
     private

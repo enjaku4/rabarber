@@ -16,4 +16,12 @@ RSpec.describe Rabarber::Audit::Events::RolesRevoked do
     ).and_call_original
     subject
   end
+
+  context "when context is invalid" do
+    let(:context) { 42 }
+
+    it "raises an error" do
+      expect { subject }.to raise_error(Rabarber::Error, "Unexpected context: 42")
+    end
+  end
 end

@@ -460,10 +460,10 @@ RSpec.describe Rabarber::Role do
     context "when the context is an unexpected value" do
       let(:role) { described_class.create!(name: :admin) }
 
-      before { allow(role).to receive_messages(context_type: { foo: "bar" }, context_id: [:baz, :bad]) }
+      before { allow(role).to receive_messages(context_type: 123, context_id: [:foo, :bar]) }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Unexpected context data: {:foo=>\"bar\"}#[:baz, :bad]")
+        expect { subject }.to raise_error(Rabarber::Error, "Unexpected context data:\n---\n:context_type: 123\n:context_id:\n- :foo\n- :bar\n")
       end
     end
 

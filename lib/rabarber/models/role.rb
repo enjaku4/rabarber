@@ -86,7 +86,7 @@ module Rabarber
       in [NilClass, NilClass] then nil
       in [String, NilClass] then context_type.constantize
       in [String, String | Integer] then context_type.constantize.find(context_id)
-      else raise Rabarber::Error, "Unexpected context data: #{context_type.inspect}##{context_id.inspect}"
+      else raise Rabarber::Error, "Unexpected context data:\n#{{context_type:, context_id:}.to_yaml}"
       end
     rescue ActiveRecord::RecordNotFound, NameError
       raise Rabarber::Error, "Context not found: #{context_type}#{"##{context_id}" if context_id}"

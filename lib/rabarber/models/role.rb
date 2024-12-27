@@ -16,8 +16,8 @@ module Rabarber
         where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
-      def names_grouped_by_context
-        all.group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
+      def all_names
+        all.group_by(&:raw_context).transform_values { |roles| roles.map { _1.name.to_sym } }
       end
 
       def add(name, context: nil)
@@ -81,7 +81,7 @@ module Rabarber
       end
     end
 
-    def context
+    def raw_context
       case [context_type, context_id]
       in [NilClass, NilClass] then nil
       in [String, NilClass] then context_type.constantize

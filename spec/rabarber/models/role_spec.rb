@@ -81,8 +81,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".names_grouped_by_context" do
-    subject { described_class.names_grouped_by_context }
+  describe ".all_names" do
+    subject { described_class.all_names }
 
     context "when there are no roles" do
       it { is_expected.to eq({}) }
@@ -435,8 +435,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe "#context" do
-    subject { role.context }
+  describe "#raw_context" do
+    subject { role.raw_context }
 
     context "when the context is global" do
       let(:role) { described_class.create!(name: :admin) }

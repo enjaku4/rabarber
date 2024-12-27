@@ -89,8 +89,8 @@ RSpec.describe Rabarber::HasRoles do
     end
   end
 
-  describe "#roles_grouped_by_context" do
-    subject { user.roles_grouped_by_context }
+  describe "#all_roles" do
+    subject { user.all_roles }
 
     let(:user) { User.create! }
 

@@ -1,5 +1,3 @@
-<!-- TODO: describe new methods -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -160,6 +158,14 @@ To get the list of roles assigned to the user, use:
 user.roles
 ```
 
+**`#all_roles`**
+
+To get all roles assigned to the user, grouped by context, use:
+
+```rb
+user.all_roles
+```
+
 ---
 
 To manipulate roles directly, you can use `Rabarber::Role` methods:
@@ -205,10 +211,18 @@ Rabarber::Role.remove(:admin, force: true)
 
 **`.names(context: nil)`**
 
-If you need to list the role names available in your application, use:
+If you need to list the roles available in your application, use:
 
 ```rb
 Rabarber::Role.names
+```
+
+**`.all_names`**
+
+If you need list all roles available in your application, grouped by context, use:
+
+```rb
+Rabarber::Role.all_names
 ```
 
 **`.assignees(role_name, context: nil)`**

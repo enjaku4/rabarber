@@ -9,6 +9,8 @@ module Rabarber
                      format: { with: Rabarber::Input::Role::REGEX },
                      strict: true
 
+    belongs_to :context, polymorphic: true, optional: true
+
     before_destroy :delete_assignments
 
     class << self
@@ -17,19 +19,11 @@ module Rabarber
       end
 
       def all_names
-        all
-          .group_by { |role| [role.context_type, role.context_id] }
-          .transform_values { |roles| roles.map { _1.name.to_sym } }
-          .transform_keys do |context_type, context_id|
-            case [context_type, context_id]
-            in [NilClass, NilClass] then nil
-            in [String, NilClass] then context_type.constantize
-            in [String, String | Integer] then context_type.constantize.find(context_id)
-            else raise Rabarber::Error, "Unexpected context data:\n#{{ context_type:, context_id: }.to_yaml}"
-            end
-          rescue ActiveRecord::RecordNotFound, NameError
-            raise Rabarber::Error, "Context not found: #{context_type}#{"##{context_id}" if context_id}"
-          end
+        includes(:context).group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
+      rescue ActiveRecord::RecordNotFound => e
+        raise Rabarber::Error, "Context not found: #{e.model}##{e.id}"
+      rescue NameError => e
+        raise Rabarber::Error, "Context not found: #{e.name}"
       end
 
       def add(name, context: nil)
@@ -91,6 +85,16 @@ module Rabarber
       def process_context(context)
         Rabarber::Input::Context.new(context).process
       end
+    end
+
+    def context
+      return context_type.constantize if context_type.present? && context_id.blank?
+
+      record = super
+
+      raise ActiveRecord::RecordNotFound.new(nil, context_type, nil, context_id) if context_id.present? && !record
+
+      record
     end
 
     private

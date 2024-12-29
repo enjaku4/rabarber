@@ -9,11 +9,21 @@ module Rabarber
                      format: { with: Rabarber::Input::Role::REGEX },
                      strict: true
 
+    belongs_to :context, polymorphic: true, optional: true
+
     before_destroy :delete_assignments
 
     class << self
       def names(context: nil)
         where(process_context(context)).pluck(:name).map(&:to_sym)
+      end
+
+      def all_names
+        includes(:context).group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
+      rescue ActiveRecord::RecordNotFound => e
+        raise Rabarber::Error, "Context not found: #{e.model}##{e.id}"
+      rescue NameError => e
+        raise Rabarber::Error, "Context not found: #{e.name}"
       end
 
       def add(name, context: nil)
@@ -75,6 +85,16 @@ module Rabarber
       def process_context(context)
         Rabarber::Input::Context.new(context).process
       end
+    end
+
+    def context
+      return context_type.constantize if context_type.present? && context_id.blank?
+
+      record = super
+
+      raise ActiveRecord::RecordNotFound.new(nil, context_type, nil, context_id) if context_id.present? && !record
+
+      record
     end
 
     private

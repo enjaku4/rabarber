@@ -1,3 +1,14 @@
+## v4.1.0
+
+### Features:
+
+- Added `Rabarber::Role.all_names` method to retrieve all roles available in the application, grouped by context
+- Added `Rabarber::HasRoles#all_roles` method to retrieve all roles assigned to a user, grouped by context
+
+### Bugs:
+
+- Fixed potential bug in role revocation caused by checking for the presence of a role in the cache instead of the database
+
 ## v4.0.2
 
 ### Misc:

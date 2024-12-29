@@ -81,6 +81,49 @@ RSpec.describe Rabarber::Role do
     end
   end
 
+  describe ".all_names" do
+    subject { described_class.all_names }
+
+    context "when there are no roles" do
+      it { is_expected.to eq({}) }
+    end
+
+    context "when there are some roles" do
+      let(:project1) { Project.create! }
+      let(:project2) { Project.create! }
+      let(:user) { User.create! }
+
+      before do
+        described_class.add(:admin)
+        described_class.add(:accountant)
+        described_class.add(:admin, context: Project)
+        described_class.add(:manager, context: Project)
+        described_class.add(:manager, context: project1)
+        described_class.add(:viewer, context: project2)
+        described_class.add(:manager, context: project2)
+        described_class.add(:editor, context: user)
+      end
+
+      it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager], user => [:editor]) }
+
+      context "when the instance context can't be found" do
+        before { project1.destroy! }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Project##{project1.id}")
+        end
+      end
+
+      context "when the class context doesn't exist" do
+        before { described_class.take.update!(context_type: "Foo") }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Foo")
+        end
+      end
+    end
+  end
+
   shared_examples_for "role name is processed" do |roles|
     it "uses Input::Role to process the given roles" do
       roles.each do |role|
@@ -407,6 +450,45 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to be_empty }
 
       it_behaves_like "role name is processed", ["admin"]
+    end
+  end
+
+  describe "#context" do
+    subject { role.context }
+
+    context "when the role has global context" do
+      let(:role) { described_class.create!(name: "admin") }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when the role has an instance context" do
+      let(:project) { Project.create! }
+      let(:role) { described_class.create!(name: "admin", context_type: project.model_name, context_id: project.id) }
+
+      it { is_expected.to eq(project) }
+    end
+
+    context "when the role has a class context" do
+      let(:role) { described_class.create!(name: "admin", context_type: "Project") }
+
+      it { is_expected.to eq(Project) }
+    end
+
+    context "when the instance context can't be found" do
+      let(:role) { described_class.create!(name: "admin", context_type: "Project", context_id: 42) }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context "when the class context doesn't exist" do
+      let(:role) { described_class.create!(name: "admin", context_type: "Foo") }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(NameError)
+      end
     end
   end
 end

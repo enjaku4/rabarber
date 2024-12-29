@@ -19,6 +19,10 @@ module Rabarber
       Rabarber::Core::Cache.fetch(roleable_id, context: processed_context) { rabarber_roles.names(context: processed_context) }
     end
 
+    def all_roles
+      rabarber_roles.all_names
+    end
+
     def has_role?(*role_names, context: nil)
       processed_context = process_context(context)
       processed_roles = process_role_names(role_names)
@@ -55,7 +59,7 @@ module Rabarber
       processed_context = process_context(context)
 
       roles_to_revoke = Rabarber::Role.where(
-        name: processed_role_names.intersection(roles(context: processed_context)), **processed_context
+        name: processed_role_names.intersection(rabarber_roles.names(context: processed_context)), **processed_context
       )
 
       if roles_to_revoke.any?

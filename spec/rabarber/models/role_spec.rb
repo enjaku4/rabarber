@@ -91,6 +91,7 @@ RSpec.describe Rabarber::Role do
     context "when there are some roles" do
       let(:project1) { Project.create! }
       let(:project2) { Project.create! }
+      let(:user) { User.create! }
 
       before do
         described_class.add(:admin)
@@ -100,9 +101,10 @@ RSpec.describe Rabarber::Role do
         described_class.add(:manager, context: project1)
         described_class.add(:viewer, context: project2)
         described_class.add(:manager, context: project2)
+        described_class.add(:editor, context: user)
       end
 
-      it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager]) }
+      it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager], user => [:editor]) }
 
       context "when the instance context can't be found" do
         before { project1.destroy! }

@@ -13,13 +13,13 @@ module Rabarber
       attr_reader :storage
 
       def initialize
-        @storage = { controller_rules: Hash.new({}), action_rules: Hash.new([]) }
+        @storage = { controller_rules: Hash.new([]), action_rules: Hash.new([]) }
       end
 
       class << self
         def add(controller, action, roles, context, dynamic_rule, negated_dynamic_rule)
           rule = Rabarber::Core::Rule.new(action, roles, context, dynamic_rule, negated_dynamic_rule)
-          action ? action_rules[controller] += [rule] : controller_rules[controller] = rule
+          (action ? action_rules : controller_rules)[controller] += [rule]
         end
 
         def controller_rules

@@ -1,5 +1,3 @@
-<!-- TODO: readme -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -324,6 +322,21 @@ class Crm::InvoicesController < Crm::BaseController
 end
 ```
 This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
+
+This applies as well to multiple rules defined for the same controller or action:
+```rb
+class Crm::OrdersController < ApplicationController
+  grant_access roles: :manager, context: Order
+  grant_access roles: :admin
+
+  grant_access action: :show, roles: :client, context: -> { Order.find(params[:id]) }
+  grant_access action: :show, roles: :accountant
+  def show
+    # ...
+  end
+end
+```
+This will add rules for `manager` and `admin` roles for all actions in `Crm::OrdersController`, and for `client` and `accountant` roles for the `show` action.
 
 ## Dynamic Authorization Rules
 

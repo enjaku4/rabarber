@@ -71,6 +71,8 @@ class MultipleRulesController < ApplicationController
   def qux = head(:ok)
 end
 
+# TODO: tests for empty grant_access
+
 class NoUserController < ApplicationController
   grant_access action: :access_with_roles, roles: :admin
   def access_with_roles = head(:ok)

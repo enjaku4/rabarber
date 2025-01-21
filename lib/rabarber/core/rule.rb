@@ -3,6 +3,7 @@
 module Rabarber
   module Core
     class Rule
+      # TODO: remove action attr and change storage structure and rule lookup accordingly
       attr_reader :action, :roles, :context, :dynamic_rule, :negated_dynamic_rule
 
       def initialize(action, roles, context, dynamic_rule, negated_dynamic_rule)

@@ -14,9 +14,7 @@ module Rabarber
       end
 
       def action_accessible?(roleable, action, controller_instance)
-        action_rules[controller_instance.class].any? do |rule|
-          rule.action == action && rule.verify_access(roleable, controller_instance)
-        end
+        action_rules[controller_instance.class][action].any? { _1.verify_access(roleable, controller_instance) }
       end
     end
   end

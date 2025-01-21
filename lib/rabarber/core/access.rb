@@ -8,8 +8,8 @@ module Rabarber
       end
 
       def controller_accessible?(roleable, controller_instance)
-        controller_rules.any? do |rule_controller, rules|
-          controller_instance.is_a?(rule_controller) && rules.any? { _1.verify_access(roleable, controller_instance) }
+        controller_rules.any? do |controller, rules|
+          controller_instance.is_a?(controller) && rules.any? { _1.verify_access(roleable, controller_instance) }
         end
       end
 

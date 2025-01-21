@@ -25,7 +25,7 @@ RSpec.describe Rabarber::Core::Permissions do
       it "adds permissions to the controller rules storage" do
         expect { permissions.add(DummyController, nil, [:admin, :manager], nil, nil, nil) }
           .to change { permissions.instance.storage[:controller_rules] }
-          .to({ DummyController => rule })
+          .to({ DummyController => [rule] })
       end
     end
   end

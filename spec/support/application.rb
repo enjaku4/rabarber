@@ -42,6 +42,10 @@ DummyApplication.routes.draw do
     delete :qux, on: :collection
   end
 
+  resources :all_access, only: [] do
+    get :quux, on: :collection
+  end
+
   resources :no_user, only: [] do
     collection do
       put :access_with_roles

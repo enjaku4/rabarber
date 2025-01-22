@@ -1,3 +1,13 @@
+## v4.1.1
+
+### Bugs:
+
+- Fixed an issue where controller-wide `grant_access` calls would overwrite each other instead of being additive, causing inconsistent access control based on statement order
+
+### Misc:
+
+- Minor performance improvement for authorization checks
+
 ## v4.1.0
 
 ### Features:

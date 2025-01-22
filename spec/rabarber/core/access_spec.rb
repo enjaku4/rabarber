@@ -52,7 +52,7 @@ RSpec.describe Rabarber::Core::Access do
 
       context "if role has access to the controller" do
         before do
-          allow(permissions.controller_rules[controller]).to receive(:verify_access)
+          allow(permissions.controller_rules[controller].first).to receive(:verify_access)
             .with(user, controller_instance).and_return(true)
         end
 
@@ -61,7 +61,7 @@ RSpec.describe Rabarber::Core::Access do
 
       context "if role doesn't have access to the controller" do
         before do
-          allow(permissions.controller_rules[controller]).to receive(:verify_access)
+          allow(permissions.controller_rules[controller].first).to receive(:verify_access)
             .with(user, controller_instance).and_return(false)
         end
 
@@ -74,7 +74,7 @@ RSpec.describe Rabarber::Core::Access do
 
       context "if role has access to the controller's parent" do
         before do
-          allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
+          allow(permissions.controller_rules[DummyParentController].first).to receive(:verify_access)
             .with(user, controller_instance).and_return(true)
         end
 
@@ -83,7 +83,7 @@ RSpec.describe Rabarber::Core::Access do
 
       context "if role doesn't have access to the controller's parent" do
         before do
-          allow(permissions.controller_rules[DummyParentController]).to receive(:verify_access)
+          allow(permissions.controller_rules[DummyParentController].first).to receive(:verify_access)
             .with(user, controller_instance).and_return(false)
         end
 
@@ -114,7 +114,7 @@ RSpec.describe Rabarber::Core::Access do
 
         context "if role has access to the action" do
           before do
-            allow(permissions.action_rules[controller].first).to receive(:verify_access)
+            allow(permissions.action_rules[controller][:index].first).to receive(:verify_access)
               .with(user, controller_instance).and_return(true)
           end
 

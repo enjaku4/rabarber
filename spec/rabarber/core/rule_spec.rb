@@ -5,7 +5,7 @@ RSpec.describe Rabarber::Core::Rule do
     subject { rule.verify_access(roleable, DummyController) }
 
     let(:roleable) { double }
-    let(:rule) { described_class.new(:index, :admin, -> { Project }, -> { true }, nil) }
+    let(:rule) { described_class.new(:admin, -> { Project }, -> { true }, nil) }
 
     context "if all conditions are met" do
       before do
@@ -40,7 +40,7 @@ RSpec.describe Rabarber::Core::Rule do
   describe "#roles_permitted?" do
     subject { rule.roles_permitted?(roleable, DummyController.new) }
 
-    let(:rule) { described_class.new(:index, roles, { context_type: "Project", context_id: nil }, nil, nil) }
+    let(:rule) { described_class.new(roles, { context_type: "Project", context_id: nil }, nil, nil) }
 
     context "when roleable is a User" do
       let(:roleable) { User.create! }
@@ -125,7 +125,7 @@ RSpec.describe Rabarber::Core::Rule do
     subject { rule.dynamic_rules_followed?(controller_instance) }
 
     let(:controller_instance) { double }
-    let(:rule) { described_class.new(:index, :manager, nil, dynamic_rule, negated_dynamic_rule) }
+    let(:rule) { described_class.new(:manager, nil, dynamic_rule, negated_dynamic_rule) }
 
     context "both dynamic rules are empty" do
       let(:dynamic_rule) { nil }

@@ -1,3 +1,9 @@
+## v4.1.2
+
+### Misc:
+
+- Replaced `git ls-files` with `Dir.glob` in gemspec for improved portability and compatibility
+
 ## v4.1.1
 
 ### Bugs:

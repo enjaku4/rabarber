@@ -248,17 +248,19 @@ This adds `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless:
 The most basic usage of the method is as follows:
 
 ```rb
-class Crm::InvoicesController < ApplicationController
-  grant_access action: :index, roles: [:accountant, :admin]
-  def index
-    @invoices = Invoice.all
-    @invoices = @invoices.paid if current_user.has_role?(:accountant)
-    # ...
-  end
+module Crm
+  class InvoicesController < ApplicationController
+    grant_access action: :index, roles: [:accountant, :admin]
+    def index
+      @invoices = Invoice.all
+      @invoices = @invoices.paid if current_user.has_role?(:accountant)
+      # ...
+    end
 
-  grant_access action: :destroy, roles: :admin
-  def destroy
-    # ...
+    grant_access action: :destroy, roles: :admin
+    def destroy
+      # ...
+    end
   end
 end
 ```
@@ -267,23 +269,27 @@ This grants access to `index` action for users with `accountant` or `admin` role
 You can also define controller-wide rules (without `action` argument):
 
 ```rb
-class Crm::BaseController < ApplicationController
-  grant_access roles: [:admin, :manager]
+module Crm
+  class BaseController < ApplicationController
+    grant_access roles: [:admin, :manager]
 
-  grant_access action: :dashboard, roles: :marketer
-  def dashboard
-    # ...
+    grant_access action: :dashboard, roles: :marketer
+    def dashboard
+      # ...
+    end
   end
 end
 
-class Crm::InvoicesController < Crm::BaseController
-  grant_access roles: :accountant
-  def index
-    # ...
-  end
+module Crm
+  class InvoicesController < Crm::BaseController
+    grant_access roles: :accountant
+    def index
+      # ...
+    end
 
-  def delete
-    # ...
+    def delete
+      # ...
+    end
   end
 end
 ```
@@ -311,28 +317,34 @@ If you've set `must_have_roles` setting to `true`, then only the users with at l
 
 Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
 ```rb
-class Crm::BaseController < ApplicationController
-  grant_access roles: :admin
+module Crm
+  class BaseController < ApplicationController
+    grant_access roles: :admin
   # ...
+  end
 end
 
-class Crm::InvoicesController < Crm::BaseController
-  grant_access roles: :accountant
+module Crm
+  class InvoicesController < Crm::BaseController
+    grant_access roles: :accountant
   # ...
+  end
 end
 ```
 This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
 
 This applies as well to multiple rules defined for the same controller or action:
 ```rb
-class Crm::OrdersController < ApplicationController
-  grant_access roles: :manager, context: Order
-  grant_access roles: :admin
+module Crm
+  class OrdersController < ApplicationController
+    grant_access roles: :manager, context: Order
+    grant_access roles: :admin
 
-  grant_access action: :show, roles: :client, context: -> { Order.find(params[:id]) }
-  grant_access action: :show, roles: :accountant
-  def show
-    # ...
+    grant_access action: :show, roles: :client, context: -> { Order.find(params[:id]) }
+    grant_access action: :show, roles: :accountant
+    def show
+      # ...
+    end
   end
 end
 ```
@@ -343,38 +355,42 @@ This will add rules for `manager` and `admin` roles for all actions in `Crm::Ord
 For more complex cases, Rabarber provides dynamic rules:
 
 ```rb
-class Crm::OrdersController < ApplicationController
-  grant_access roles: :manager, if: :company_manager?, unless: :fired?
+module Crm
+  class OrdersController < ApplicationController
+    grant_access roles: :manager, if: :company_manager?, unless: :fired?
 
-  def index
-    # ...
-  end
+    def index
+      # ...
+    end
 
-  private
+    private
 
-  def company_manager?
-    Company.find(params[:company_id]).manager == current_user
-  end
+    def company_manager?
+      Company.find(params[:company_id]).manager == current_user
+    end
 
-  def fired?
-    current_user.fired?
+    def fired?
+      current_user.fired?
+    end
   end
 end
 
-class Crm::InvoicesController < ApplicationController
-  grant_access roles: :senior_accountant
+module Crm
+  class InvoicesController < ApplicationController
+    grant_access roles: :senior_accountant
 
-  grant_access action: :index, roles: [:secretary, :accountant], if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
-  def index
-    @invoices = Invoice.all
-    @invoices = @invoices.where("total < 10000") if current_user.has_role?(:accountant)
-    @invoices = @invoices.unpaid if current_user.has_role?(:secretary)
-    # ...
-  end
+    grant_access action: :index, roles: [:secretary, :accountant], if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
+    def index
+      @invoices = Invoice.all
+      @invoices = @invoices.where("total < 10000") if current_user.has_role?(:accountant)
+      @invoices = @invoices.unpaid if current_user.has_role?(:secretary)
+      # ...
+    end
 
-  grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).total > 10_000 }
-  def show
-    # ...
+    grant_access action: :show, roles: :accountant, unless: -> { Invoice.find(params[:id]).total > 10_000 }
+    def show
+      # ...
+    end
   end
 end
 ```
@@ -408,27 +424,27 @@ Every Rabarber method can accept a context as an additional keyword argument. By
 E.g., consider a model named `Project`, where each project has its owner and regular members. Roles can be defined like this:
 
 ```rb
-  user.assign_roles(:owner, context: project)
-  another_user.assign_roles(:member, context: project)
+user.assign_roles(:owner, context: project)
+another_user.assign_roles(:member, context: project)
 ```
 
 Then the roles can be verified:
 
 ```rb
-  user.has_role?(:owner, context: project)
-  another_user.has_role?(:member, context: project)
+user.has_role?(:owner, context: project)
+another_user.has_role?(:member, context: project)
 ```
 
 A role can also be added using a class as a context, e.g., for project admins who can manage all projects:
 
 ```rb
-  user.assign_roles(:admin, context: Project)
+user.assign_roles(:admin, context: Project)
 ```
 
 And then it can also be verified:
 
 ```rb
-  user.has_role?(:admin, context: Project)
+user.has_role?(:admin, context: Project)
 ```
 
 In authorization rules, the context can be used in the same way, but it also can be a proc or a symbol (similar to dynamic rules):
@@ -460,13 +476,13 @@ It's important to note that role names are not unique globally but are unique wi
 If you want to see all the roles assigned to a user within a specific context, you can use:
 
 ```rb
-  user.roles(context: project)
+user.roles(context: project)
 ```
 
 Or if you want to get all the roles available in a specific context, you can use:
 
 ```rb
-  Rabarber::Role.names(context: Project)
+Rabarber::Role.names(context: Project)
 ```
 
 ## When Unauthorized

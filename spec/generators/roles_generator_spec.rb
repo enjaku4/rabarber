@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rails/generators"
-require_relative "../../lib/generators/rabarber/roles_generator"
+require "generators/rabarber/roles_generator"
 
 RSpec.describe Rabarber::RolesGenerator do
   subject { described_class.start(args) }

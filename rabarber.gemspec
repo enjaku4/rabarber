@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
 
   spec.files = [
     "rabarber.gemspec", "README.md", "CHANGELOG.md", "LICENSE.txt"
-  ] + `git ls-files | grep -E '^(lib)'`.split("\n")
+  ] + Dir.glob("lib/**/*")
 
   spec.require_paths = ["lib"]
 

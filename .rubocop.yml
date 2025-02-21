@@ -1,4 +1,6 @@
 require:
+  - rubocop-md
+  - rubocop-packaging
   - rubocop-performance
   - rubocop-rails
   - rubocop-rake

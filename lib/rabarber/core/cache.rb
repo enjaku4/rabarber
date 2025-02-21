@@ -38,10 +38,7 @@ module Rabarber
   end
 
   module Cache
-    module_function
-
-    def clear
-      Rabarber::Core::Cache.clear
-    end
+    delegate :clear, to: :"Rabarber::Core::Cache"
+    module_function :clear
   end
 end

@@ -102,7 +102,7 @@ module Rabarber
     end
 
     def delete_roleable_cache(context:)
-      Rabarber::Core::Cache.delete([roleable_id, context])
+      Rabarber::Core::Cache.delete([roleable_id, context], [roleable_id, :all])
     end
 
     def roleable_id

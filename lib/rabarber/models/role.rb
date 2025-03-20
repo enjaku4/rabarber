@@ -67,7 +67,7 @@ module Rabarber
       private
 
       def delete_roleables_cache(role, context:)
-        Rabarber::Core::Cache.delete(*assigned_to_roleables(role).map { [_1, context] })
+        Rabarber::Core::Cache.delete(*assigned_to_roleables(role).flat_map { [[_1, context], [_1, :all]] })
       end
 
       def assigned_to_roleables(role)

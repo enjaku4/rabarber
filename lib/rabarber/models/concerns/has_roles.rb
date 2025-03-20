@@ -16,11 +16,11 @@ module Rabarber
 
     def roles(context: nil)
       processed_context = process_context(context)
-      Rabarber::Core::Cache.fetch(roleable_id, context: processed_context) { rabarber_roles.names(context: processed_context) }
+      Rabarber::Core::Cache.fetch([roleable_id, processed_context]) { rabarber_roles.names(context: processed_context) }
     end
 
     def all_roles
-      rabarber_roles.all_names
+      Rabarber::Core::Cache.fetch([roleable_id, :all]) { rabarber_roles.all_names }
     end
 
     def has_role?(*role_names, context: nil)
@@ -102,7 +102,7 @@ module Rabarber
     end
 
     def delete_roleable_cache(context:)
-      Rabarber::Core::Cache.delete(roleable_id, context:)
+      Rabarber::Core::Cache.delete([roleable_id, context])
     end
 
     def roleable_id

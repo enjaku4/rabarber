@@ -17,10 +17,9 @@ module Rabarber
       end
 
       def roles_permitted?(roleable, controller_instance)
-        resolved_context = resolve_context(controller_instance)
         return false if Rabarber::Configuration.instance.must_have_roles && roleable.all_roles.empty?
 
-        roles.empty? || roleable.has_role?(*roles, context: resolved_context)
+        roles.empty? || roleable.has_role?(*roles, context: resolve_context(controller_instance))
       end
 
       def dynamic_rules_followed?(controller_instance)

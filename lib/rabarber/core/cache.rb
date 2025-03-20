@@ -5,7 +5,7 @@ require "digest/sha2"
 module Rabarber
   module Core
     module Cache
-      extend self
+      module_function
 
       def fetch(key, &)
         return yield unless enabled?
@@ -27,14 +27,12 @@ module Rabarber
         Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
       end
 
-      CACHE_PREFIX = "rabarber"
-      private_constant :CACHE_PREFIX
-
-      private
-
       def prepare_key(key)
         "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest(Marshal.dump(key))}"
       end
+
+      CACHE_PREFIX = "rabarber"
+      private_constant :CACHE_PREFIX
     end
   end
 

@@ -37,7 +37,7 @@ RSpec.describe Rabarber::HasRoles do
 
     shared_examples_for "it caches user roles" do |processed_context, role_names|
       it "caches user roles" do
-        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id, context: processed_context) do |&block|
+        expect(Rabarber::Core::Cache).to receive(:fetch).with([user.id, processed_context]) do |&block|
           result = block.call
           expect(result).to match_array(role_names)
           result
@@ -94,8 +94,21 @@ RSpec.describe Rabarber::HasRoles do
 
     let(:user) { User.create! }
 
+    shared_examples_for "it caches all user roles" do |all_roles|
+      it "caches user roles" do
+        expect(Rabarber::Core::Cache).to receive(:fetch).with([user.id, :all]) do |&block|
+          result = block.call
+          expect(result).to eq(all_roles)
+          result
+        end
+        subject
+      end
+    end
+
     context "when the user has no roles" do
       it { is_expected.to eq({}) }
+
+      it_behaves_like "it caches all user roles", {}
     end
 
     context "when the user has some roles" do
@@ -108,6 +121,8 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it { is_expected.to eq(nil => [:admin, :manager], User => [:viewer], project => [:manager]) }
+
+      it_behaves_like("it caches all user roles", { nil => [:admin, :manager], User => [:viewer], Project.take => [:manager] })
 
       context "when the instance context can't be found" do
         before { project.destroy! }
@@ -171,7 +186,7 @@ RSpec.describe Rabarber::HasRoles do
 
   shared_examples_for "it deletes the cache" do |processed_context|
     it "deletes the cache" do
-      expect(Rabarber::Core::Cache).to receive(:delete).with(user.id, context: processed_context).and_call_original
+      expect(Rabarber::Core::Cache).to receive(:delete).with([user.id, processed_context], [user.id, :all]).and_call_original
       subject
     end
   end

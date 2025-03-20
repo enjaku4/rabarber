@@ -5,22 +5,18 @@ require "digest/sha2"
 module Rabarber
   module Core
     module Cache
-      CACHE_PREFIX = "rabarber"
-      private_constant :CACHE_PREFIX
-
       module_function
 
-      def fetch(roleable_id, context:, &block)
+      def fetch(key, &)
         return yield unless enabled?
 
-        Rails.cache.fetch(key_for(roleable_id, context), expires_in: 1.hour, race_condition_ttl: 5.seconds, &block)
+        Rails.cache.fetch(prepare_key(key), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
 
-      def delete(*roleable_ids, context:)
+      def delete(*keys)
         return unless enabled?
 
-        keys = roleable_ids.map { |roleable_id| key_for(roleable_id, context) }
-        Rails.cache.delete_multi(keys) if keys.any?
+        Rails.cache.delete_multi(keys.map { prepare_key(_1) }) if keys.any?
       end
 
       def enabled?
@@ -31,9 +27,12 @@ module Rabarber
         Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
       end
 
-      def key_for(id, context)
-        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest("#{id}#{context.fetch(:context_type)}#{context.fetch(:context_id)}")}"
+      def prepare_key(key)
+        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest(Marshal.dump(key))}"
       end
+
+      CACHE_PREFIX = "rabarber"
+      private_constant :CACHE_PREFIX
     end
   end
 

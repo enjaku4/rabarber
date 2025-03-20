@@ -1,11 +1,13 @@
 require:
-  - rubocop-md
   - rubocop-packaging
+  - rubocop-rspec_rails
+
+plugins:
+  - rubocop-md
   - rubocop-performance
   - rubocop-rails
   - rubocop-rake
   - rubocop-rspec
-  - rubocop-rspec_rails
   - rubocop-thread_safety
 
 AllCops:
@@ -98,6 +100,9 @@ Style/Lambda:
   EnforcedStyle: literal
 
 Style/ParallelAssignment:
+  Enabled: false
+
+Style/RedundantFetchBlock:
   Enabled: false
 
 Style/StringLiterals:

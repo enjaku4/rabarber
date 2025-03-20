@@ -7,6 +7,10 @@ module Rabarber
         []
       end
 
+      def all_roles
+        {}
+      end
+
       def has_role?(*role_names, context: nil) # rubocop:disable Lint/UnusedMethodArgument
         false
       end

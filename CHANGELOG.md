@@ -1,3 +1,13 @@
+## v4.1.3
+
+### Bugs:
+
+- Fixed an issue where role presence checking did not work correctly if `must_have_roles` configuration option was enabled
+
+### Misc:
+
+- Added caching for `Rabarber::HasRoles#all_roles` method to improve performance
+
 ## v4.1.2
 
 ### Misc:

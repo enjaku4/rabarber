@@ -1,6 +1,5 @@
 require:
   - rubocop-packaging
-  - rubocop-rspec_rails
 
 plugins:
   - rubocop-md
@@ -8,6 +7,7 @@ plugins:
   - rubocop-rails
   - rubocop-rake
   - rubocop-rspec
+  - rubocop-rspec_rails
   - rubocop-thread_safety
 
 AllCops:
@@ -39,9 +39,6 @@ Metrics/ParameterLists:
 Naming/PredicateName:
   Enabled: false
 
-RSpec/AnyInstance:
-  Enabled: false
-
 Rails/ApplicationController:
   Enabled: false
 
@@ -57,6 +54,9 @@ Rails/RakeEnvironment:
 Rake/Desc:
   Enabled: false
 
+RSpec/AnyInstance:
+  Enabled: false
+
 RSpec/ContextWording:
   Enabled: false
 
@@ -64,9 +64,6 @@ RSpec/ExampleLength:
   Enabled: false
 
 RSpec/IndexedLet:
-  Enabled: false
-
-RSpec/MessageChain:
   Enabled: false
 
 RSpec/MessageSpies:

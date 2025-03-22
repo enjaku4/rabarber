@@ -22,5 +22,5 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "rails", ">= 7.0", "< 8.1"
+  spec.add_dependency "rails", ">= 7.1", "< 8.1"
 end

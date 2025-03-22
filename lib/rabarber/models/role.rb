@@ -99,8 +99,6 @@ module Rabarber
       record
     end
 
-    private
-
     def delete_assignments
       ActiveRecord::Base.connection.execute(
         ActiveRecord::Base.sanitize_sql(

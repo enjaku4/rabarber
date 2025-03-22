@@ -6,16 +6,15 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :must_have_roles
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method
 
     def initialize
       @audit_trail_enabled = true
       @cache_enabled = true
       @current_user_method = :current_user
-      @must_have_roles = false
     end
 
-    [:audit_trail_enabled, :cache_enabled, :must_have_roles].each do |method_name|
+    [:audit_trail_enabled, :cache_enabled].each do |method_name|
       define_method(:"#{method_name}=") do |value|
         instance_variable_set(:"@#{method_name}", Rabarber::Input::Types::Boolean.new(
           value, Rabarber::ConfigurationError, "Configuration '#{method_name}' must be a Boolean"

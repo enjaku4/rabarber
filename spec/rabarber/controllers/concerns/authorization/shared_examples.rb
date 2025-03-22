@@ -29,18 +29,6 @@ shared_examples_for "it does not allow access" do |hash|
   end
 end
 
-shared_examples_for "it does not allow access when user must have roles" do |hash|
-  before { Rabarber::Configuration.instance.must_have_roles = true }
-
-  it_behaves_like "it does not allow access", hash
-end
-
-shared_examples_for "it allows access even when user must have roles" do |hash|
-  before { Rabarber::Configuration.instance.must_have_roles = true }
-
-  it_behaves_like "it allows access", hash
-end
-
 shared_examples_for "it checks permissions integrity" do |hash|
   subject { send(hash.keys.first, hash.values.first, params: hash[:params]) }
 
@@ -70,7 +58,7 @@ shared_examples_for "it checks permissions integrity" do |hash|
   end
 end
 
-shared_examples_for "it does not check permissions integrity whatsoever" do |hash|
+shared_examples_for "it does not check permissions integrity" do |hash|
   [true, false].each do |is_eager_load_enabled|
     context "when eager loading is #{is_eager_load_enabled ? "enabled" : "disabled"}" do
       it "does not run Rabarber::Core::PermissionsIntegrityChecker" do

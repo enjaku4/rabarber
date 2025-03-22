@@ -30,7 +30,6 @@ RSpec.describe DummyController, type: :controller do
       it_behaves_like "it does not allow access", get: :multiple_roles
     end
 
-    it_behaves_like "it does not allow access when user must have roles", get: :multiple_roles
     it_behaves_like "it checks permissions integrity", get: :multiple_roles
   end
 
@@ -51,7 +50,6 @@ RSpec.describe DummyController, type: :controller do
       it_behaves_like "it does not allow access", post: :single_role
     end
 
-    it_behaves_like "it does not allow access when user must have roles", post: :single_role
     it_behaves_like "it checks permissions integrity", post: :single_role
   end
 
@@ -66,7 +64,6 @@ RSpec.describe DummyController, type: :controller do
       it_behaves_like "it allows access", put: :all_access
     end
 
-    it_behaves_like "it does not allow access when user must have roles", put: :all_access
     it_behaves_like "it checks permissions integrity", put: :all_access
   end
 
@@ -81,7 +78,6 @@ RSpec.describe DummyController, type: :controller do
       it_behaves_like "it does not allow access", delete: :no_access
     end
 
-    it_behaves_like "it does not allow access when user must have roles", delete: :no_access
     it_behaves_like "it checks permissions integrity", delete: :no_access
   end
 
@@ -108,7 +104,6 @@ RSpec.describe DummyController, type: :controller do
       it_behaves_like "it does not allow access", post: :multiple_rules
     end
 
-    it_behaves_like "it does not allow access when user must have roles", post: :multiple_rules
     it_behaves_like "it checks permissions integrity", post: :multiple_rules
   end
 
@@ -126,7 +121,6 @@ RSpec.describe DummyController, type: :controller do
         it_behaves_like "it does not allow access", get: :if_lambda, params: { foo: "baz" }
       end
 
-      it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
       it_behaves_like "it checks permissions integrity", get: :if_lambda, params: { foo: "bar" }
     end
 
@@ -143,7 +137,6 @@ RSpec.describe DummyController, type: :controller do
         it_behaves_like "it does not allow access", post: :if_method, params: { bad: "bar" }
       end
 
-      it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
       it_behaves_like "it checks permissions integrity", post: :if_method, params: { bad: "baz" }
     end
   end
@@ -162,7 +155,6 @@ RSpec.describe DummyController, type: :controller do
         it_behaves_like "it allows access", patch: :unless_lambda, params: { foo: "baz" }
       end
 
-      it_behaves_like "it does not allow access when user must have roles", patch: :unless_lambda, params: { foo: "bar" }
       it_behaves_like "it checks permissions integrity", patch: :unless_lambda, params: { foo: "bar" }
     end
 
@@ -179,7 +171,6 @@ RSpec.describe DummyController, type: :controller do
         it_behaves_like "it allows access", delete: :unless_method, params: { bad: "bar" }
       end
 
-      it_behaves_like "it does not allow access when user must have roles", delete: :unless_method, params: { bad: "baz" }
       it_behaves_like "it checks permissions integrity", delete: :unless_method, params: { bad: "baz" }
     end
   end

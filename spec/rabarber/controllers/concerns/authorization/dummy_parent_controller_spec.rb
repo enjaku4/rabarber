@@ -27,8 +27,6 @@ RSpec.describe DummyParentController, type: :controller do
       it_behaves_like "it does not allow access", delete: :bar
     end
 
-    it_behaves_like "it does not allow access when user must have roles", put: :foo
-    it_behaves_like "it does not allow access when user must have roles", delete: :bar
     it_behaves_like "it checks permissions integrity", put: :foo
     it_behaves_like "it checks permissions integrity", delete: :bar
   end

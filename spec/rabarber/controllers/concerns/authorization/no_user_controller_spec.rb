@@ -17,9 +17,6 @@ RSpec.describe NoUserController, type: :controller do
     it_behaves_like "it does not allow access", post: :no_access
   end
 
-  it_behaves_like "it does not allow access when user must have roles", put: :access_with_roles
-  it_behaves_like "it does not allow access when user must have roles", get: :all_access
-  it_behaves_like "it does not allow access when user must have roles", post: :no_access
   it_behaves_like "it checks permissions integrity", put: :access_with_roles
   it_behaves_like "it checks permissions integrity", get: :all_access
   it_behaves_like "it checks permissions integrity", post: :no_access

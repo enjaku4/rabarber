@@ -13,7 +13,6 @@ RSpec.describe Rabarber do
         expect(config.audit_trail_enabled).to be true
         expect(config.cache_enabled).to be true
         expect(config.current_user_method).to eq(:current_user)
-        expect(config.must_have_roles).to be false
       end
     end
 
@@ -23,7 +22,6 @@ RSpec.describe Rabarber do
           config.audit_trail_enabled = false
           config.cache_enabled = false
           config.current_user_method = "user"
-          config.must_have_roles = true
         end
       end
 
@@ -31,7 +29,6 @@ RSpec.describe Rabarber do
         expect(config.audit_trail_enabled).to be false
         expect(config.cache_enabled).to be false
         expect(config.current_user_method).to eq(:user)
-        expect(config.must_have_roles).to be true
       end
 
       it "uses Input::Types::Boolean to process audit_trail_enabled" do
@@ -48,11 +45,6 @@ RSpec.describe Rabarber do
         expect_input_processor(Rabarber::Input::Types::Symbol, :user, "Configuration 'current_user_method' must be a Symbol or a String")
         described_class.configure { |config| config.current_user_method = :user }
       end
-
-      it "uses Input::Types::Boolean to process must_have_roles" do
-        expect_input_processor(Rabarber::Input::Types::Boolean, true, "Configuration 'must_have_roles' must be a Boolean")
-        described_class.configure { |config| config.must_have_roles = true }
-      end
     end
 
     context "when misconfigured" do
@@ -66,10 +58,6 @@ RSpec.describe Rabarber do
 
       it "raises an error for invalid current_user_method" do
         expect_configuration_error(:current_user_method, User, "Configuration 'current_user_method' must be a Symbol or a String")
-      end
-
-      it "raises an error for invalid must_have_roles" do
-        expect_configuration_error(:must_have_roles, nil, "Configuration 'must_have_roles' must be a Boolean")
       end
     end
   end

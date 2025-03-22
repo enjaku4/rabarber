@@ -20,7 +20,6 @@ RSpec.describe ContextController, type: :controller do
       it_behaves_like "it does not allow access", get: :global_ctx
     end
 
-    it_behaves_like "it does not allow access when user must have roles", get: :global_ctx
     it_behaves_like "it checks permissions integrity", get: :global_ctx
   end
 
@@ -37,7 +36,6 @@ RSpec.describe ContextController, type: :controller do
       it_behaves_like "it does not allow access", post: :class_ctx
     end
 
-    it_behaves_like "it does not allow access when user must have roles", post: :class_ctx
     it_behaves_like "it checks permissions integrity", post: :class_ctx
   end
 
@@ -58,7 +56,6 @@ RSpec.describe ContextController, type: :controller do
       it_behaves_like "it does not allow access", put: :instance_ctx
     end
 
-    it_behaves_like "it does not allow access when user must have roles", put: :instance_ctx
     it_behaves_like "it checks permissions integrity", put: :instance_ctx
   end
 
@@ -79,7 +76,6 @@ RSpec.describe ContextController, type: :controller do
       it_behaves_like "it does not allow access", patch: :symbol_ctx
     end
 
-    it_behaves_like "it does not allow access when user must have roles", patch: :symbol_ctx
     it_behaves_like "it checks permissions integrity", patch: :symbol_ctx
   end
 
@@ -96,7 +92,6 @@ RSpec.describe ContextController, type: :controller do
       it_behaves_like "it does not allow access", delete: :proc_ctx
     end
 
-    it_behaves_like "it does not allow access when user must have roles", delete: :proc_ctx
     it_behaves_like "it checks permissions integrity", delete: :proc_ctx
   end
 end

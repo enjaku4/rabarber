@@ -57,34 +57,16 @@ RSpec.describe Rabarber::Core::Rule do
       context "if roles are empty" do
         let(:roles) { [] }
 
-        context "if must_have_roles is false" do
-          context "if user has roles" do
-            let(:user_roles) { [:manager] }
+        context "if user has roles" do
+          let(:user_roles) { [:manager] }
 
-            it { is_expected.to be true }
-          end
-
-          context "if user does not have roles" do
-            let(:user_roles) { [] }
-
-            it { is_expected.to be true }
-          end
+          it { is_expected.to be true }
         end
 
-        context "if must_have_roles is true" do
-          before { Rabarber::Configuration.instance.must_have_roles = true }
+        context "if user does not have roles" do
+          let(:user_roles) { [] }
 
-          context "if user has roles" do
-            let(:user_roles) { [:manager] }
-
-            it { is_expected.to be true }
-          end
-
-          context "if user does not have roles" do
-            let(:user_roles) { [] }
-
-            it { is_expected.to be false }
-          end
+          it { is_expected.to be true }
         end
       end
 
@@ -108,15 +90,7 @@ RSpec.describe Rabarber::Core::Rule do
       context "if rule doesn't have roles" do
         let(:roles) { [] }
 
-        context "if must_have_roles is false" do
-          it { is_expected.to be true }
-        end
-
-        context "if must_have_roles is true" do
-          before { Rabarber::Configuration.instance.must_have_roles = true }
-
-          it { is_expected.to be false }
-        end
+        it { is_expected.to be true }
       end
     end
   end

@@ -17,6 +17,5 @@ RSpec.describe NoRulesController, type: :controller do
     it_behaves_like "it does not allow access", delete: :no_rules
   end
 
-  it_behaves_like "it does not allow access when user must have roles", delete: :no_rules
   it_behaves_like "it checks permissions integrity", delete: :no_rules
 end

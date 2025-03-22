@@ -12,7 +12,7 @@ plugins:
 
 AllCops:
   TargetRailsVersion: 7.1
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
   NewCops: enable
 
 Layout/LineLength:

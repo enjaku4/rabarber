@@ -84,9 +84,6 @@ RSpec/SpecFilePathFormat:
 Style/ClassVars:
   Enabled: false
 
-Style/DoubleNegation:
-  Enabled: false
-
 Style/Documentation:
   Enabled: false
 
@@ -95,9 +92,6 @@ Style/HashSyntax:
 
 Style/Lambda:
   EnforcedStyle: literal
-
-Style/ParallelAssignment:
-  Enabled: false
 
 Style/RedundantFetchBlock:
   Enabled: false

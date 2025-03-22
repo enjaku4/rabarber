@@ -7,16 +7,16 @@ module Rabarber
     module Cache
       module_function
 
-      def fetch(key, &)
+      def fetch(uid, &)
         return yield unless enabled?
 
-        Rails.cache.fetch(prepare_key(key), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
+        Rails.cache.fetch(prepare_key(uid), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
 
-      def delete(*keys)
+      def delete(*uids)
         return unless enabled?
 
-        Rails.cache.delete_multi(keys.map { prepare_key(_1) }) if keys.any?
+        Rails.cache.delete_multi(uids.map { prepare_key(_1) }) if uids.any?
       end
 
       def enabled?
@@ -27,8 +27,8 @@ module Rabarber
         Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
       end
 
-      def prepare_key(key)
-        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest(Marshal.dump(key))}"
+      def prepare_key(uid)
+        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest(Marshal.dump(uid))}"
       end
 
       CACHE_PREFIX = "rabarber"

@@ -1,3 +1,10 @@
+## v4.1.4
+
+### Misc:
+
+- Deprecated `must_have_roles` configuration option
+- Optimized cache invalidation
+
 ## v4.1.3
 
 ### Bugs:

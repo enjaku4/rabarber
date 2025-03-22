@@ -20,6 +20,7 @@ module Rabarber
         instance_variable_set(:"@#{method_name}", Rabarber::Input::Types::Boolean.new(
           value, Rabarber::ConfigurationError, "Configuration '#{method_name}' must be a Boolean"
         ).process)
+        ActiveSupport::Deprecation.new("5.0.0", "rabarber").warn("Rabarber’s ‘must_have_roles’ configuration option is deprecated and will be removed in the next major version!") if method_name == :must_have_roles
       end
     end
 

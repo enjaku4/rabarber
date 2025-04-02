@@ -14,13 +14,16 @@ module Rabarber
       @current_user_method = :current_user
     end
 
-    [:audit_trail_enabled, :cache_enabled].each do |method_name|
-      define_method(:"#{method_name}=") do |value|
-        instance_variable_set(:"@#{method_name}", Rabarber::Input::Types::Boolean.new(
-          value, Rabarber::ConfigurationError, "Configuration '#{method_name}' must be a Boolean"
-        ).process)
-        ActiveSupport::Deprecation.new("5.0.0", "rabarber").warn("Rabarber’s ‘must_have_roles’ configuration option is deprecated and will be removed in the next major version!") if method_name == :must_have_roles
-      end
+    def cache_enabled=(value)
+      @cache_enabled = Rabarber::Input::Types::Boolean.new(
+        value, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
+      ).process
+    end
+
+    def audit_trail_enabled=(value)
+      @audit_trail_enabled = Rabarber::Input::Types::Boolean.new(
+        value, Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+      ).process
     end
 
     def current_user_method=(method_name)

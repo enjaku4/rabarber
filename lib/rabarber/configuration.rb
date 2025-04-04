@@ -14,15 +14,15 @@ module Rabarber
       @current_user_method = :current_user
     end
 
-    def cache_enabled=(value)
-      @cache_enabled = Rabarber::Input::Types::Boolean.new(
-        value, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
-      ).process
-    end
-
     def audit_trail_enabled=(value)
       @audit_trail_enabled = Rabarber::Input::Types::Boolean.new(
         value, Rabarber::ConfigurationError, "Configuration 'audit_trail_enabled' must be a Boolean"
+      ).process
+    end
+
+    def cache_enabled=(value)
+      @cache_enabled = Rabarber::Input::Types::Boolean.new(
+        value, Rabarber::ConfigurationError, "Configuration 'cache_enabled' must be a Boolean"
       ).process
     end
 

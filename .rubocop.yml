@@ -1,8 +1,6 @@
-require:
-  - rubocop-packaging
-
 plugins:
   - rubocop-md
+  - rubocop-packaging
   - rubocop-performance
   - rubocop-rails
   - rubocop-rake

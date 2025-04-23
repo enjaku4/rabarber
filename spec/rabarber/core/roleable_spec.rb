@@ -29,7 +29,9 @@ RSpec.describe Rabarber::Core::Roleable do
     context "when user does not exist" do
       let(:user) { nil }
 
-      it { is_expected.to be_empty }
+      it "raise an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
+      end
     end
   end
 end

@@ -15,7 +15,9 @@ RSpec.describe Rabarber::Helpers do
     context "when there is no current user" do
       let(:user) { nil }
 
-      it { is_expected.to be_nil }
+      it "raise an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
+      end
     end
 
     context "when some of the roles are invalid" do
@@ -55,7 +57,9 @@ RSpec.describe Rabarber::Helpers do
     context "when there is no current user" do
       let(:user) { nil }
 
-      it { is_expected.to eq("foo") }
+      it "raise an error" do
+        expect { subject }.to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
+      end
     end
 
     context "when some of the roles are invalid" do

@@ -77,22 +77,6 @@ RSpec.describe Rabarber::Core::Rule do
         it { is_expected.to be false }
       end
     end
-
-    context "when roleable is NullRoleable" do
-      let(:roleable) { Rabarber::Core::NullRoleable.new }
-
-      context "if rule has roles" do
-        let(:roles) { :admin }
-
-        it { is_expected.to be false }
-      end
-
-      context "if rule doesn't have roles" do
-        let(:roles) { [] }
-
-        it { is_expected.to be true }
-      end
-    end
   end
 
   describe "#dynamic_rules_followed?" do

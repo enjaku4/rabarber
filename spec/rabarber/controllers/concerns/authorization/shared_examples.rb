@@ -5,27 +5,12 @@ shared_examples_for "it allows access" do |hash|
     send(hash.keys.first, hash.values.first, params: hash[:params])
     expect(response).to have_http_status(:success)
   end
-
-  it "does not log a warning to the audit trail" do
-    expect(Rabarber::Audit::Events::UnauthorizedAttempt).not_to receive(:trigger)
-    send(hash.keys.first, hash.values.first, params: hash[:params])
-  end
 end
 
 shared_examples_for "it does not allow access" do |hash|
   it "does not allow access" do
     send(hash.keys.first, hash.values.first, params: hash[:params])
     expect(response).to redirect_to(DummyApplication.routes.url_helpers.root_path)
-  end
-
-  it "logs a warning to the audit trail" do
-    allow(Rabarber::Audit::Events::UnauthorizedAttempt).to receive(:trigger).and_call_original
-    send(hash.keys.first, hash.values.first, params: hash[:params])
-    expect(Rabarber::Audit::Events::UnauthorizedAttempt)
-      .to have_received(:trigger).with(
-        controller.current_user.presence || an_instance_of(Rabarber::Core::NullRoleable),
-        path: request.path, request_method: hash.keys.first.to_s.upcase
-      )
   end
 end
 
@@ -66,5 +51,12 @@ shared_examples_for "it does not check permissions integrity" do |hash|
         send(hash.keys.first, hash.values.first, params: hash[:params])
       end
     end
+  end
+end
+
+shared_examples_for "it raises an error on nil current_user" do |hash|
+  it "raises an error" do
+    expect { send(hash.keys.first, hash.values.first, params: hash[:params]) }
+      .to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
   end
 end

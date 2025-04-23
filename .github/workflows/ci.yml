@@ -33,7 +33,7 @@ jobs:
       - name: Bundle install
         run: bundle install
       - name: Run grepfruit
-        run: bundle exec grepfruit -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:38' --search-hidden
+        run: bundle exec grepfruit -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:36' --search-hidden
 
   tests:
     runs-on: ubuntu-latest

@@ -5,11 +5,9 @@ module Rabarber
     extend ActiveSupport::Concern
     include Rabarber::Core::Roleable
 
-    included { before_action :verify_access }
-
     class_methods do
       def skip_authorization(options = {})
-        skip_before_action :verify_access, **options
+        skip_before_action :authorize, **options
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
@@ -26,7 +24,7 @@ module Rabarber
 
     private
 
-    def verify_access
+    def authorize
       Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
 
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)

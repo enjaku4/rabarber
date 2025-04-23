@@ -3,7 +3,7 @@
 RSpec.describe Rabarber::Authorization do
   describe ".skip_authorization" do
     it "passes the options to skip_before_action" do
-      expect(DummyAuthController).to receive(:skip_before_action).with(:verify_access, only: [:index, :show], if: :foo?)
+      expect(DummyAuthController).to receive(:skip_before_action).with(:authorize, only: [:index, :show], if: :foo?)
       DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?)
     end
   end

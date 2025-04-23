@@ -14,18 +14,20 @@ RSpec.describe Rabarber::Railtie do
   context "when eager_load is true" do
     let(:is_eager_load_enabled) { true }
 
-    it "checks the integrity" do
+    it "checks the integrity and includes the Rabarber::HasRoles module" do
       expect(double).to receive(:run!)
       subject
+      expect(User < Rabarber::HasRoles).to be true
     end
   end
 
   context "when eager_load is false" do
     let(:is_eager_load_enabled) { false }
 
-    it "does not check the actions" do
+    it "does not check the integrity but still includes the Rabarber::HasRoles module" do
       expect(double).not_to receive(:run!)
       subject
+      expect(User < Rabarber::HasRoles).to be true
     end
   end
 end

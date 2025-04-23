@@ -541,10 +541,4 @@ RSpec.describe Rabarber::HasRoles do
 
     it { is_expected.to eq("User##{user.id}") }
   end
-
-  describe ".roleable_class" do
-    subject { described_class.roleable_class }
-
-    it { is_expected.to eq(User) }
-  end
 end

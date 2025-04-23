@@ -6,6 +6,7 @@ module Rabarber
   class Railtie < Rails::Railtie
     initializer "rabarber.after_initialize" do |app|
       app.config.after_initialize do
+        Rabarber::Configuration.instance.user_model.include Rabarber::HasRoles
         Rabarber::Core::PermissionsIntegrityChecker.new.run! if app.config.eager_load
       end
     end

@@ -16,7 +16,7 @@ module Rabarber
       end
 
       def log_identity
-        "Unauthenticated #{Rabarber::HasRoles.roleable_class.model_name.human.downcase}"
+        "Unauthenticated user"
       end
     end
   end

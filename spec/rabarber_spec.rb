@@ -13,6 +13,7 @@ RSpec.describe Rabarber do
         expect(config.audit_trail_enabled).to be true
         expect(config.cache_enabled).to be true
         expect(config.current_user_method).to eq(:current_user)
+        expect(config.user_model).to eq(User)
       end
     end
 
@@ -22,6 +23,7 @@ RSpec.describe Rabarber do
           config.audit_trail_enabled = false
           config.cache_enabled = false
           config.current_user_method = "user"
+          config.user_model = Client
         end
       end
 
@@ -29,6 +31,7 @@ RSpec.describe Rabarber do
         expect(config.audit_trail_enabled).to be false
         expect(config.cache_enabled).to be false
         expect(config.current_user_method).to eq(:user)
+        expect(config.user_model).to eq(Client)
       end
 
       it "uses Input::Types::Boolean to process audit_trail_enabled" do
@@ -45,6 +48,11 @@ RSpec.describe Rabarber do
         expect_input_processor(Rabarber::Input::Types::Symbol, :user, "Configuration 'current_user_method' must be a Symbol or a String")
         described_class.configure { |config| config.current_user_method = :user }
       end
+
+      it "uses Input::Types::ArModel to process user_model" do
+        expect_input_processor(Rabarber::Input::Types::ArModel, Client, "Configuration 'user_model' must be an ActiveRecord model")
+        described_class.configure { |config| config.user_model = Client }
+      end
     end
 
     context "when misconfigured" do
@@ -58,6 +66,10 @@ RSpec.describe Rabarber do
 
       it "raises an error for invalid current_user_method" do
         expect_configuration_error(:current_user_method, User, "Configuration 'current_user_method' must be a Symbol or a String")
+      end
+
+      it "raises an error for invalid user_model" do
+        expect_configuration_error(:user_model, Rabarber::Core, "Configuration 'user_model' must be an ActiveRecord model")
       end
     end
   end

@@ -59,7 +59,7 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
-        Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
+        Rabarber::Configuration.instance.user_model.joins(:rabarber_roles).where(
           rabarber_roles: { name: process_role_name(name), **process_context(context) }
         )
       end

@@ -1,4 +1,5 @@
 <!-- TODO: make necessary changes -->
+<!-- TODO: make it clear that authorization must follow the authentication -->
 
 # Rabarber: Simplified Authorization for Rails
 

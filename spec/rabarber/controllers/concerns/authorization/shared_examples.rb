@@ -57,6 +57,6 @@ end
 shared_examples_for "it raises an error on nil current_user" do |hash|
   it "raises an error" do
     expect { send(hash.keys.first, hash.values.first, params: hash[:params]) }
-      .to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
+      .to raise_error(Rabarber::Error, "Expected an instance of User from current_user method, but got nil")
   end
 end

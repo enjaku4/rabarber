@@ -30,7 +30,7 @@ RSpec.describe Rabarber::Core::Roleable do
       let(:user) { nil }
 
       it "raise an error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Expected an instance of User from :current_user method, but got nil")
+        expect { subject }.to raise_error(Rabarber::Error, "Expected an instance of User from current_user method, but got nil")
       end
     end
   end

@@ -9,7 +9,7 @@ module Rabarber
         unless current_user.is_a?(Rabarber::Configuration.instance.user_model)
           raise(
             Rabarber::Error,
-            "Expected an instance of #{Rabarber::Configuration.instance.user_model.name} from #{Rabarber::Configuration.instance.current_user_method.inspect} method, but got #{current_user.inspect}"
+            "Expected an instance of #{Rabarber::Configuration.instance.user_model.name} from #{Rabarber::Configuration.instance.current_user_method} method, but got #{current_user.inspect}"
           )
         end
 

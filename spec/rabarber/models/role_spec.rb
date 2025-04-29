@@ -119,6 +119,14 @@ RSpec.describe Rabarber::Role do
           expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo was renamed or deleted")
         end
       end
+
+      context "when the instance context's class doesn't exist" do
+        before { described_class.find_by(context: project1).update!(context_type: "Foo") }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo was renamed or deleted")
+        end
+      end
     end
   end
 

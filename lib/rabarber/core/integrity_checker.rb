@@ -19,7 +19,7 @@ module Rabarber
 
       def check_for_missing_context_class
         # TODO: tests
-        Rabarber::Role.distinct.pluck(:context_type).each do |context_class|
+        Rabarber::Role.where.not(context_type: nil).distinct.pluck(:context_type).each do |context_class|
           context_class.constantize
         rescue NameError => e
           raise Rabarber::Error, "Context not found: class #{e.name} was renamed or deleted"

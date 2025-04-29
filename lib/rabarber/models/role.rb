@@ -11,6 +11,7 @@ module Rabarber
 
     belongs_to :context, polymorphic: true, optional: true
 
+    # TODO: try habtm
     before_destroy :delete_assignments
 
     class << self

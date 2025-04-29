@@ -36,9 +36,9 @@ module Rabarber
       end
 
       def missing_actions_list
-        @missing_actions_list ||= action_rules.each_with_object([]) do |(controller, hash), arr|
-          missing_actions = hash.keys - controller.action_methods.map(&:to_sym)
-          arr << { controller => missing_actions } if missing_actions.any?
+        @missing_actions_list ||= action_rules.each_with_object([]) do |(rule_controller, hash), arr|
+          missing_actions = hash.keys - rule_controller.action_methods.map(&:to_sym)
+          arr << { rule_controller => missing_actions } if missing_actions.any?
         end
       end
 

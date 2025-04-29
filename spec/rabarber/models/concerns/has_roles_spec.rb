@@ -127,16 +127,16 @@ RSpec.describe Rabarber::HasRoles do
       context "when the instance context can't be found" do
         before { project.destroy! }
 
-        it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Project##{project.id}")
-        end
+        it { is_expected.to eq(nil => [:admin, :manager], User => [:viewer]) }
+
+        it_behaves_like "it caches all user roles", { nil => [:admin, :manager], User => [:viewer] }
       end
 
       context "when the class context doesn't exist" do
         before { Rabarber::Role.take.update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Foo")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo was renamed or deleted")
         end
       end
     end

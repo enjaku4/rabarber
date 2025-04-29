@@ -2,7 +2,7 @@
 
 module Rabarber
   module Core
-    class PermissionsIntegrityChecker
+    class IntegrityChecker
       attr_reader :controller
 
       def initialize(controller = nil)
@@ -10,6 +10,8 @@ module Rabarber
       end
 
       def run!
+        # TODO: raise if class context is missing in any role
+        # TODO: prune roles with missing instance context
         return if missing_list.empty?
 
         raise(

@@ -4,10 +4,10 @@ RSpec.describe Rabarber::Railtie do
   subject { initializer.run(DummyApplication) }
 
   let(:initializer) { described_class.initializers.detect { |i| i.name == "rabarber.after_initialize" } }
-  let(:double) { instance_double(Rabarber::Core::PermissionsIntegrityChecker) }
+  let(:double) { instance_double(Rabarber::Core::IntegrityChecker) }
 
   before do
-    allow(Rabarber::Core::PermissionsIntegrityChecker).to receive(:new).and_return(double)
+    allow(Rabarber::Core::IntegrityChecker).to receive(:new).and_return(double)
     allow(Rails.configuration).to receive(:eager_load).and_return(is_eager_load_enabled)
   end
 

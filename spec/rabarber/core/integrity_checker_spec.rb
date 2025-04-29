@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Core::PermissionsIntegrityChecker do
+RSpec.describe Rabarber::Core::IntegrityChecker do
   subject { described_class.new(controller).run! }
 
   after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }

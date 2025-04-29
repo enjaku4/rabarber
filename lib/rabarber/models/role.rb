@@ -19,11 +19,13 @@ module Rabarber
       end
 
       def all_names
-        includes(:context).group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
-      rescue ActiveRecord::RecordNotFound => e
-        raise Rabarber::Error, "Context not found: #{e.model}##{e.id}"
+        includes(:context).each_with_object({}) do |role, hash|
+          (hash[role.context] ||= []) << role.name.to_sym
+        rescue ActiveRecord::RecordNotFound
+          next
+        end
       rescue NameError => e
-        raise Rabarber::Error, "Context not found: #{e.name}"
+        raise Rabarber::Error, "Context not found: class #{e.name} was renamed or deleted"
       end
 
       def add(name, context: nil)

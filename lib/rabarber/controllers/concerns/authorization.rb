@@ -25,7 +25,7 @@ module Rabarber
     private
 
     def authorize
-      Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
+      Rabarber::Core::IntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
 
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 

@@ -31,8 +31,8 @@ require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/models/concerns/has_roles"
 require_relative "rabarber/models/role"
 
+require_relative "rabarber/core/integrity_checker"
 require_relative "rabarber/core/permissions"
-require_relative "rabarber/core/permissions_integrity_checker"
 
 require_relative "rabarber/railtie"
 

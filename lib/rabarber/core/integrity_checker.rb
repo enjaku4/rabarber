@@ -49,7 +49,17 @@ module Rabarber
 
       def prune_missing_instance_context_roles
         # TODO: tests
-        # TODO: implement
+        ids = Rabarber::Role.where.not(context_id: nil).includes(:context).filter_map do |role|
+          role.context
+          false
+        rescue ActiveRecord::RecordNotFound
+          role.id
+        end
+
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.connection.execute("DELETE FROM rabarber_roles_roleables WHERE role_id IN (#{ids.join(",")})")
+          Rabarber::Role.where(id: ids).delete_all
+        end
       end
     end
   end

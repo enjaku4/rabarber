@@ -12,6 +12,7 @@ module Rabarber
       @audit_trail_enabled = true
       @cache_enabled = true
       @current_user_method = :current_user
+      # TODO: consider using a string instead of a class, may enable habtm and prevent load issues
       @user_model = User
     end
 

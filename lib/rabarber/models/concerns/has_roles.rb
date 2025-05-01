@@ -42,13 +42,6 @@ module Rabarber
       if roles_to_assign.any?
         delete_roleable_cache(context: processed_context)
         rabarber_roles << roles_to_assign
-
-        Rabarber::Audit::Events::RolesAssigned.trigger(
-          self,
-          roles_to_assign: roles_to_assign.names(context: processed_context),
-          current_roles: roles(context: processed_context),
-          context: processed_context
-        )
       end
 
       roles(context: processed_context)
@@ -65,13 +58,6 @@ module Rabarber
       if roles_to_revoke.any?
         delete_roleable_cache(context: processed_context)
         self.rabarber_roles -= roles_to_revoke
-
-        Rabarber::Audit::Events::RolesRevoked.trigger(
-          self,
-          roles_to_revoke: roles_to_revoke.names(context: processed_context),
-          current_roles: roles(context: processed_context),
-          context: processed_context
-        )
       end
 
       roles(context: processed_context)

@@ -20,10 +20,6 @@ require_relative "rabarber/input/types/symbol"
 
 require_relative "rabarber/core/cache"
 
-require_relative "rabarber/audit/events/base"
-require_relative "rabarber/audit/events/roles_assigned"
-require_relative "rabarber/audit/events/roles_revoked"
-
 require_relative "rabarber/core/roleable"
 
 require_relative "rabarber/controllers/concerns/authorization"

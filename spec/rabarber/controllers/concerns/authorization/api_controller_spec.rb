@@ -19,7 +19,5 @@ RSpec.describe ApiController, type: :controller do
 
       it_behaves_like "it does not allow access", get: :api_action
     end
-
-    it_behaves_like "it checks permissions integrity", get: :api_action
   end
 end

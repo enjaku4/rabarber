@@ -116,7 +116,7 @@ RSpec.describe Rabarber::Role do
         before { described_class.take.update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo was renamed or deleted")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
         end
       end
 
@@ -124,7 +124,7 @@ RSpec.describe Rabarber::Role do
         before { described_class.find_by(context: project1).update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo was renamed or deleted")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
         end
       end
     end

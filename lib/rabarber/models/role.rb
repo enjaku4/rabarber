@@ -25,7 +25,7 @@ module Rabarber
           next
         end
       rescue NameError => e
-        raise Rabarber::Error, "Context not found: class #{e.name} was renamed or deleted"
+        raise Rabarber::Error, "Context not found: class #{e.name} may have been renamed or deleted"
       end
 
       def add(name, context: nil)

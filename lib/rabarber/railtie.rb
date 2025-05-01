@@ -8,8 +8,7 @@ module Rabarber
       app.config.to_prepare do
         user_model = Rabarber::Configuration.instance.user_model
         user_model.include Rabarber::HasRoles unless user_model < Rabarber::HasRoles
-        # TODO: see if calling IntegrityChecker in controller can be removed
-        Rabarber::Core::IntegrityChecker.new.run! if app.config.eager_load
+        Rabarber::Core::IntegrityChecker.run!
       end
     end
   end

@@ -16,6 +16,4 @@ RSpec.describe NoRulesController, type: :controller do
   context "when the user does not have any roles" do
     it_behaves_like "it does not allow access", delete: :no_rules
   end
-
-  it_behaves_like "it checks permissions integrity", delete: :no_rules
 end

@@ -6,15 +6,14 @@ module Rabarber
       extend self
 
       def run!
-        check_for_missing_context_class
+        check_for_missing_class_context
         check_for_missing_actions
-        prune_missing_instance_context_roles
+        prune_missing_instance_context
       end
 
       private
 
-      def check_for_missing_context_class
-        # TODO: tests
+      def check_for_missing_class_context
         Rabarber::Role.where.not(context_type: nil).distinct.pluck(:context_type).each do |context_class|
           context_class.constantize
         rescue NameError => e
@@ -36,7 +35,7 @@ module Rabarber
         )
       end
 
-      def prune_missing_instance_context_roles
+      def prune_missing_instance_context
         # TODO: tests
         ids = Rabarber::Role.where.not(context_id: nil).includes(:context).filter_map do |role|
           role.context

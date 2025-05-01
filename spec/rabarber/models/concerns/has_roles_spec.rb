@@ -444,12 +444,4 @@ RSpec.describe Rabarber::HasRoles do
       it { is_expected.to be_empty }
     end
   end
-
-  describe "#log_identity" do
-    subject { user.log_identity }
-
-    let(:user) { User.create! }
-
-    it { is_expected.to eq("User##{user.id}") }
-  end
 end

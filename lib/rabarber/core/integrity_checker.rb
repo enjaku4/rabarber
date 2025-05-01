@@ -36,7 +36,6 @@ module Rabarber
       end
 
       def prune_missing_instance_context
-        # TODO: tests
         ids = Rabarber::Role.where.not(context_id: nil).includes(:context).filter_map do |role|
           role.context
           nil

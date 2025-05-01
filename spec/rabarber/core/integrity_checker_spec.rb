@@ -3,7 +3,7 @@
 RSpec.describe Rabarber::Core::IntegrityChecker do
   subject { described_class.run! }
 
-  context "checking missing class context" do
+  context "checking for missing class context" do
     context "when class is missing in class context" do
       before { Rabarber::Role.create!(name: "manager", context_type: "Order", context_id: nil) }
 
@@ -34,7 +34,7 @@ RSpec.describe Rabarber::Core::IntegrityChecker do
     end
   end
 
-  context "checking missing actions" do
+  context "checking for missing actions" do
     after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
 
     context "when action is missing" do
@@ -48,6 +48,31 @@ RSpec.describe Rabarber::Core::IntegrityChecker do
     context "when action is not missing" do
       it "does not raise error" do
         expect { subject }.not_to raise_error
+      end
+    end
+  end
+
+  context "pruning missing instance context" do
+    let(:project) { Project.create! }
+    let!(:role) { Rabarber::Role.create!(name: "manager", context_type: "Project", context_id: project.id) }
+
+    before { Rabarber::Role.create!(name: "manager", context_type: "Project", context_id: Project.create!.id) }
+
+    context "when context is missing" do
+      before { project.destroy! }
+
+      it "deletes the roles with missing context" do
+        expect { subject }.to change { Rabarber::Role.find_by(id: role.id) }.from(role).to(nil)
+      end
+
+      it "does not delete the roles with existing context" do
+        expect { subject }.to change(Rabarber::Role, :count).from(2).to(1)
+      end
+    end
+
+    context "when context is not missing" do
+      it "does not delete any roles" do
+        expect { subject }.not_to change(Rabarber::Role, :count)
       end
     end
   end

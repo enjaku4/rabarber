@@ -40,7 +40,7 @@ module Rabarber
         # TODO: tests
         ids = Rabarber::Role.where.not(context_id: nil).includes(:context).filter_map do |role|
           role.context
-          false
+          nil
         rescue ActiveRecord::RecordNotFound
           role.id
         end

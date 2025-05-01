@@ -9,7 +9,7 @@ module Rabarber
         unless current_roleable.is_a?(Rabarber::Configuration.instance.user_model)
           raise(
             Rabarber::Error,
-            "Expected `#{Rabarber::Configuration.instance.current_user_method}` to return an instance of #{Rabarber::Configuration.instance.user_model.name}, but got #{current_roleable.inspect}"
+            "Expected `#{Rabarber::Configuration.instance.current_user_method}` to return an instance of #{Rabarber::Configuration.instance.user_model_name}, but got #{current_roleable.inspect}"
           )
         end
 

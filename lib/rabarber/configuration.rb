@@ -7,12 +7,11 @@ module Rabarber
     include Singleton
 
     attr_reader :cache_enabled, :current_user_method
-    attr_writer :user_model_name
+    attr_accessor :user_model_name
 
     def initialize
       @cache_enabled = true
       @current_user_method = :current_user
-      # TODO: may enable habtm and other similar use cases
       @user_model_name = "User"
     end
 

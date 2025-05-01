@@ -21,6 +21,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.mock_with :rspec do |mocks|
+    mocks.verify_doubled_constant_names = true
+  end
+
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
   config.before(:suite) do

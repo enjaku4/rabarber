@@ -6,7 +6,7 @@ module Rabarber
       def valid?
         processed_value < ActiveRecord::Base
       rescue NameError
-        raise_error
+        false
       end
 
       private

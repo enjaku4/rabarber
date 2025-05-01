@@ -23,7 +23,7 @@ RSpec.describe Rabarber do
           config.audit_trail_enabled = false
           config.cache_enabled = false
           config.current_user_method = "user"
-          config.user_model = Client
+          config.user_model_name = "Client"
         end
       end
 
@@ -49,9 +49,12 @@ RSpec.describe Rabarber do
         described_class.configure { |config| config.current_user_method = :user }
       end
 
-      it "uses Input::Types::ArModel to process user_model" do
-        expect_input_processor(Rabarber::Input::Types::ArModel, Client, "Configuration 'user_model' must be an ActiveRecord model")
-        described_class.configure { |config| config.user_model = Client }
+      it "uses Input::Types::ArModel to process user_model_name" do
+        described_class.configure { |config| config.user_model_name = "Client" }
+        input_processor = instance_double(Rabarber::Input::ArModel, process: "Client")
+        allow(Rabarber::Input::ArModel).to receive(:new).with("Client", Rabarber::ConfigurationError, "Configuration 'user_model_name' must be an ActiveRecord model name").and_return(input_processor)
+        expect(input_processor).to receive(:process)
+        Rabarber::Configuration.instance.user_model
       end
     end
 
@@ -68,8 +71,10 @@ RSpec.describe Rabarber do
         expect_configuration_error(:current_user_method, User, "Configuration 'current_user_method' must be a Symbol or a String")
       end
 
-      it "raises an error for invalid user_model" do
-        expect_configuration_error(:user_model, Rabarber::Core, "Configuration 'user_model' must be an ActiveRecord model")
+      it "raises an error for invalid user_model_name" do
+        described_class.configure { |config| config.user_model_name = "Rabarber::Core" }
+        expect { Rabarber::Configuration.instance.user_model }
+          .to raise_error(Rabarber::ConfigurationError, "Configuration 'user_model_name' must be an ActiveRecord model name")
       end
     end
   end

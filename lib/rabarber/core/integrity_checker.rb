@@ -56,6 +56,8 @@ module Rabarber
           role.id
         end
 
+        return if ids.empty?
+
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute("DELETE FROM rabarber_roles_roleables WHERE role_id IN (#{ids.join(",")})")
           Rabarber::Role.where(id: ids).delete_all

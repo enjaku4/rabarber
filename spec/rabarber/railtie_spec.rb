@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Railtie do
-  subject { initializer.run(DummyApplication) }
+  subject { DummyApplication.config.to_prepare_blocks.each(&:call) }
 
-  let(:initializer) { described_class.initializers.detect { |i| i.name == "rabarber.after_initialize" } }
   let(:double) { instance_double(Rabarber::Core::IntegrityChecker) }
 
   before do

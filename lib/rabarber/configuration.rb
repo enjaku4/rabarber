@@ -6,16 +6,16 @@ module Rabarber
   class Configuration
     include Singleton
 
-    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :user_model
+    attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method
+    attr_writer :user_model_name
 
     def initialize
       # TODO: consider nuking the feature in favor of the user implementing their own audit trail when needed
       @audit_trail_enabled = true
       @cache_enabled = true
       @current_user_method = :current_user
-      # TODO: consider using a string instead of a class, may enable habtm and prevent load issues
-      # TODO: user_model_name, and the input is Rabarber::Input::ArModelName in this case
-      @user_model = User
+      # TODO: may enable habtm and other similar use cases
+      @user_model_name = "User"
     end
 
     def audit_trail_enabled=(value)
@@ -36,9 +36,9 @@ module Rabarber
       ).process
     end
 
-    def user_model=(model_class)
-      @user_model = Rabarber::Input::Types::ArModel.new(
-        model_class, Rabarber::ConfigurationError, "Configuration 'user_model' must be an ActiveRecord model"
+    def user_model
+      Rabarber::Input::ArModel.new(
+        @user_model_name, Rabarber::ConfigurationError, "Configuration 'user_model_name' must be an ActiveRecord model name"
       ).process
     end
   end

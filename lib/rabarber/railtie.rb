@@ -4,10 +4,11 @@ require "rails/railtie"
 
 module Rabarber
   class Railtie < Rails::Railtie
-    initializer "rabarber.after_initialize" do |app|
-      app.config.after_initialize do
-        # TODO: ensure user model doesn’t lose the module after a reload in dev mode
-        Rabarber::Configuration.instance.user_model.include Rabarber::HasRoles
+    initializer "rabarber.to_prepare" do |app|
+      app.config.to_prepare do
+        user_model = Rabarber::Configuration.instance.user_model
+        user_model.include Rabarber::HasRoles unless user_model < Rabarber::HasRoles
+        # TODO: see if calling IntegrityChecker in controller can be removed
         Rabarber::Core::IntegrityChecker.new.run! if app.config.eager_load
       end
     end

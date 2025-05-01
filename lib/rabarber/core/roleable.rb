@@ -4,16 +4,16 @@ module Rabarber
   module Core
     module Roleable
       def roleable
-        current_user = send(Rabarber::Configuration.instance.current_user_method)
+        current_roleable = send(Rabarber::Configuration.instance.current_user_method)
 
-        unless current_user.is_a?(Rabarber::Configuration.instance.user_model)
+        unless current_roleable.is_a?(Rabarber::Configuration.instance.user_model)
           raise(
             Rabarber::Error,
-            "Expected an instance of #{Rabarber::Configuration.instance.user_model.name} from #{Rabarber::Configuration.instance.current_user_method} method, but got #{current_user.inspect}"
+            "Expected an instance of #{Rabarber::Configuration.instance.user_model.name} from #{Rabarber::Configuration.instance.current_user_method} method, but got #{current_roleable.inspect}"
           )
         end
 
-        current_user
+        current_roleable
       end
 
       def roleable_roles(context: nil)

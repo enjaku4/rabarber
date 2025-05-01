@@ -27,7 +27,7 @@ module Rabarber
           next
         end
       rescue NameError => e
-        raise Rabarber::Error, "Context not found: class #{e.name} may have been renamed or deleted"
+        raise Rabarber::NotFoundError, "Context not found: class #{e.name} may have been renamed or deleted"
       end
 
       def add(name, context: nil)
@@ -43,8 +43,10 @@ module Rabarber
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
         name = process_role_name(new_name)
-        # TODO: maybe this has to blow up if the role is not found
-        return false if !role || exists?(name:, **processed_context) || role.roleables.exists? && !force
+
+        raise Rabarber::NotFoundError, "Role not found" unless role
+
+        return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
 
         delete_roleables_cache(role, context: processed_context)
 
@@ -54,8 +56,10 @@ module Rabarber
       def remove(name, context: nil, force: false)
         processed_context = process_context(context)
         role = find_by(name: process_role_name(name), **processed_context)
-        # TODO: maybe this has to blow up if the role is not found
-        return false if !role || role.roleables.exists? && !force
+
+        raise Rabarber::NotFoundError, "Role not found" unless role
+
+        return false if role.roleables.exists? && !force
 
         delete_roleables_cache(role, context: processed_context)
 

@@ -36,6 +36,7 @@ module Rabarber
   class Error < StandardError; end
   class ConfigurationError < Rabarber::Error; end
   class InvalidArgumentError < Rabarber::Error; end
+  class NotFoundError < Rabarber::Error; end
 
   def configure
     yield(Rabarber::Configuration.instance)

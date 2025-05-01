@@ -13,6 +13,7 @@ module Rabarber
       @cache_enabled = true
       @current_user_method = :current_user
       # TODO: consider using a string instead of a class, may enable habtm and prevent load issues
+      # TODO: user_model_name, and the input is Rabarber::Input::ArModelName in this case
       @user_model = User
     end
 

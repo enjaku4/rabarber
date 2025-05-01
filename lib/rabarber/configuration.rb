@@ -9,6 +9,7 @@ module Rabarber
     attr_reader :audit_trail_enabled, :cache_enabled, :current_user_method, :user_model
 
     def initialize
+      # TODO: consider nuking the feature in favor of the user implementing their own audit trail when needed
       @audit_trail_enabled = true
       @cache_enabled = true
       @current_user_method = :current_user

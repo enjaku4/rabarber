@@ -1,5 +1,30 @@
-<!-- TODO: v5 description -->
+## v5.0.0
+
+### Breaking:
+
+- Dropped support for Ruby 3.1
+- Dropped support for Rails 7.0
+- Removed the `must_have_roles` configuration option and its associated behavior
+- Completely removed Audit Trail feature
+- Introduced a new `user_model_name` configuration option
+- Moved `authorize` callback out of `Rabarber::Authorization` for finer control
+- `Rabarber::Role.rename` and `Rabarber::Role.remove` now require the role to exist
+
 <!-- TODO: write migration guide and provide the link here -->
+To upgrade to v5.0.0, please refer to the [migration guide](#)
+
+### Features:
+
+- Rabarber now skips roles with missing instance context and prunes them automatically; missing class context still raises errors
+
+### Bugs:
+
+- Fixed an error that occurred when Rabarber was used with eager loading disabled
+
+### Misc:
+
+- Streamlined the authorization process by requiring the user to be authenticated before access is verified
+- Optimized various parts of the code and database queries for improved performance
 
 ## v4.1.4
 

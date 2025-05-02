@@ -240,7 +240,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-Please note: you must ensure the user is authenticated before authorize is called.
+Please note: you must ensure the user is authenticated before `authorize` is called.
 
 This adds `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
 

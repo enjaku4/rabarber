@@ -1,18 +1,15 @@
-<!-- TODO: make necessary changes -->
-<!-- TODO: make it clear that authorization must follow the authentication -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
-Rabarber is a role-based authorization library for Ruby on Rails. It provides a set of tools for managing user roles and defining authorization rules, supports multi-tenancy and comes with audit logging for enhanced security.
+Rabarber is a role-based authorization library for Ruby on Rails. It provides a set of tools for managing user roles and defining authorization rules, with support for multi-tenancy and fine-grained access control.
 
 ---
 
 **Example of Usage**:
 
-Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `marketer` has access to marketing-related data. Such authorization rules can be easily defined with Rabarber.
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `marketer` has access to marketing-related data. You can define such authorization rules easily with Rabarber.
 
 ---
 
@@ -46,7 +43,6 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [When Unauthorized](#when-unauthorized)
   - [Skip Authorization](#skip-authorization)
   - [View Helpers](#view-helpers)
-  - [Audit Trail](#audit-trail)
 
 **Community Resources:**
   - [Problems?](#problems)
@@ -58,7 +54,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
 
 ## Installation
 
-Add the Rabarber gem to your Gemfile:
+Add Rabarber to your Gemfile:
 
 ```rb
 gem "rabarber"
@@ -70,19 +66,19 @@ Install the gem:
 bundle install
 ```
 
-Next, generate a migration to create tables for storing roles in the database. Make sure to specify the table name of the model representing users in your application as an argument. For instance, if the table name is `users`, run:
+Generate a migration to create tables for storing roles. Run the generator with the table name used by the model that represents users in your application. For example, if the table is `users`, run:
 
 ```shell
 rails g rabarber:roles users
 ```
 
-Rabarber supports UUIDs as primary keys. If your application uses UUIDs, add `--uuid` option to the generator:
+Rabarber supports UUIDs as primary keys. If your application uses UUIDs, add `--uuid` option:
 
 ```shell
 rails g rabarber:roles users --uuid
 ```
 
-Finally, run the migration to apply the changes to the database:
+Finally, run the migration:
 
 ```shell
 rails db:migrate
@@ -90,34 +86,23 @@ rails db:migrate
 
 ## Configuration
 
-If specific customization is required, Rabarber can be configured by using `.configure` method in an initializer:
+If customization is required, Rabarber can be configured using `.configure` method in an initializer:
 
 ```rb
 Rabarber.configure do |config|
-  config.audit_trail_enabled = true
   config.cache_enabled = true
   config.current_user_method = :current_user
-  config.must_have_roles = false
+  config.user_model_name = "User"
 end
 ```
 
-- `audit_trail_enabled` determines whether the audit trail functionality is enabled. The audit trail is enabled by default.
 - `cache_enabled` determines whether roles are cached to avoid unnecessary database queries. Roles are cached by default. If you need to clear the cache, use `Rabarber::Cache.clear` method.
-- `current_user_method` represents the method that returns the currently authenticated user. The default value is `:current_user`.
-- `must_have_roles` determines whether a user with no roles can access endpoints permitted to everyone. The default value is `false` (allowing users without roles to access such endpoints).
+- `current_user_method` defines the method used to access the currently authenticated user. Default is `:current_user`.
+- `user_model_name` sets the name of the model representing the user in your application. Default is `"User"`. Use this if your user model is named differently.
 
 ## Roles
 
-Include `Rabarber::HasRoles` module in your model representing users in your application:
-
-```rb
-class User < ApplicationRecord
-  include Rabarber::HasRoles
-  # ...
-end
-```
-
-This adds the following methods:
+Rabarber automatically augments your user model (defined via `user_model_name` configuration) with role-related methods.
 
 **`#assign_roles(*roles, context: nil, create_new: true)`**
 
@@ -126,10 +111,13 @@ To assign roles, use:
 ```rb
 user.assign_roles(:accountant, :marketer)
 ```
-By default, it will automatically create any roles that don't exist. If you want to assign only existing roles and prevent the creation of new ones, use the method with `create_new: false` argument:
+
+By default, it will automatically create any roles that don't exist. To assign only existing roles and prevent automatic creation, pass `create_new: false`:
+
 ```rb
 user.assign_roles(:accountant, :marketer, create_new: false)
 ```
+
 The method returns an array of roles assigned to the user.
 
 **`#revoke_roles(*roles, context: nil)`**
@@ -139,7 +127,8 @@ To revoke roles, use:
 ```rb
 user.revoke_roles(:accountant, :marketer)
 ```
-If the user doesn't have the role you want to revoke, it will be ignored.
+
+Roles the user doesn’t have are ignored.
 
 The method returns an array of roles assigned to the user.
 
@@ -151,7 +140,7 @@ To check whether the user has a role, use:
 user.has_role?(:accountant, :marketer)
 ```
 
-It returns `true` if the user has at least one role and `false` otherwise.
+It returns `true` if the user has at least one of the given roles.
 
 **`#roles(context: nil)`**
 
@@ -190,9 +179,11 @@ To rename a role, use:
 ```rb
 Rabarber::Role.rename(:admin, :administrator)
 ```
-The first argument is the old name, and the second argument is the new name. This will rename the role and return `true`. If the role with a new name already exists, it will return `false`.
 
-The method won't rename the role and will return `false` if it is assigned to any user. To force the rename, use the method with `force: true` argument:
+The old role must exist. If it doesn’t, an error is raised. If a role with the new name already exists, the method returns `false` and the rename fails.
+
+The rename also fails if the role is assigned to any user. To force it, use:
+
 ```rb
 Rabarber::Role.rename(:admin, :administrator, force: true)
 ```
@@ -205,9 +196,10 @@ To remove a role, use:
 Rabarber::Role.remove(:admin)
 ```
 
-This will remove the role and return `true`. If the role doesn't exist, it will return `false`.
+The old role must exist. If it doesn’t, an error is raised. The method returns `true` if successful.
 
-The method won't remove the role and will return `false` if it is assigned to any user. To force the removal, use the method with `force: true` argument:
+If the role is assigned to any user, removal will fail. To force it, use:
+
 ```rb
 Rabarber::Role.remove(:admin, force: true)
 ```
@@ -222,7 +214,7 @@ Rabarber::Role.names
 
 **`.all_names`**
 
-If you need list all roles available in your application, grouped by context, use:
+If you need to list all roles available in your application, grouped by context, use:
 
 ```rb
 Rabarber::Role.all_names
@@ -238,14 +230,18 @@ Rabarber::Role.assignees(:admin)
 
 ## Authorization Rules
 
-Include `Rabarber::Authorization` module into the controller that needs authorization rules to be applied. Typically, it is `ApplicationController`, but it can be any controller of your choice.
+To use authorization in a controller, include `Rabarber::Authorization` and call `before_action :authorize`. This gives you full control over where and when authorization runs.
 
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
-  # ...
+
+  before_action :authorize
 end
 ```
+
+Please note: you must ensure the user is authenticated before authorize is called.
+
 This adds `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
 
 The most basic usage of the method is as follows:
@@ -267,6 +263,7 @@ module Crm
   end
 end
 ```
+
 This grants access to `index` action for users with `accountant` or `admin` role, and access to `destroy` action for `admin` users only.
 
 You can also define controller-wide rules (without `action` argument):
@@ -296,9 +293,10 @@ module Crm
   end
 end
 ```
-This means that `admin` and `manager` have access to all the actions inside `Crm::BaseController` and its children, while `accountant` role has access only to the actions in `Crm::InvoicesController` and its possible children. Users with `marketer` role can only see the dashboard in this example.
 
-Roles can also be omitted:
+In this example, `admin` and `manager` have access to all actions in `Crm::BaseController` and its descendants, while `accountant` role has access only to the actions in `Crm::InvoicesController`. Users with `marketer` role can only see the dashboard.
+
+You can also omit roles to allow unrestricted access:
 
 ```rb
 class OrdersController < ApplicationController
@@ -314,11 +312,10 @@ class InvoicesController < ApplicationController
 end
 ```
 
-This allows everyone to access `OrdersController` and its children and also `index` action in `InvoicesController`.
+This allows everyone to access `OrdersController` and its descendants and also `index` action in `InvoicesController`.
 
-If you've set `must_have_roles` setting to `true`, then only the users with at least one role can gain access. This setting can be useful if your requirements are such that users without roles are not allowed to access anything.
+Also keep in mind that rules defined in descendant classes don't override ancestor rules but rather add to them:
 
-Also keep in mind that rules defined in child classes don't override parent rules but rather add to them:
 ```rb
 module Crm
   class BaseController < ApplicationController
@@ -334,9 +331,11 @@ module Crm
   end
 end
 ```
+
 This means that `Crm::InvoicesController` is still accessible to `admin` but is also accessible to `accountant`.
 
-This applies as well to multiple rules defined for the same controller or action:
+This also applies when defining multiple rules for the same controller or action:
+
 ```rb
 module Crm
   class OrdersController < ApplicationController
@@ -351,11 +350,12 @@ module Crm
   end
 end
 ```
+
 This will add rules for `manager` and `admin` roles for all actions in `Crm::OrdersController`, and for `client` and `accountant` roles for the `show` action.
 
 ## Dynamic Authorization Rules
 
-For more complex cases, Rabarber provides dynamic rules:
+For more complex scenarios, Rabarber supports dynamic authorization rules:
 
 ```rb
 module Crm
@@ -397,9 +397,11 @@ module Crm
   end
 end
 ```
-You can pass a dynamic rule as `if` or `unless` argument. It can be a symbol, in which case the method with that name will be called, or alternatively it can be a proc that will be executed within the context of the controller instance at request time.
+
+You can pass a dynamic rule as `if` or `unless` argument. You can pass a symbol (method name) or a proc. Symbols refer to instance methods, and procs are evaluated in the controller at request time.
 
 You can use only dynamic rules without specifying roles if that suits your needs:
+
 ```rb
 class InvoicesController < ApplicationController
   grant_access action: :index, if: -> { current_user.company == Company.find(params[:company_id]) }
@@ -408,7 +410,9 @@ class InvoicesController < ApplicationController
   end
 end
 ```
-This basically allows you to use Rabarber as a policy-based authorization library by calling your own custom policy within a dynamic rule:
+
+This allows you to use Rabarber as a policy-based authorization library by calling your own custom policy within a dynamic rule:
+
 ```rb
 class InvoicesController < ApplicationController
   grant_access action: :index, if: -> { InvoicesPolicy.new(current_user).can_access?(:index) }
@@ -420,9 +424,9 @@ end
 
 ## Context / Multi-tenancy
 
-Rabarber supports multi-tenancy by providing a context feature. This allows you to define and authorize roles and rules within a specific context.
+Rabarber supports multi-tenancy through its context feature. This allows you to define and authorize roles and rules within a specific context.
 
-Every Rabarber method can accept a context as an additional keyword argument. By default, the context is set to `nil`, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles. Apart from being global, the context can be an instance of ActiveRecord model or a class.
+Every Rabarber method can accept a context as an additional keyword argument. By default, the context is set to `nil`, meaning the roles are global. Thus, all examples from other sections of this README are valid for global roles. Besides being global, context can also be an instance of an `ActiveRecord` model or a class.
 
 E.g., consider a model named `Project`, where each project has its owner and regular members. Roles can be defined like this:
 
@@ -431,7 +435,7 @@ user.assign_roles(:owner, context: project)
 another_user.assign_roles(:member, context: project)
 ```
 
-Then the roles can be verified:
+You can then check roles like this:
 
 ```rb
 user.has_role?(:owner, context: project)
@@ -444,7 +448,7 @@ A role can also be added using a class as a context, e.g., for project admins wh
 user.assign_roles(:admin, context: Project)
 ```
 
-And then it can also be verified:
+And check it the same way:
 
 ```rb
 user.has_role?(:admin, context: Project)
@@ -474,7 +478,7 @@ class ProjectsController < ApplicationController
 end
 ```
 
-It's important to note that role names are not unique globally but are unique within the scope of their context. E.g., `user.assign_roles(:admin, context: Project)` and `user.assign_roles(:admin)` assign different roles to the user. The same as `Rabarber::Role.add(:admin, context: Project)` and `Rabarber::Role.add(:admin)` create different roles.
+It's important to note that role names are scoped by context, i.e. `admin` in a specific project is different from a global `admin`.
 
 If you want to see all the roles assigned to a user within a specific context, you can use:
 
@@ -490,13 +494,15 @@ Rabarber::Role.names(context: Project)
 
 ## When Unauthorized
 
-By default, in the event of an unauthorized attempt, Rabarber redirects the user back if the request format is HTML (with fallback to the root path), and returns a 401 (Unauthorized) status code otherwise.
+By default, Rabarber redirects back on unauthorized access if the request format is HTML (falling back to the root path), and returns a 401 Unauthorized for other formats.
 
-This behavior can be customized by overriding private `when_unauthorized` method:
+You can customize this behavior by overriding the private `when_unauthorized` method:
 
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
+
+  before_action :authorize
 
   # ...
 
@@ -521,11 +527,11 @@ class TicketsController < ApplicationController
 end
 ```
 
-This method accepts the same options as `skip_before_action` method in Rails.
+This method accepts the same options as Rails’ `skip_before_action`.
 
 ## View Helpers
 
-Rabarber also provides a couple of helpers that can be used in views: `visible_to(*roles, context: nil, &block)` and `hidden_from(*roles, context: nil, &block)`. To use them, simply include `Rabarber::Helpers` in the desired helper. Usually it is `ApplicationHelper`, but it can be any helper of your choice.
+Rabarber provides two helpers for use in views: `visible_to(*roles, context: nil, &block)` and `hidden_from(*roles, context: nil, &block)`. To enable them, include `Rabarber::Helpers` in your helper module, typically `ApplicationHelper`.
 
 ```rb
 module ApplicationHelper
@@ -547,16 +553,6 @@ The usage is straightforward:
   <p>Accountant cannot see this</p>
 <% end %>
 ```
-
-## Audit Trail
-
-Rabarber supports audit trail, which provides a record of user access control activity. This feature logs the following events:
-
-- Role assignments to users
-- Role revocations from users
-- Unauthorized access attempts
-
-The logs are written to the file `log/rabarber_audit.log` unless the `audit_trail_enabled` configuration option is set to `false`.
 
 ## Problems?
 

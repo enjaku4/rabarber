@@ -23,8 +23,10 @@ module Rabarber
       end
 
       def check_for_orphaned_grant_access
-        controllers = (Rabarber::Core::Permissions.controller_rules.keys | Rabarber::Core::Permissions.action_rules.keys).each_with_object([]) do |controller, arr|
-          arr << controller unless controller._process_action_callbacks.select { |cb| cb.kind == :before }.map(&:filter).include?(:authorize)
+        controllers = (
+          Rabarber::Core::Permissions.controller_rules.keys | Rabarber::Core::Permissions.action_rules.keys
+        ).uniq.reject do |controller|
+          controller._process_action_callbacks.any? { |callback| callback.kind == :before && callback.filter == :authorize }
         end
 
         return if controllers.empty?
@@ -36,9 +38,9 @@ module Rabarber
       end
 
       def check_for_missing_actions
-        missing_actions_list = Rabarber::Core::Permissions.action_rules.each_with_object([]) do |(controller, hash), arr|
-          missing_actions = hash.keys - controller.action_methods.map(&:to_sym)
-          arr << { controller => missing_actions } if missing_actions.any?
+        missing_actions_list = Rabarber::Core::Permissions.action_rules.filter_map do |controller, actions|
+          missing_actions = actions.keys - controller.action_methods.map(&:to_sym)
+          { controller => missing_actions } if missing_actions.any?
         end
 
         return if missing_actions_list.empty?

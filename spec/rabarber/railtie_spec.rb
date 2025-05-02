@@ -8,4 +8,9 @@ RSpec.describe Rabarber::Railtie do
     subject
     expect(User < Rabarber::HasRoles).to be true
   end
+
+  it "does not reset permissions" do
+    expect(Rabarber::Core::Permissions).not_to receive(:reset!)
+    subject
+  end
 end

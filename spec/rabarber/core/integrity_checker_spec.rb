@@ -34,6 +34,23 @@ RSpec.describe Rabarber::Core::IntegrityChecker do
     end
   end
 
+  context "checking for orphaned grant_access" do
+    context "when controller is missing before_action :authorize" do
+      before { Rabarber::Core::Permissions.add(DummyPagesController, nil, [:admin], nil, nil, nil) }
+      after { Rabarber::Core::Permissions.controller_rules.delete(DummyPagesController) }
+
+      it "raises error" do
+        expect { subject }.to raise_error(Rabarber::Error, "The following controllers use `grant_access` but are missing `before_action :authorize`:\n---\n- DummyPagesController\n")
+      end
+    end
+
+    context "when controller is not missing before_action :authorize" do
+      it "does not raise error" do
+        expect { subject }.not_to raise_error
+      end
+    end
+  end
+
   context "checking for missing actions" do
     after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
 

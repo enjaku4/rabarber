@@ -67,4 +67,21 @@ RSpec.describe Rabarber::Core::Permissions do
       end
     end
   end
+
+  describe ".reset!" do
+    before do
+      permissions.add(DummyController, nil, [:admin], nil, nil, nil)
+      permissions.add(DummyController, :index, [:admin], nil, nil, nil)
+    end
+
+    it "clears the permissions storage" do
+      expect(permissions.controller_rules).not_to be_empty
+      expect(permissions.action_rules).not_to be_empty
+
+      permissions.reset!
+
+      expect(permissions.controller_rules).to be_empty
+      expect(permissions.action_rules).to be_empty
+    end
+  end
 end

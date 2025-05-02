@@ -5,6 +5,10 @@ module Rabarber
     extend ActiveSupport::Concern
     include Rabarber::Core::Roleable
 
+    included do
+      before_action -> { Rabarber::Core::IntegrityChecker.run! }, unless: -> { Rails.application.config.eager_load }
+    end
+
     class_methods do
       def skip_authorization(options = {})
         skip_before_action :authorize, **options

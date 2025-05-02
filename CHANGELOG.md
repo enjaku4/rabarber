@@ -20,6 +20,7 @@ To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/e
 ### Bugs:
 
 - Fixed an error that occurred when Rabarber was used with eager loading disabled
+- Fixed an issue where authorization rules weren’t cleared on code reload when eager loading was disabled
 
 ### Misc:
 

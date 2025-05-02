@@ -32,6 +32,11 @@ module Rabarber
         def action_rules
           instance.storage[:action_rules]
         end
+
+        def reset!
+          instance.storage[:controller_rules].clear
+          instance.storage[:action_rules].clear
+        end
       end
     end
   end

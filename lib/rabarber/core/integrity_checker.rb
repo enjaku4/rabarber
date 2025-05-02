@@ -25,7 +25,7 @@ module Rabarber
       def check_for_orphaned_grant_access
         controllers = (
           Rabarber::Core::Permissions.controller_rules.keys | Rabarber::Core::Permissions.action_rules.keys
-        ).uniq.reject do |controller|
+        ).reject do |controller|
           controller._process_action_callbacks.any? { |callback| callback.kind == :before && callback.filter == :authorize }
         end
 

@@ -10,8 +10,7 @@
 - Moved `authorize` callback out of `Rabarber::Authorization` for finer control
 - `Rabarber::Role.rename` and `Rabarber::Role.remove` now require the role to exist
 
-<!-- TODO: write migration guide and provide the link here -->
-To upgrade to v5.0.0, please refer to the [migration guide](#)
+To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/77)
 
 ### Features:
 

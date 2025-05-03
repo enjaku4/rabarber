@@ -58,7 +58,7 @@ RSpec.describe Rabarber::Core::IntegrityChecker do
       before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil, nil) }
 
       it "raises error" do
-        expect { subject }.to raise_error(Rabarber::Error, "The following actions were passed to `grant_access` but are not defined in the controller:\n---\n- !ruby/class 'DummyAuthController':\n  - :index\n")
+        expect { subject }.to raise_error(Rabarber::Error, "The following actions were passed to `grant_access` but are not defined in the controller:\n---\n- DummyAuthController:\n  - :index\n")
       end
     end
 

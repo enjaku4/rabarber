@@ -40,7 +40,7 @@ module Rabarber
       def check_for_missing_actions
         missing_actions_list = Rabarber::Core::Permissions.action_rules.filter_map do |controller, actions|
           missing_actions = actions.keys - controller.action_methods.map(&:to_sym)
-          { controller => missing_actions } if missing_actions.any?
+          { controller.name => missing_actions } if missing_actions.any?
         end
 
         return if missing_actions_list.empty?

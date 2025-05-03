@@ -6,6 +6,17 @@ RSpec.describe Rabarber::Authorization do
       expect(DummyAuthController).to receive(:skip_before_action).with(:authorize, only: [:index, :show], if: :foo?)
       DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?)
     end
+
+    context "when ArgumentError is raised" do
+      before do
+        allow(DummyAuthController).to receive(:skip_before_action).and_raise(ArgumentError, "No before_action found")
+      end
+
+      it "re-raises the error" do
+        expect { DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?) }
+          .to raise_error(Rabarber::Error, "No before_action found")
+      end
+    end
   end
 
   describe ".grant_access" do

@@ -448,7 +448,7 @@ A role can also be added using a class as a context, e.g., for project admins wh
 user.assign_roles(:admin, context: Project)
 ```
 
-And check it the same way:
+And to check it:
 
 ```rb
 user.has_role?(:admin, context: Project)
@@ -478,7 +478,7 @@ class ProjectsController < ApplicationController
 end
 ```
 
-It's important to note that role names are scoped by context, i.e. `admin` in a specific project is different from a global `admin`.
+It's important to note that role names are scoped by context, i.e. `admin` in a project is different from a global admin, or from an `admin` in another project.
 
 If you want to see all the roles assigned to a user within a specific context, you can use:
 
@@ -491,6 +491,10 @@ Or if you want to get all the roles available in a specific context, you can use
 ```rb
 Rabarber::Role.names(context: Project)
 ```
+
+If a context object (e.g., a project) is deleted, any roles tied to it automatically become irrelevant and are no longer returned by role queries. Rabarber treats them as orphaned and ignores them.
+
+However, if a context class is renamed (e.g., `Project` becomes `Campaign`), an exception will be raised the next time Rabarber attempts to load roles for that class. This is to ensure you explicitly handle the migration, either by migrating existing roles to the new context or by cleaning up old data.
 
 ## When Unauthorized
 

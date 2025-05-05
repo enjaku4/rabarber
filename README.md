@@ -496,6 +496,11 @@ If a context object (e.g., a project) is deleted, any roles tied to it automatic
 
 However, if a context class is renamed (e.g., `Project` becomes `Campaign`), an exception will be raised the next time Rabarber attempts to load roles for that class. This is to ensure you explicitly handle the migration, either by migrating existing roles to the new context or by cleaning up old data.
 
+To help with such scenarios during data migrations, Rabarber provides two helper methods available in migrations:
+
+- `migrate_authorization_context!(old_context, new_context)` - renames a context
+- `delete_authorization_context!(context)` – removes roles tied to a deleted context
+
 ## When Unauthorized
 
 By default, Rabarber redirects back on unauthorized access if the request format is HTML (falling back to the root path), and returns a 401 Unauthorized for other formats.

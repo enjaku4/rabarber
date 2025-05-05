@@ -24,6 +24,7 @@ require_relative "rabarber/core/roleable"
 
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
+require_relative "rabarber/helpers/migration_helpers"
 require_relative "rabarber/models/concerns/has_roles"
 require_relative "rabarber/models/role"
 

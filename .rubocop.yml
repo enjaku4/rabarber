@@ -49,6 +49,9 @@ Rails/FilePath:
 Rails/RakeEnvironment:
   Enabled: false
 
+Rails/SkipsModelValidations:
+  Enabled: false
+
 Rake/Desc:
   Enabled: false
 

@@ -28,5 +28,11 @@ module Rabarber
         Rabarber::Core::IntegrityChecker.run! if app.config.eager_load
       end
     end
+
+    initializer "rabarber.extend_migration_helpers" do
+      ActiveSupport.on_load :active_record do
+        ActiveRecord::Migration.include Rabarber::MigrationHelpers
+      end
+    end
   end
 end

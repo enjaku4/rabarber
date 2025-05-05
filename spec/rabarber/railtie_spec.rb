@@ -73,4 +73,20 @@ RSpec.describe Rabarber::Railtie do
       end
     end
   end
+
+  context "extend_migration_helpers" do
+    subject { initializer.run(DummyApplication) }
+
+    let(:initializer) { described_class.initializers.detect { |i| i.name == "rabarber.extend_migration_helpers" } }
+
+    before do
+      allow(ActiveSupport).to receive(:on_load).with(:active_record).and_yield
+      allow(ActiveRecord::Migration).to receive(:include)
+    end
+
+    it "includes Rabarber::MigrationHelpers in ActiveRecord::Migration" do
+      subject
+      expect(ActiveRecord::Migration).to have_received(:include).with(Rabarber::MigrationHelpers)
+    end
+  end
 end

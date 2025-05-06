@@ -230,19 +230,27 @@ Rabarber::Role.assignees(:admin)
 
 ## Authorization Rules
 
-To use authorization in a controller, include `Rabarber::Authorization` and call `before_action :authorize`. This gives you full control over where and when authorization runs.
+Include `Rabarber::Authorization` module in the controller where you want to apply authorization rules. Typically, it is `ApplicationController`, but it can be any controller of your choice. Then call `.with_authorization(options = {})` method, which accepts the same options as Rails’ `before_action`, allowing you to apply it selectively.
 
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  before_action :authorize
+  with_authorization
+
+  # ...
+end
+
+class InvoicesController < ApplicationController
+  with_authorization only: [:update, :destroy]
+
+  # ...
 end
 ```
 
-Please note: you must ensure the user is authenticated before `authorize` is called.
+You must ensure the user is authenticated before authorization checks are performed.
 
-This adds `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)` method which allows you to define the authorization rules.
+To define authorization rules, use `.grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)` method.
 
 The most basic usage of the method is as follows:
 
@@ -314,7 +322,7 @@ end
 
 This allows everyone to access `OrdersController` and its descendants and also `index` action in `InvoicesController`.
 
-Also keep in mind that rules defined in descendant classes don't override ancestor rules but rather add to them:
+Rules defined in descendant classes don't override ancestor rules but rather add to them:
 
 ```rb
 module Crm
@@ -478,7 +486,7 @@ class ProjectsController < ApplicationController
 end
 ```
 
-It's important to note that role names are scoped by context, i.e. `admin` in a project is different from a global admin, or from an `admin` in another project.
+Role names are scoped by context, i.e. `admin` in a project is different from a global admin, or from an `admin` in another project.
 
 If you want to see all the roles assigned to a user within a specific context, you can use:
 
@@ -501,7 +509,7 @@ To help with such scenarios, Rabarber provides two helper methods that can be ca
 - `migrate_authorization_context!(old_context, new_context)` - renames a context
 - `delete_authorization_context!(context)` – removes roles tied to a deleted context
 
-Please note that these are irreversible data migrations.
+These are irreversible data migrations.
 
 ## When Unauthorized
 
@@ -513,7 +521,7 @@ You can customize this behavior by overriding the private `when_unauthorized` me
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  before_action :authorize
+  with_authorization
 
   # ...
 

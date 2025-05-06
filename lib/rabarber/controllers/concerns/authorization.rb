@@ -6,8 +6,14 @@ module Rabarber
     include Rabarber::Core::Roleable
 
     class_methods do
+      def with_authorization(options = {})
+        before_action :with_authorization, **options
+      rescue ArgumentError => e
+        raise Rabarber::Error, e.message
+      end
+
       def skip_authorization(options = {})
-        skip_before_action :authorize, **options
+        skip_before_action :with_authorization, **options
       rescue ArgumentError => e
         raise Rabarber::Error, e.message
       end
@@ -26,7 +32,7 @@ module Rabarber
 
     private
 
-    def authorize
+    def with_authorization
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
 
       when_unauthorized

@@ -10,7 +10,7 @@ end
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  before_action :authorize
+  with_authorization
 end
 
 class DummyAuthController < ApplicationController; end
@@ -139,7 +139,7 @@ end
 class ApiController < ActionController::API
   include Rabarber::Authorization
 
-  before_action :authorize
+  with_authorization
 
   grant_access action: :api_action, roles: :client
   def api_action = head(:ok)

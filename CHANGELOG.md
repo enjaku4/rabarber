@@ -7,7 +7,7 @@
 - Removed the `must_have_roles` configuration option and its associated behavior
 - Completely removed Audit Trail feature
 - Introduced a new `user_model_name` configuration option
-- Moved `authorize` callback out of `Rabarber::Authorization` for finer control
+- Added `with_authorization` method for more granular authorization control
 - `Rabarber::Role.rename` and `Rabarber::Role.remove` now require the role to exist
 
 To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/77)

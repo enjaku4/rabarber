@@ -7,8 +7,6 @@ module Rabarber
 
       def run!
         check_for_missing_class_context
-        check_for_orphaned_grant_access
-        check_for_missing_actions
         prune_missing_instance_context
       end
 
@@ -20,35 +18,6 @@ module Rabarber
         rescue NameError => e
           raise Rabarber::Error, "Context not found: class #{e.name} may have been renamed or deleted"
         end
-      end
-
-      def check_for_orphaned_grant_access
-        controllers = (
-          Rabarber::Core::Permissions.controller_rules.keys | Rabarber::Core::Permissions.action_rules.keys
-        ).reject do |controller|
-          controller._process_action_callbacks.any? { |callback| callback.kind == :before && callback.filter == :authorize }
-        end
-
-        return if controllers.empty?
-
-        raise(
-          Rabarber::Error,
-          "The following controllers use `grant_access` but are missing `before_action :authorize`:\n#{controllers.map(&:to_s).to_yaml}"
-        )
-      end
-
-      def check_for_missing_actions
-        missing_actions_list = Rabarber::Core::Permissions.action_rules.filter_map do |controller, actions|
-          missing_actions = actions.keys - controller.action_methods.map(&:to_sym)
-          { controller.name => missing_actions } if missing_actions.any?
-        end
-
-        return if missing_actions_list.empty?
-
-        raise(
-          Rabarber::Error,
-          "The following actions were passed to `grant_access` but are not defined in the controller:\n#{missing_actions_list.to_yaml}"
-        )
       end
 
       def prune_missing_instance_context

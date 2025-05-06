@@ -34,41 +34,6 @@ RSpec.describe Rabarber::Core::IntegrityChecker do
     end
   end
 
-  context "checking for orphaned grant_access" do
-    context "when controller is missing before_action :authorize" do
-      before { Rabarber::Core::Permissions.add(DummyPagesController, nil, [:admin], nil, nil, nil) }
-      after { Rabarber::Core::Permissions.controller_rules.delete(DummyPagesController) }
-
-      it "raises error" do
-        expect { subject }.to raise_error(Rabarber::Error, "The following controllers use `grant_access` but are missing `before_action :authorize`:\n---\n- DummyPagesController\n")
-      end
-    end
-
-    context "when controller is not missing before_action :authorize" do
-      it "does not raise error" do
-        expect { subject }.not_to raise_error
-      end
-    end
-  end
-
-  context "checking for missing actions" do
-    after { Rabarber::Core::Permissions.action_rules.delete(DummyAuthController) }
-
-    context "when action is missing" do
-      before { Rabarber::Core::Permissions.add(DummyAuthController, :index, [:admin], nil, nil, nil) }
-
-      it "raises error" do
-        expect { subject }.to raise_error(Rabarber::Error, "The following actions were passed to `grant_access` but are not defined in the controller:\n---\n- DummyAuthController:\n  - :index\n")
-      end
-    end
-
-    context "when action is not missing" do
-      it "does not raise error" do
-        expect { subject }.not_to raise_error
-      end
-    end
-  end
-
   context "pruning missing instance context" do
     let(:project) { Project.create! }
     let!(:role) { Rabarber::Role.create!(name: "manager", context_type: "Project", context_id: project.id) }

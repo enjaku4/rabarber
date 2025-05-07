@@ -29,6 +29,7 @@ class TicketsController < ApplicationController
   end
 end
 ```
+
 This means that `admin` users can access everything in `TicketsController`, while `manager` role can access only `index` action.
 
 ## Table of Contents

@@ -55,7 +55,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
 
 ## Installation
 
-Add the Rabarber gem to your Gemfile:
+Add Rabarber to your Gemfile:
 
 ```rb
 gem "rabarber"
@@ -219,7 +219,7 @@ Rabarber::Role.names
 
 **`.all_names`**
 
-If you need list all roles available in your application, grouped by context, use:
+If you need to list all roles available in your application, grouped by context, use:
 
 ```rb
 Rabarber::Role.all_names

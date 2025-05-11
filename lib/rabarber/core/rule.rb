@@ -5,11 +5,15 @@ module Rabarber
     class Rule
       attr_reader :roles, :context, :dynamic_rule, :negated_dynamic_rule
 
+      DEFAULT_DYNAMIC_RULE = -> { true }.freeze
+      DEFAULT_NEGATED_DYNAMIC_RULE = -> { false }.freeze
+      private_constant :DEFAULT_DYNAMIC_RULE, :DEFAULT_NEGATED_DYNAMIC_RULE
+
       def initialize(roles, context, dynamic_rule, negated_dynamic_rule)
         @roles = Array(roles)
         @context = context
-        @dynamic_rule = dynamic_rule || -> { true }
-        @negated_dynamic_rule = negated_dynamic_rule || -> { false }
+        @dynamic_rule = dynamic_rule || DEFAULT_DYNAMIC_RULE
+        @negated_dynamic_rule = negated_dynamic_rule || DEFAULT_NEGATED_DYNAMIC_RULE
       end
 
       def verify_access(roleable, controller_instance)

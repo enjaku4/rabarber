@@ -232,7 +232,7 @@ Rabarber::Role.all_names
 
 ## Authorization Rules
 
-Include `Rabarber::Authorization` module in the controller where you want to apply authorization rules. Typically, it is `ApplicationController`, but it can be any controller of your choice. Then call `.with_authorization(options = {})` method, which accepts the same options as Rails’ `before_action`, allowing you to apply it selectively.
+Include `Rabarber::Authorization` module in the controller where you want to define authorization rules. Typically, it is `ApplicationController`, but it can be any controller of your choice. Then use `.with_authorization(options = {})` method, which accepts the same options as Rails’ `before_action`, allowing you to perform authorization checks selectively.
 
 ```rb
 class ApplicationController < ActionController::Base

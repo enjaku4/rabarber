@@ -37,7 +37,8 @@ This means that `admin` users can access everything in `TicketsController`, whil
 **Gem usage:**
   - [Installation](#installation)
   - [Configuration](#configuration)
-  - [Roles](#roles)
+  - [Role Assignments](#role-assignments)
+  - [Role Management](#role-management)
   - [Authorization Rules](#authorization-rules)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
   - [Context / Multi-tenancy](#context--multi-tenancy)
@@ -101,7 +102,7 @@ end
 - `current_user_method` defines the method used to access the currently authenticated user. Default is `:current_user`.
 - `user_model_name` sets the name of the model representing the user in your application. Default is `"User"`. Use this if your user model is named differently.
 
-## Roles
+## Role Assignments
 
 Rabarber automatically augments your user model (defined via `user_model_name` configuration) with role-related methods.
 
@@ -159,9 +160,17 @@ To get all roles assigned to the user, grouped by context, use:
 user.all_roles
 ```
 
----
+**`.assignees(role_name, context: nil)`**
 
-To manipulate roles directly, you can use `Rabarber::Role` methods:
+To get all the users to whom the role is assigned, use:
+
+```rb
+Rabarber::Role.assignees(:admin)
+```
+
+## Role Management
+
+To manipulate roles directly, you can use the following methods:
 
 **`.add(role_name, context: nil)`**
 
@@ -219,14 +228,6 @@ If you need to list all roles available in your application, grouped by context,
 
 ```rb
 Rabarber::Role.all_names
-```
-
-**`.assignees(role_name, context: nil)`**
-
-To get all the users to whom the role is assigned, use:
-
-```rb
-Rabarber::Role.assignees(:admin)
 ```
 
 ## Authorization Rules

@@ -50,6 +50,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Problems?](#problems)
   - [Contributing](#contributing)
   - [Code of Conduct](#code-of-conduct)
+  - [Old Versions](#old-versions)
 
 **Legal:**
   - [License](#license)
@@ -593,6 +594,13 @@ Before creating an issue or a pull request, please read the [contributing guidel
 ## Code of Conduct
 
 Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/main/CODE_OF_CONDUCT.md).
+
+## Old Versions
+
+Only the latest major version is supported. Older versions are obsolete and not maintained, but their READMEs are available here for reference:
+
+[v4.x.x](https://github.com/enjaku4/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/enjaku4/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
+ | [v2.x.x](https://github.com/enjaku4/rabarber/blob/875b357ea949404ddc3645ad66eddea7ed4e2ee4/README.md) | [v1.x.x](https://github.com/enjaku4/rabarber/blob/b81428429404e197d70317b763e7b2a21e02c296/README.md)
 
 ## License
 

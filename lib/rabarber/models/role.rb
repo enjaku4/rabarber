@@ -42,9 +42,10 @@ module Rabarber
       def rename(old_name, new_name, context: nil, force: false)
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
-        name = process_role_name(new_name)
 
         raise Rabarber::NotFoundError, "Role not found" unless role
+
+        name = process_role_name(new_name)
 
         return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
 

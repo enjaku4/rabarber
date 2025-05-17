@@ -6,7 +6,7 @@ module Rabarber
       roles = Rabarber::Role.where(context_type: old_context.to_s)
 
       raise Rabarber::InvalidArgumentError, "No roles exist in context #{old_context.inspect}" unless roles.exists?
-      raise Rabarber::InvalidArgumentError, "Cannot migrate context to #{new_context.inspect}: model does not exist" unless new_context.to_s.safe_constantize
+      raise Rabarber::InvalidArgumentError, "Cannot migrate context to #{new_context.inspect}: class does not exist" unless new_context.to_s.safe_constantize
 
       roles.update_all(context_type: new_context.to_s)
     end

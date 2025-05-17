@@ -30,7 +30,7 @@ RSpec.describe Rabarber::MigrationHelpers do
 
         it "raises if new context class is invalid: #{invalid_context.inspect}" do
           expect { dummy_migration.migrate_authorization_context!("User", invalid_context) }.to raise_error(
-            Rabarber::InvalidArgumentError, "Cannot migrate context to #{invalid_context.inspect}: model does not exist"
+            Rabarber::InvalidArgumentError, "Cannot migrate context to #{invalid_context.inspect}: class does not exist"
           )
         end
       end

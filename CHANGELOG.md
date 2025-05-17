@@ -14,7 +14,6 @@ To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/b
 
 ### Features:
 
-- Streamlined the authorization process by requiring the user to be authenticated before access is verified
 - Added migration helpers to assist with context renaming and removal
 
 ### Bugs:
@@ -25,6 +24,7 @@ To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/b
 ### Misc:
 
 - Optimized various parts of the code and database queries for improved performance
+- Streamlined the authorization process by requiring the user to be authenticated before access is verified
 - Rabarber now skips roles with missing instance context and prunes them automatically; missing class context still raises errors
 
 ## v4.1.4

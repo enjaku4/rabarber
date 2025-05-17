@@ -101,7 +101,7 @@ end
 
 - `cache_enabled` determines whether roles are cached to avoid unnecessary database queries. Roles are cached by default. If you need to clear the cache, use `Rabarber::Cache.clear` method.
 - `current_user_method` defines the method used to access the currently authenticated user. Default is `:current_user`.
-- `user_model_name` sets the name of the model representing the user in your application. Default is `"User"`. Use this if your user model is named differently.
+- `user_model_name` sets the name of the model representing the user in your application. Default is `"User"`.
 
 ## Role Assignments
 
@@ -323,7 +323,7 @@ class InvoicesController < ApplicationController
 end
 ```
 
-This allows everyone to access `OrdersController` and its descendants and also `index` action in `InvoicesController`.
+This allows everyone to access `OrdersController` and its descendants as well as `index` action in `InvoicesController`.
 
 Rules defined in descendant classes don't override ancestor rules but rather add to them:
 
@@ -489,7 +489,7 @@ class ProjectsController < ApplicationController
 end
 ```
 
-Role names are scoped by context, i.e. `admin` in a project is different from a global admin, or from an `admin` in another project.
+Role names are scoped by context, i.e. `admin` in a project is different from a global `admin`, or from an `admin` in another project.
 
 If you want to see all the roles assigned to a user within a specific context, you can use:
 

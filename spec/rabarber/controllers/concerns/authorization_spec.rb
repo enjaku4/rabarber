@@ -1,10 +1,39 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Authorization do
+  describe ".with_authorization" do
+    it "passes the options to before_action" do
+      expect(DummyAuthController).to receive(:before_action).with(:with_authorization, only: [:index, :show], if: :foo?)
+      DummyAuthController.with_authorization(only: [:index, :show], if: :foo?)
+    end
+
+    context "when ArgumentError is raised" do
+      before do
+        allow(DummyAuthController).to receive(:before_action).and_raise(ArgumentError, "No before_action found")
+      end
+
+      it "re-raises the error" do
+        expect { DummyAuthController.with_authorization(only: [:index, :show], if: :foo?) }
+          .to raise_error(Rabarber::Error, "No before_action found")
+      end
+    end
+  end
+
   describe ".skip_authorization" do
     it "passes the options to skip_before_action" do
-      expect(DummyAuthController).to receive(:skip_before_action).with(:verify_access, only: [:index, :show], if: :foo?)
+      expect(DummyAuthController).to receive(:skip_before_action).with(:with_authorization, only: [:index, :show], if: :foo?)
       DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?)
+    end
+
+    context "when ArgumentError is raised" do
+      before do
+        allow(DummyAuthController).to receive(:skip_before_action).and_raise(ArgumentError, "No before_action found")
+      end
+
+      it "re-raises the error" do
+        expect { DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?) }
+          .to raise_error(Rabarber::Error, "No before_action found")
+      end
     end
   end
 

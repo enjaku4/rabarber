@@ -29,8 +29,5 @@ RSpec.describe MultipleRulesController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it does not allow access", delete: :qux
     end
-
-    it_behaves_like "it does not allow access when user must have roles", delete: :qux
-    it_behaves_like "it checks permissions integrity", delete: :qux
   end
 end

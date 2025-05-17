@@ -5,11 +5,17 @@ module Rabarber
     extend ActiveSupport::Concern
     include Rabarber::Core::Roleable
 
-    included { before_action :verify_access }
-
     class_methods do
+      def with_authorization(options = {})
+        before_action :with_authorization, **options
+      rescue ArgumentError => e
+        raise Rabarber::Error, e.message
+      end
+
       def skip_authorization(options = {})
-        skip_before_action :verify_access, **options
+        skip_before_action :with_authorization, **options
+      rescue ArgumentError => e
+        raise Rabarber::Error, e.message
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
@@ -26,14 +32,8 @@ module Rabarber
 
     private
 
-    def verify_access
-      Rabarber::Core::PermissionsIntegrityChecker.new(self.class).run! unless Rails.configuration.eager_load
-
+    def with_authorization
       return if Rabarber::Core::Permissions.access_granted?(roleable, action_name.to_sym, self)
-
-      Rabarber::Audit::Events::UnauthorizedAttempt.trigger(
-        roleable, path: request.path, request_method: request.request_method
-      )
 
       when_unauthorized
     end

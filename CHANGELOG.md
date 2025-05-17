@@ -1,3 +1,32 @@
+## v5.0.0
+
+### Breaking:
+
+- Dropped support for Ruby 3.1
+- Dropped support for Rails 7.0
+- Removed the `must_have_roles` configuration option and its associated behavior
+- Completely removed Audit Trail feature
+- Introduced a new `user_model_name` configuration option
+- Added `with_authorization` method for more granular authorization control
+- `Rabarber::Role.rename` and `Rabarber::Role.remove` now require the role to exist
+
+To upgrade to v5.0.0, please refer to the [migration guide](https://github.com/brownboxdev/rabarber/discussions/77)
+
+### Features:
+
+- Added migration helpers to assist with context renaming and removal
+
+### Bugs:
+
+- Fixed an error that occurred when Rabarber was used with eager loading disabled
+- Fixed an issue where authorization rules weren’t cleared on code reload when eager loading was disabled
+
+### Misc:
+
+- Optimized various parts of the code and database queries for improved performance
+- Streamlined the authorization process by requiring the user to be authenticated before access is verified
+- Rabarber now skips roles with missing instance context and prunes them automatically; missing class context still raises errors
+
 ## v4.1.4
 
 ### Misc:
@@ -86,7 +115,7 @@
 
 - Changed Rabarber roles table structure
 
-To upgrade to v3.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/58)
+To upgrade to v3.0.0, please refer to the [migration guide](https://github.com/brownboxdev/rabarber/discussions/58)
 
 ### Features:
 
@@ -110,7 +139,7 @@ To upgrade to v3.0.0, please refer to the [migration guide](https://github.com/e
 - Replaced `when_unauthorized` configuration option with an overridable controller method
 - Renamed `Rabarber::Role.assignees_for` method to `Rabarber::Role.assignees`
 
-To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/52)
+To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/brownboxdev/rabarber/discussions/52)
 
 ### Features:
 
@@ -132,7 +161,7 @@ To upgrade to v2.0.0, please refer to the [migration guide](https://github.com/e
 
 - Add 'Audit trail' feature: Logging of role assignments, revocations, and unauthorized access attempts
 - Add `audit_trail_enabled` configuration option, allowing to enable or disable the audit trail
-- Deprecate `when_actions_missing` and `when_roles_missing` configuration options (see [the discussion](https://github.com/enjaku4/rabarber/discussions/48))
+- Deprecate `when_actions_missing` and `when_roles_missing` configuration options
 
 ## v1.3.1
 

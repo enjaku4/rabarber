@@ -109,16 +109,22 @@ RSpec.describe Rabarber::Role do
       context "when the instance context can't be found" do
         before { project1.destroy! }
 
-        it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Project##{project1.id}")
-        end
+        it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project2 => [:viewer, :manager], user => [:editor]) }
       end
 
       context "when the class context doesn't exist" do
         before { described_class.take.update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Foo")
+          expect { subject }.to raise_error(Rabarber::NotFoundError, "Context not found: class Foo may have been renamed or deleted")
+        end
+      end
+
+      context "when the instance context's class doesn't exist" do
+        before { described_class.find_by(context: project1).update!(context_type: "Foo") }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Rabarber::NotFoundError, "Context not found: class Foo may have been renamed or deleted")
         end
       end
     end
@@ -216,6 +222,12 @@ RSpec.describe Rabarber::Role do
       it_behaves_like "role name is processed", [:admin, :manager]
     end
 
+    shared_examples_for "it raises an error" do
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::NotFoundError, "Role not found")
+      end
+    end
+
     context "when the role does not exist" do
       let(:context) { Project }
 
@@ -225,11 +237,11 @@ RSpec.describe Rabarber::Role do
         context "when the new role name is already taken" do
           before { described_class.create!(name: "manager", context_type: "Project", context_id: nil) }
 
-          it_behaves_like "it does nothing", role_exists: false
+          it_behaves_like "it raises an error"
         end
 
         context "when the new role name is not taken" do
-          it_behaves_like "it does nothing", role_exists: false
+          it_behaves_like "it raises an error"
         end
       end
 
@@ -239,11 +251,11 @@ RSpec.describe Rabarber::Role do
         context "when the new role name is already taken" do
           before { described_class.create!(name: "manager", context_type: "Project", context_id: nil) }
 
-          it_behaves_like "it does nothing", role_exists: false
+          it_behaves_like "it raises an error"
         end
 
         context "when the new role name is not taken" do
-          it_behaves_like "it does nothing", role_exists: false
+          it_behaves_like "it raises an error"
         end
       end
     end
@@ -353,19 +365,25 @@ RSpec.describe Rabarber::Role do
       it_behaves_like "role name is processed", [:admin]
     end
 
+    shared_examples_for "it raises an error" do
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::NotFoundError, "Role not found")
+      end
+    end
+
     context "when the role does not exist" do
       let(:context) { nil }
 
       context "when force is false" do
         let(:force) { false }
 
-        it_behaves_like "it does nothing"
+        it_behaves_like "it raises an error"
       end
 
       context "when force is true" do
         let(:force) { true }
 
-        it_behaves_like "it does nothing"
+        it_behaves_like "it raises an error"
       end
     end
 

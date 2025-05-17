@@ -7,7 +7,6 @@ gemspec
 rails_version = ENV.fetch("RAILS_VERSION", "~> 7")
 
 gem "byebug"
-gem "concurrent-ruby", "1.3.4"
 gem "database_cleaner-active_record"
 gem "grepfruit"
 gem "rails", rails_version
@@ -23,4 +22,4 @@ gem "rubocop-rake"
 gem "rubocop-rspec"
 gem "rubocop-rspec_rails"
 gem "rubocop-thread_safety"
-gem "sqlite3", rails_version.match?(/(^8\.| 8\.)/) ? ">= 2.1" : "~> 1.4"
+gem "sqlite3"

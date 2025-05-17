@@ -11,7 +11,9 @@ module Rabarber
 
     belongs_to :context, polymorphic: true, optional: true
 
-    before_destroy :delete_assignments
+    has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.instance.user_model_name,
+                                        association_foreign_key: "roleable_id",
+                                        join_table: "rabarber_roles_roleables"
 
     class << self
       def names(context: nil)
@@ -19,11 +21,13 @@ module Rabarber
       end
 
       def all_names
-        includes(:context).group_by(&:context).transform_values { |roles| roles.map { _1.name.to_sym } }
-      rescue ActiveRecord::RecordNotFound => e
-        raise Rabarber::Error, "Context not found: #{e.model}##{e.id}"
+        includes(:context).each_with_object({}) do |role, hash|
+          (hash[role.context] ||= []) << role.name.to_sym
+        rescue ActiveRecord::RecordNotFound
+          next
+        end
       rescue NameError => e
-        raise Rabarber::Error, "Context not found: #{e.name}"
+        raise Rabarber::NotFoundError, "Context not found: class #{e.name} may have been renamed or deleted"
       end
 
       def add(name, context: nil)
@@ -38,9 +42,12 @@ module Rabarber
       def rename(old_name, new_name, context: nil, force: false)
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
+
+        raise Rabarber::NotFoundError, "Role not found" unless role
+
         name = process_role_name(new_name)
 
-        return false if !role || exists?(name:, **processed_context) || assigned_to_roleables(role).any? && !force
+        return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
 
         delete_roleables_cache(role, context: processed_context)
 
@@ -51,7 +58,9 @@ module Rabarber
         processed_context = process_context(context)
         role = find_by(name: process_role_name(name), **processed_context)
 
-        return false if !role || assigned_to_roleables(role).any? && !force
+        raise Rabarber::NotFoundError, "Role not found" unless role
+
+        return false if role.roleables.exists? && !force
 
         delete_roleables_cache(role, context: processed_context)
 
@@ -59,25 +68,16 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
-        Rabarber::HasRoles.roleable_class.joins(:rabarber_roles).where(
-          rabarber_roles: { name: process_role_name(name), **process_context(context) }
-        )
+        find_by(name: process_role_name(name), **process_context(context))&.roleables ||
+          Rabarber::Configuration.instance.user_model.none
       end
 
       private
 
       def delete_roleables_cache(role, context:)
-        assigned_to_roleables(role).each_slice(1000) do |ids|
-          Rabarber::Core::Cache.delete(*ids.flat_map { [[_1, context], [_1, :all]] })
+        role.roleables.in_batches(of: 1000) do |batch|
+          Rabarber::Core::Cache.delete(*batch.pluck(:id).flat_map { [[_1, context], [_1, :all]] })
         end
-      end
-
-      def assigned_to_roleables(role)
-        ActiveRecord::Base.connection.select_values(
-          ActiveRecord::Base.sanitize_sql(
-            ["SELECT roleable_id FROM rabarber_roles_roleables WHERE role_id = ?", role.id]
-          )
-        )
       end
 
       def process_role_name(name)
@@ -97,14 +97,6 @@ module Rabarber
       raise ActiveRecord::RecordNotFound.new(nil, context_type, nil, context_id) if context_id.present? && !record
 
       record
-    end
-
-    def delete_assignments
-      ActiveRecord::Base.connection.execute(
-        ActiveRecord::Base.sanitize_sql(
-          ["DELETE FROM rabarber_roles_roleables WHERE role_id = ?", id]
-        )
-      )
     end
   end
 end

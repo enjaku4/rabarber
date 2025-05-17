@@ -29,9 +29,6 @@ RSpec.describe DummyController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it does not allow access", get: :multiple_roles
     end
-
-    it_behaves_like "it does not allow access when user must have roles", get: :multiple_roles
-    it_behaves_like "it checks permissions integrity", get: :multiple_roles
   end
 
   describe "when a single role is allowed" do
@@ -50,9 +47,6 @@ RSpec.describe DummyController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it does not allow access", post: :single_role
     end
-
-    it_behaves_like "it does not allow access when user must have roles", post: :single_role
-    it_behaves_like "it checks permissions integrity", post: :single_role
   end
 
   describe "when everyone is allowed" do
@@ -65,9 +59,6 @@ RSpec.describe DummyController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it allows access", put: :all_access
     end
-
-    it_behaves_like "it does not allow access when user must have roles", put: :all_access
-    it_behaves_like "it checks permissions integrity", put: :all_access
   end
 
   describe "when no one is allowed" do
@@ -80,9 +71,6 @@ RSpec.describe DummyController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it does not allow access", delete: :no_access
     end
-
-    it_behaves_like "it does not allow access when user must have roles", delete: :no_access
-    it_behaves_like "it checks permissions integrity", delete: :no_access
   end
 
   describe "when multiple rules applied" do
@@ -107,9 +95,6 @@ RSpec.describe DummyController, type: :controller do
     context "when the user does not have any roles" do
       it_behaves_like "it does not allow access", post: :multiple_rules
     end
-
-    it_behaves_like "it does not allow access when user must have roles", post: :multiple_rules
-    it_behaves_like "it checks permissions integrity", post: :multiple_rules
   end
 
   context "when dynamic rule is not negated" do
@@ -125,9 +110,6 @@ RSpec.describe DummyController, type: :controller do
 
         it_behaves_like "it does not allow access", get: :if_lambda, params: { foo: "baz" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", get: :if_lambda, params: { foo: "bar" }
-      it_behaves_like "it checks permissions integrity", get: :if_lambda, params: { foo: "bar" }
     end
 
     describe "when dynamic rule is defined as a method" do
@@ -142,9 +124,6 @@ RSpec.describe DummyController, type: :controller do
 
         it_behaves_like "it does not allow access", post: :if_method, params: { bad: "bar" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", post: :if_method, params: { bad: "baz" }
-      it_behaves_like "it checks permissions integrity", post: :if_method, params: { bad: "baz" }
     end
   end
 
@@ -161,9 +140,6 @@ RSpec.describe DummyController, type: :controller do
 
         it_behaves_like "it allows access", patch: :unless_lambda, params: { foo: "baz" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", patch: :unless_lambda, params: { foo: "bar" }
-      it_behaves_like "it checks permissions integrity", patch: :unless_lambda, params: { foo: "bar" }
     end
 
     describe "when dynamic rule is defined as a method" do
@@ -178,9 +154,6 @@ RSpec.describe DummyController, type: :controller do
 
         it_behaves_like "it allows access", delete: :unless_method, params: { bad: "bar" }
       end
-
-      it_behaves_like "it does not allow access when user must have roles", delete: :unless_method, params: { bad: "baz" }
-      it_behaves_like "it checks permissions integrity", delete: :unless_method, params: { bad: "baz" }
     end
   end
 end

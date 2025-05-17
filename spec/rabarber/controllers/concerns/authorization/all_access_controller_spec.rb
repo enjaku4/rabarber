@@ -17,8 +17,5 @@ RSpec.describe AllAccessController, type: :controller do
     context "when the user has no roles" do
       it_behaves_like "it allows access", get: :quux
     end
-
-    it_behaves_like "it does not allow access when user must have roles", get: :quux
-    it_behaves_like "it checks permissions integrity", get: :quux
   end
 end

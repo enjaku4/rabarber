@@ -21,6 +21,10 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
+  config.mock_with :rspec do |mocks|
+    mocks.verify_doubled_constant_names = true
+  end
+
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
   config.before(:suite) do
@@ -36,15 +40,14 @@ RSpec.configure do |config|
     reset_config = Rabarber::Configuration.send(:new)
 
     Rabarber::Configuration.instance.instance_variables.each do |var|
-      method_name = var.to_s.delete("@").to_sym
-      Rabarber::Configuration.instance.public_send(:"#{method_name}=", reset_config.public_send(method_name))
+      Rabarber::Configuration.instance.instance_variable_set(var, reset_config.instance_variable_get(var))
     end
   end
 end
 
 load "#{File.dirname(__FILE__)}/support/schema.rb"
 
-require "#{File.dirname(__FILE__)}/support/application"
 require "#{File.dirname(__FILE__)}/support/models"
+require "#{File.dirname(__FILE__)}/support/application"
 require "#{File.dirname(__FILE__)}/support/controllers"
 require "#{File.dirname(__FILE__)}/support/helpers"

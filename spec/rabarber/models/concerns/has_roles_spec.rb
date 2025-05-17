@@ -127,16 +127,24 @@ RSpec.describe Rabarber::HasRoles do
       context "when the instance context can't be found" do
         before { project.destroy! }
 
-        it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Project##{project.id}")
-        end
+        it { is_expected.to eq(nil => [:admin, :manager], User => [:viewer]) }
+
+        it_behaves_like "it caches all user roles", { nil => [:admin, :manager], User => [:viewer] }
       end
 
       context "when the class context doesn't exist" do
-        before { Rabarber::Role.take.update!(context_type: "Foo") }
+        before { Rabarber::Role.find_by(context_type: "User").update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: Foo")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
+        end
+      end
+
+      context "when the instance context's class doesn't exist" do
+        before { Rabarber::Role.find_by(context: project).update!(context_type: "Foo") }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
         end
       end
     end
@@ -216,17 +224,6 @@ RSpec.describe Rabarber::HasRoles do
           expect(user.roles(context:)).to match_array(roles)
         end
 
-        it "logs the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(
-              user,
-              roles_to_assign: roles,
-              current_roles: roles,
-              context: { context_type: "Project", context_id: nil }
-            ).and_call_original
-          subject
-        end
-
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
@@ -248,17 +245,6 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.to change(Rabarber::Role, :names).from([]).to(roles)
         end
 
-        it "logs the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(
-              user,
-              roles_to_assign: roles,
-              current_roles: roles,
-              context: { context_type: nil, context_id: nil }
-            ).and_call_original
-          subject
-        end
-
         it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
         it { is_expected.to match_array(roles) }
@@ -278,17 +264,6 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.to change(Rabarber::Role, :names).from([roles.first]).to(roles)
         end
 
-        it "logs the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(
-              user,
-              roles_to_assign: roles,
-              current_roles: roles,
-              context: { context_type: nil, context_id: nil }
-            ).and_call_original
-          subject
-        end
-
         it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
         it { is_expected.to match_array(roles) }
@@ -306,11 +281,6 @@ RSpec.describe Rabarber::HasRoles do
 
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
-        end
-
-        it "doesn't log the assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
-          subject
         end
 
         it "does not clear the cache" do
@@ -344,17 +314,6 @@ RSpec.describe Rabarber::HasRoles do
           expect(user.roles(context:)).to match_array(roles)
         end
 
-        it "logs the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(
-              user,
-              roles_to_assign: roles,
-              current_roles: roles,
-              context: { context_type: "Project", context_id: nil }
-            ).and_call_original
-          subject
-        end
-
         it "does not create new roles" do
           expect { subject }.not_to change(Rabarber::Role, :count).from(roles.size)
         end
@@ -376,11 +335,6 @@ RSpec.describe Rabarber::HasRoles do
           expect { subject }.not_to change(Rabarber::Role, :count).from(0)
         end
 
-        it "does not log the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
-          subject
-        end
-
         it "does not clear the cache" do
           expect(Rabarber::Core::Cache).not_to receive(:delete)
           subject
@@ -397,17 +351,6 @@ RSpec.describe Rabarber::HasRoles do
         it "assignes existing roles" do
           subject
           expect(user.roles).to eq([roles.first])
-        end
-
-        it "logs the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).to receive(:trigger)
-            .with(
-              user,
-              roles_to_assign: [roles.first],
-              current_roles: [roles.first],
-              context: { context_type: nil, context_id: nil }
-            ).and_call_original
-          subject
         end
 
         it "does not create new roles" do
@@ -427,11 +370,6 @@ RSpec.describe Rabarber::HasRoles do
         it "does not assign any roles to the user" do
           subject
           expect(user.roles(context:)).to match_array(roles)
-        end
-
-        it "does not log the role assignment" do
-          expect(Rabarber::Audit::Events::RolesAssigned).not_to receive(:trigger)
-          subject
         end
 
         it "does not create new roles" do
@@ -468,17 +406,6 @@ RSpec.describe Rabarber::HasRoles do
         expect(user.roles(context:)).to be_empty
       end
 
-      it "logs the role revocation" do
-        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(
-            user,
-            roles_to_revoke: roles,
-            current_roles: [],
-            context: { context_type: "Project", context_id: nil }
-          ).and_call_original
-        subject
-      end
-
       it_behaves_like "it deletes the cache", { context_type: "Project", context_id: nil }
 
       it { is_expected.to be_empty }
@@ -492,11 +419,6 @@ RSpec.describe Rabarber::HasRoles do
       it "does not revoke any roles from the user" do
         subject
         expect(user.roles(context:)).to eq([:accountant])
-      end
-
-      it "does not log the role revocation" do
-        expect(Rabarber::Audit::Events::RolesRevoked).not_to receive(:trigger)
-        subject
       end
 
       it "does not clear the cache" do
@@ -517,34 +439,9 @@ RSpec.describe Rabarber::HasRoles do
         expect(user.roles).to be_empty
       end
 
-      it "logs the role revocation" do
-        expect(Rabarber::Audit::Events::RolesRevoked).to receive(:trigger)
-          .with(
-            user,
-            roles_to_revoke: roles.first(1),
-            current_roles: [],
-            context: { context_type: nil, context_id: nil }
-          ).and_call_original
-        subject
-      end
-
       it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
 
       it { is_expected.to be_empty }
     end
-  end
-
-  describe "#log_identity" do
-    subject { user.log_identity }
-
-    let(:user) { User.create! }
-
-    it { is_expected.to eq("User##{user.id}") }
-  end
-
-  describe ".roleable_class" do
-    subject { described_class.roleable_class }
-
-    it { is_expected.to eq(User) }
   end
 end

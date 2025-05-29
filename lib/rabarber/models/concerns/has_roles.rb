@@ -40,7 +40,7 @@ module Rabarber
       )
 
       if roles_to_assign.any?
-        delete_roleable_cache(context: processed_context)
+        delete_roleable_cache(contexts: [processed_context])
         rabarber_roles << roles_to_assign
       end
 
@@ -56,11 +56,21 @@ module Rabarber
       )
 
       if roles_to_revoke.any?
-        delete_roleable_cache(context: processed_context)
+        delete_roleable_cache(contexts: [processed_context])
         self.rabarber_roles -= roles_to_revoke
       end
 
       roles(context: processed_context)
+    end
+
+    def revoke_all_roles
+      return if rabarber_roles.none?
+
+      contexts = all_roles.keys.map { process_context(_1) }
+
+      rabarber_roles.clear
+
+      delete_roleable_cache(contexts:)
     end
 
     private
@@ -78,8 +88,8 @@ module Rabarber
       Rabarber::Input::Context.new(context).process
     end
 
-    def delete_roleable_cache(context:)
-      Rabarber::Core::Cache.delete([roleable_id, context], [roleable_id, :all])
+    def delete_roleable_cache(contexts:)
+      Rabarber::Core::Cache.delete(*contexts.map { [roleable_id, _1] }, [roleable_id, :all])
     end
 
     def roleable_id

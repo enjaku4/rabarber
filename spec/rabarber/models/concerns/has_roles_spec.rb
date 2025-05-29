@@ -444,4 +444,51 @@ RSpec.describe Rabarber::HasRoles do
       it { is_expected.to be_empty }
     end
   end
+
+  describe "#revoke_all_roles" do
+    subject { user.revoke_all_roles }
+
+    let(:user) { User.create! }
+
+    context "when the user has no roles" do
+      it "does not change the user's roles" do
+        expect { subject }.not_to change(user, :roles)
+      end
+
+      it "does not clear the cache" do
+        expect(Rabarber::Core::Cache).not_to receive(:delete)
+        subject
+      end
+    end
+
+    context "when the user has some roles" do
+      let(:project) { Project.create! }
+
+      before do
+        user.assign_roles(:admin, :manager)
+        user.assign_roles(:viewer, context: Project)
+        user.assign_roles(:manager, context: project)
+      end
+
+      it "revokes all roles from the user" do
+        expect { subject }.to change(user, :all_roles).from(
+          { nil => [:admin, :manager], Project => [:viewer], project => [:manager] }
+        ).to({})
+      end
+
+      it "does not delete the roles themselves" do
+        expect { subject }.not_to change(Rabarber::Role, :count).from(4)
+      end
+
+      it "clears the cache" do
+        expect(Rabarber::Core::Cache).to receive(:delete).with(
+          [user.id, { context_type: nil, context_id: nil }],
+          [user.id, { context_type: "Project", context_id: nil }],
+          [user.id, { context_type: "Project", context_id: project.id }],
+          [user.id, :all]
+        )
+        subject
+      end
+    end
+  end
 end

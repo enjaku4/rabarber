@@ -14,7 +14,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "re-raises the error" do
         expect { DummyAuthController.with_authorization(only: [:index, :show], if: :foo?) }
-          .to raise_error(Rabarber::Error, "No before_action found")
+          .to raise_error(Rabarber::InvalidArgumentError, "No before_action found")
       end
     end
   end
@@ -32,7 +32,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "re-raises the error" do
         expect { DummyAuthController.skip_authorization(only: [:index, :show], if: :foo?) }
-          .to raise_error(Rabarber::Error, "No before_action found")
+          .to raise_error(Rabarber::InvalidArgumentError, "No before_action found")
       end
     end
   end

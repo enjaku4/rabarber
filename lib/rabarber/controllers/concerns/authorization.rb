@@ -9,13 +9,13 @@ module Rabarber
       def with_authorization(options = {})
         before_action :with_authorization, **options
       rescue ArgumentError => e
-        raise Rabarber::Error, e.message
+        raise Rabarber::InvalidArgumentError, e.message
       end
 
       def skip_authorization(options = {})
         skip_before_action :with_authorization, **options
       rescue ArgumentError => e
-        raise Rabarber::Error, e.message
+        raise Rabarber::InvalidArgumentError, e.message
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)

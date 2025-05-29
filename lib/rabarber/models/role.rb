@@ -4,11 +4,6 @@ module Rabarber
   class Role < ActiveRecord::Base
     self.table_name = "rabarber_roles"
 
-    validates :name, presence: true,
-                     uniqueness: { scope: [:context_type, :context_id] },
-                     format: { with: Rabarber::Input::Role::REGEX },
-                     strict: true
-
     belongs_to :context, polymorphic: true, optional: true
 
     has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.instance.user_model_name,

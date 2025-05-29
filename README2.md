@@ -87,7 +87,7 @@ Sometimes you need to manage the roles themselves:
 
 ```ruby
 # Create new roles
-Rabarber::Role.add(:admin)                    # Returns true if created, false if exists
+Rabarber::Role.add(:admin) # Returns true if created, false if exists
 
 # Remove roles (but only if no users have them)
 Rabarber::Role.remove(:admin)                 # Fails if users have this role
@@ -272,7 +272,7 @@ Sometimes you need exceptions:
 
 ```ruby
 class TicketsController < ApplicationController
-  skip_authorization only: :index              # Public index page
+  skip_authorization only: :index # Public index page
   skip_authorization except: [:create, :update, :destroy] # Only CUD operations need auth
 end
 ```

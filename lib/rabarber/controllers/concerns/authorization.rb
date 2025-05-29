@@ -39,7 +39,7 @@ module Rabarber
     end
 
     def when_unauthorized
-      request.format.html? ? redirect_back(fallback_location: root_path) : head(:unauthorized)
+      request.format.html? ? redirect_back(fallback_location: root_path) : head(:forbidden)
     end
   end
 end

@@ -1,5 +1,3 @@
-<!-- TODO: simplify and add description of the new feature -->
-
 # Rabarber: Simplified Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -136,6 +134,14 @@ user.revoke_roles(:accountant, :marketer)
 Roles the user doesn’t have are ignored.
 
 The method returns an array of roles assigned to the user.
+
+**`#revoke_all_roles`**
+
+To revoke absolutely all roles assigned to the user, use:
+
+```rb
+user.revoke_all_roles
+```
 
 **`#has_role?(*roles, context: nil)`**
 

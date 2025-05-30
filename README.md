@@ -235,7 +235,7 @@ class ApplicationController < ActionController::Base
   private
 
   def when_unauthorized
-    # Default behavior: redirect back (HTML) or return 401 (other formats)
+    # Default behavior: redirect back (HTML) or return 403 (other formats)
     # Custom behavior example:
     head :not_found # Hide existence of protected resources
   end
@@ -315,7 +315,7 @@ end
 
 ### Context Migrations
 
-Handle context changes when models are renamed or removed:
+Handle context changes when models are renamed or removed. These are irreversible data migrations.
 
 ```rb
 # Rename a context class (e.g., when you rename your Project model to Campaign)

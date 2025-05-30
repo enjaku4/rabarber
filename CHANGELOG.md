@@ -1,3 +1,14 @@
+## v5.1.0
+
+### Features:
+
+- Added `revoke_all_roles` method to revoke all user roles at once
+
+### Bugs:
+
+- Fixed HTTP status code for unauthorized non-HTML requests from 401 to 403
+- Fixed some error types for consistency
+
 ## v5.0.0
 
 ### Breaking:

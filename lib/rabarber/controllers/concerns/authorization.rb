@@ -9,13 +9,13 @@ module Rabarber
       def with_authorization(options = {})
         before_action :with_authorization, **options
       rescue ArgumentError => e
-        raise Rabarber::Error, e.message
+        raise Rabarber::InvalidArgumentError, e.message
       end
 
       def skip_authorization(options = {})
         skip_before_action :with_authorization, **options
       rescue ArgumentError => e
-        raise Rabarber::Error, e.message
+        raise Rabarber::InvalidArgumentError, e.message
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
@@ -39,7 +39,7 @@ module Rabarber
     end
 
     def when_unauthorized
-      request.format.html? ? redirect_back(fallback_location: root_path) : head(:unauthorized)
+      request.format.html? ? redirect_back(fallback_location: root_path) : head(:forbidden)
     end
   end
 end

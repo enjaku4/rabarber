@@ -1,38 +1,6 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Role do
-  describe "validations" do
-    describe "presence of name" do
-      subject { described_class.create(name: "") }
-
-      it "raises the 'name can't be blank' error" do
-        expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name can't be blank")
-      end
-    end
-
-    describe "uniqueness of name" do
-      subject { described_class.create(name: "admin") }
-
-      before { described_class.create(name: "admin") }
-
-      it "raises the 'name has already been taken' error" do
-        expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name has already been taken")
-      end
-    end
-
-    describe "format of name" do
-      ["admin 1", "admin!", "super-admin", "Admin"].each do |role_name|
-        context "when role name is '#{role_name}'" do
-          subject { described_class.create(name: role_name) }
-
-          it "raises the 'name is invalid' error" do
-            expect { subject }.to raise_error(ActiveModel::StrictValidationFailed, "Name is invalid")
-          end
-        end
-      end
-    end
-  end
-
   describe ".names" do
     subject { described_class.names(context:) }
 

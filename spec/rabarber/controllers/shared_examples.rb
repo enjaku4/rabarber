@@ -12,6 +12,11 @@ shared_examples_for "it does not allow access" do |hash|
     send(hash.keys.first, hash.values.first, params: hash[:params])
     expect(response).to redirect_to(DummyApplication.routes.url_helpers.root_path)
   end
+
+  it "does not allow access with a different format" do
+    send(hash.keys.first, hash.values.first, params: hash[:params], format: :json)
+    expect(response).to have_http_status(:forbidden)
+  end
 end
 
 shared_examples_for "it raises an error on nil current_user" do |hash|

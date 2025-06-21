@@ -27,7 +27,7 @@ Rabarber is a role-based authorization library for Ruby on Rails that focuses on
 
 
 **Community Resources:**
-  - [Contributing](#contributing)
+  - [Getting Help and Contributing](#getting-help-and-contributing)
   - [License](#license)
   - [Code of Conduct](#code-of-conduct)
   - [Old Versions](#old-versions)
@@ -356,7 +356,7 @@ Use conditional rendering based on roles:
 <% end %>
 ```
 
-## Contributing
+## Getting Help and Contributing
 
 ### Getting Help
 Have a question or need assistance? Open a discussion in our [discussions section](https://github.com/brownboxdev/rabarber/discussions) for:

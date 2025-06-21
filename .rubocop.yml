@@ -34,7 +34,10 @@ Metrics/MethodLength:
 Metrics/ParameterLists:
   Enabled: false
 
-Naming/PredicateName:
+Naming/PredicateMethod:
+  Enabled: false
+
+Naming/PredicatePrefix:
   Enabled: false
 
 Rails/ApplicationController:

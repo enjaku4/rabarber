@@ -8,7 +8,6 @@ rails_version = ENV.fetch("RAILS_VERSION", "~> 7.1")
 
 gem "byebug"
 gem "database_cleaner-active_record"
-gem "grepfruit"
 gem "rails", rails_version
 gem "rake"
 gem "rspec"

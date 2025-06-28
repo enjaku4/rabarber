@@ -19,7 +19,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Context must be a Class or an instance of ActiveRecord model"
+        "Expected a Class or an instance of ActiveRecord model, got #{value.inspect}"
       end
 
       def already_processed?

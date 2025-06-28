@@ -14,7 +14,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Dynamic rule must be a Symbol, a String, or a Proc"
+        "Expected a symbol, a string, or a proc, got #{value.inspect}"
       end
     end
   end

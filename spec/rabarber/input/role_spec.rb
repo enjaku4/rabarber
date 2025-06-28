@@ -26,7 +26,7 @@ RSpec.describe Rabarber::Input::Role do
           it "raises an error" do
             expect { subject }.to raise_error(
               Rabarber::InvalidArgumentError,
-              "Role name must be a Symbol or a String and may only contain lowercase letters, numbers, and underscores"
+              "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{invalid_role.inspect}"
             )
           end
         end

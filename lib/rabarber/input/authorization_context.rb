@@ -18,7 +18,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
+        "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got #{value.inspect}"
       end
     end
   end

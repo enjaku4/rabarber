@@ -15,7 +15,7 @@ module Rabarber
         end
 
         def default_error_message
-          "Value must be a Proc"
+          "Expected a proc, got #{value.inspect}"
         end
       end
     end

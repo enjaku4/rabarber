@@ -14,7 +14,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Action name must be a Symbol or a String"
+        "Expected a symbol or a string, got #{value.inspect}"
       end
     end
   end

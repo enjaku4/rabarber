@@ -16,7 +16,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Role name must be a Symbol or a String and may only contain lowercase letters, numbers, and underscores"
+        "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{value.inspect}"
       end
     end
   end

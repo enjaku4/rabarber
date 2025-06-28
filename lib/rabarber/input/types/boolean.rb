@@ -15,7 +15,7 @@ module Rabarber
         end
 
         def default_error_message
-          "Value must be a Boolean"
+          "Expected a boolean, got #{value.inspect}"
         end
       end
     end

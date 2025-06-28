@@ -13,7 +13,7 @@ module Rabarber
             reader: true,
             constructor: -> (value) do
               Rabarber::Input::Types::Boolean.new(
-                value, Rabarber::ConfigurationError, "Configuration `cache_enabled` must be a Boolean"
+                value, Rabarber::ConfigurationError, "Invalid configuration `cache_enabled`, expected a boolean, got #{value.inspect}"
               ).process
             end
     setting :current_user_method,
@@ -21,7 +21,7 @@ module Rabarber
             reader: true,
             constructor: -> (value) do
               Rabarber::Input::Types::Symbol.new(
-                value, Rabarber::ConfigurationError, "Configuration `current_user_method` must be a Symbol or a String"
+                value, Rabarber::ConfigurationError, "Invalid configuration `current_user_method`, expected a symbol or a string, got #{value.inspect}"
               ).process
             end
     setting :user_model_name,
@@ -30,7 +30,7 @@ module Rabarber
 
     def user_model
       Rabarber::Input::ArModel.new(
-        user_model_name, Rabarber::ConfigurationError, "Configuration `user_model_name` must be an ActiveRecord model name"
+        user_model_name, Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{user_model_name.inspect}"
       ).process
     end
   end

@@ -16,7 +16,7 @@ RSpec.describe Rabarber::Helpers do
       let(:user) { nil }
 
       it "raise an error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Expected `current_user` to return an instance of User, but got nil")
+        expect { subject }.to raise_error(Rabarber::Error, "Expected `current_user` to return an instance of User, got nil")
       end
     end
 
@@ -24,7 +24,7 @@ RSpec.describe Rabarber::Helpers do
       let(:roles) { [:manager, :Admin] }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores")
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got [:manager, :Admin]")
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe Rabarber::Helpers do
       let(:user) { nil }
 
       it "raise an error" do
-        expect { subject }.to raise_error(Rabarber::Error, "Expected `current_user` to return an instance of User, but got nil")
+        expect { subject }.to raise_error(Rabarber::Error, "Expected `current_user` to return an instance of User, got nil")
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Rabarber::Helpers do
       let(:roles) { [:manager, :Admin] }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores")
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got [:manager, :Admin]")
       end
     end
 

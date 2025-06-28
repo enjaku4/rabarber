@@ -38,7 +38,7 @@ RSpec.describe Rabarber::Input::DynamicRule do
           it "raises an error" do
             expect { subject }.to raise_error(
               Rabarber::InvalidArgumentError,
-              "Dynamic rule must be a Symbol, a String, or a Proc"
+              "Expected a symbol, a string, or a proc, got #{invalid_dynamic_rule.inspect}"
             )
           end
         end

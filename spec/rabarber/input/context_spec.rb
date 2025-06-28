@@ -23,7 +23,7 @@ RSpec.describe Rabarber::Input::Context do
         it "raises an error" do
           expect { subject }.to raise_error(
             Rabarber::InvalidArgumentError,
-            "Context must be a Class or an instance of ActiveRecord model"
+            "Expected a Class or an instance of ActiveRecord model, got #{context.inspect}"
           )
         end
       end
@@ -49,7 +49,7 @@ RSpec.describe Rabarber::Input::Context do
           it "raises an error" do
             expect { subject }.to raise_error(
               Rabarber::InvalidArgumentError,
-              "Context must be a Class or an instance of ActiveRecord model"
+              "Expected a Class or an instance of ActiveRecord model, got #{invalid_context.inspect}"
             )
           end
         end

@@ -16,7 +16,7 @@ module Rabarber
       end
 
       def default_error_message
-        "Value must be an ActiveRecord model"
+        "Expected an ActiveRecord model, got #{value.inspect}"
       end
     end
   end

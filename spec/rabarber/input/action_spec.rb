@@ -31,7 +31,7 @@ RSpec.describe Rabarber::Input::Action do
 
           it "raises an error" do
             expect { subject }.to raise_error(
-              Rabarber::InvalidArgumentError, "Action name must be a Symbol or a String"
+              Rabarber::InvalidArgumentError, "Expected a symbol or a string, got #{invalid_action.inspect}"
             )
           end
         end

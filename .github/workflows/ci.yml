@@ -73,7 +73,7 @@ jobs:
   uuid_tests:
     runs-on: ubuntu-latest
 
-    name: UUID Test
+    name: UUID Tests
     permissions:
       contents: read
 

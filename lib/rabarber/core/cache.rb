@@ -20,7 +20,7 @@ module Rabarber
       end
 
       def enabled?
-        Rabarber::Configuration.instance.cache_enabled
+        Rabarber::Configuration.cache_enabled
       end
 
       def clear

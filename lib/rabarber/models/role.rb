@@ -6,7 +6,7 @@ module Rabarber
 
     belongs_to :context, polymorphic: true, optional: true
 
-    has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.instance.user_model_name,
+    has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.user_model_name,
                                         association_foreign_key: "roleable_id",
                                         join_table: "rabarber_roles_roleables"
 
@@ -64,7 +64,7 @@ module Rabarber
 
       def assignees(name, context: nil)
         find_by(name: process_role_name(name), **process_context(context))&.roleables ||
-          Rabarber::Configuration.instance.user_model.none
+          Rabarber::Configuration.user_model.none
       end
 
       private

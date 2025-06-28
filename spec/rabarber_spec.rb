@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber do
-  let(:config) { Rabarber::Configuration.instance }
+  let(:config) { Rabarber::Configuration }
 
   it "has a version number" do
     expect(Rabarber::VERSION).not_to be_nil
@@ -69,7 +69,7 @@ RSpec.describe Rabarber do
     end
 
     context "with user_model_name configuration is invalid" do
-      subject { Rabarber::Configuration.instance.user_model }
+      subject { Rabarber::Configuration.user_model }
 
       before { described_class.configure { |config| config.user_model_name = 123 } }
 

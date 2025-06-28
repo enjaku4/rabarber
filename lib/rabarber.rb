@@ -39,8 +39,6 @@ module Rabarber
   class InvalidArgumentError < Rabarber::Error; end
   class NotFoundError < Rabarber::Error; end
 
-  def configure
-    yield(Rabarber::Configuration.instance)
-  end
+  delegate :configure, to: Rabarber::Configuration
   module_function :configure
 end

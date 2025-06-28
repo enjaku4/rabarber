@@ -31,14 +31,10 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
+    Rabarber::Configuration.reset_config
+
     DatabaseCleaner.cleaning do
       example.run
-    end
-
-    reset_config = Rabarber::Configuration.send(:new)
-
-    Rabarber::Configuration.instance.instance_variables.each do |var|
-      Rabarber::Configuration.instance.instance_variable_set(var, reset_config.instance_variable_get(var))
     end
   end
 end
@@ -51,6 +47,7 @@ end
 
 require "#{File.dirname(__FILE__)}/support/models"
 require "#{File.dirname(__FILE__)}/support/application"
+require "#{File.dirname(__FILE__)}/support/configuration"
 require "#{File.dirname(__FILE__)}/support/controllers"
 require "#{File.dirname(__FILE__)}/support/helpers"
 

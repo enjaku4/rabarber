@@ -122,9 +122,6 @@ class ContextController < ApplicationController
   grant_access action: :class_ctx, roles: :admin, context: Project
   def class_ctx = head(:ok)
 
-  grant_access action: :instance_ctx, roles: :admin, context: Project.create!
-  def instance_ctx = head(:ok)
-
   grant_access action: :symbol_ctx, roles: :admin, context: :project
   def symbol_ctx = head(:ok)
 

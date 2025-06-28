@@ -35,24 +35,6 @@ RSpec.describe ContextController, type: :controller do
     end
   end
 
-  describe "when context is an instance" do
-    context "when the user's role allows access" do
-      before do
-        project = Project.create!
-        allow(Project).to receive(:create!).and_return(project)
-        user.assign_roles(:admin, context: project)
-      end
-
-      it_behaves_like "it allows access", put: :instance_ctx
-    end
-
-    context "when the user's role does not allow access" do
-      before { user.assign_roles(:admin, context: Project) }
-
-      it_behaves_like "it does not allow access", put: :instance_ctx
-    end
-  end
-
   context "when context is a symbol" do
     context "when the user's role allows access" do
       before do

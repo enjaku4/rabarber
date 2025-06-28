@@ -26,7 +26,7 @@ RSpec.configure do |config|
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :deletion
     DatabaseCleaner.clean_with(:truncation)
   end
 

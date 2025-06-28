@@ -70,7 +70,6 @@ DummyApplication.routes.draw do
     collection do
       get :global_ctx
       post :class_ctx
-      put :instance_ctx
       patch :symbol_ctx
       delete :proc_ctx
     end

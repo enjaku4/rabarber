@@ -76,11 +76,11 @@ module Rabarber
       end
 
       def process_role_name(name)
-        Rabarber::Input::Role.new(name).process
+        Rabarber::Inputs.process(name, as: :role)
       end
 
       def process_context(context)
-        Rabarber::Input::Context.new(context).process
+        Rabarber::Inputs.process(context, as: :context)
       end
     end
 

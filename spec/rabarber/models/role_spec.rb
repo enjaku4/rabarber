@@ -39,13 +39,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to match_array(role_names) }
-
-      it "uses Input::Context to process the given context" do
-        input_processor = instance_double(Rabarber::Input::Context)
-        allow(Rabarber::Input::Context).to receive(:new).with(project).and_return(input_processor)
-        expect(input_processor).to receive(:process)
-        subject
-      end
     end
   end
 
@@ -98,17 +91,6 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  shared_examples_for "role name is processed" do |roles|
-    it "uses Input::Role to process the given roles" do
-      roles.each do |role|
-        input_processor = instance_double(Rabarber::Input::Role, process: role)
-        allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
-        expect(input_processor).to receive(:process)
-      end
-      subject
-    end
-  end
-
   describe ".add" do
     subject { described_class.add(:admin, context:) }
 
@@ -120,8 +102,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be true }
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     context "when the role exists" do
@@ -134,8 +114,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be false }
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     context "when the role with the same name exists in a different context" do
@@ -150,8 +128,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be true }
-
-      it_behaves_like "role name is processed", [:admin]
     end
   end
 
@@ -171,8 +147,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin, :manager]
     end
 
     shared_examples_for "it renames the role" do |role_assigned: false, processed_context: nil|
@@ -186,8 +160,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:delete).with([user.id, processed_context], [user.id, :all]) if role_assigned
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin, :manager]
     end
 
     shared_examples_for "it raises an error" do
@@ -314,8 +286,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     shared_examples_for "it deletes the role" do |role_assigned: false, processed_context: nil|
@@ -329,8 +299,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:delete).with([user.id, processed_context], [user.id, :all]) if role_assigned
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     shared_examples_for "it raises an error" do
@@ -407,16 +375,12 @@ RSpec.describe Rabarber::Role do
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }
-
-        it_behaves_like "role name is processed", ["admin"]
       end
 
       context "when the role is assigned to some users" do
         before { users.each { |user| user.assign_roles(:admin, context:) } }
 
         it { is_expected.to match_array(users) }
-
-        it_behaves_like "role name is processed", ["admin"]
       end
     end
 
@@ -424,8 +388,6 @@ RSpec.describe Rabarber::Role do
       let(:role) { "client" }
 
       it { is_expected.to be_empty }
-
-      it_behaves_like "role name is processed", ["client"]
     end
 
     context "when the role with the same name exists in a different context" do
@@ -434,8 +396,6 @@ RSpec.describe Rabarber::Role do
       before { described_class.create!(name: "admin", context_type: "Project", context_id: nil) }
 
       it { is_expected.to be_empty }
-
-      it_behaves_like "role name is processed", ["admin"]
     end
   end
 

@@ -12,26 +12,43 @@ module Rabarber
             default: true,
             reader: true,
             constructor: -> (value) do
-              Rabarber::Input::Types::Boolean.new(
-                value, Rabarber::ConfigurationError, "Invalid configuration `cache_enabled`, expected a boolean, got #{value.inspect}"
-              ).process
+              Rabarber::Inputs.process(
+                value,
+                as: :boolean,
+                error: Rabarber::ConfigurationError,
+                message: "Invalid configuration `cache_enabled`, expected a boolean, got #{value.inspect}"
+              )
             end
     setting :current_user_method,
             default: :current_user,
             reader: true,
             constructor: -> (value) do
-              Rabarber::Input::Types::Symbol.new(
-                value, Rabarber::ConfigurationError, "Invalid configuration `current_user_method`, expected a symbol or a string, got #{value.inspect}"
-              ).process
+              Rabarber::Inputs.process(
+                value,
+                as: :symbol,
+                error: Rabarber::ConfigurationError,
+                message: "Invalid configuration `current_user_method`, expected a symbol or a string, got #{value.inspect}"
+              )
             end
     setting :user_model_name,
             default: "User",
-            reader: true # TODO: constructor check if the value is a non-empty String
+            reader: true,
+            constructor: -> (value) do
+              Rabarber::Inputs.process(
+                value,
+                as: :non_empty_string,
+                error: Rabarber::ConfigurationError,
+                message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{value.inspect}"
+              )
+            end
 
     def user_model
-      Rabarber::Input::ArModel.new(
-        user_model_name, Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{user_model_name.inspect}"
-      ).process
+      Rabarber::Inputs.process(
+        user_model_name,
+        as: :model,
+        error: Rabarber::ConfigurationError,
+        message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{user_model_name.inspect}"
+      )
     end
   end
 end

@@ -9,6 +9,7 @@ rails_version = ENV.fetch("RAILS_VERSION", "~> 7.1")
 gem "byebug"
 gem "database_cleaner-active_record"
 gem "dry-configurable"
+gem "dry-types"
 gem "rails", rails_version
 gem "rake"
 gem "rspec"

@@ -36,8 +36,8 @@ module Rabarber
 
       def resolve_context(controller_instance)
         case context
-        when Proc then Rabarber::Input::Context.new(controller_instance.instance_exec(&context)).process
-        when Symbol then Rabarber::Input::Context.new(controller_instance.send(context)).process
+        when Proc then Rabarber::Inputs.process(controller_instance.instance_exec(&context), as: :context)
+        when Symbol then Rabarber::Inputs.process(controller_instance.send(context), as: :context)
         else context
         end
       end

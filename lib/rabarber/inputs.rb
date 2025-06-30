@@ -33,7 +33,7 @@ module Rabarber
           end
       },
       authorization_context: -> {
-        symbol_type = self::Strict::Symbol | self::Strict::String.constrained(min_size: 1).constructor { |v| v.to_sym }
+        symbol_type = self::Strict::Symbol | self::Strict::String.constrained(min_size: 1).constructor(&:to_sym)
         proc_type = self::Instance(Proc)
         class_type = self::Strict::Class.constructor { |v| v.try(:safe_constantize) || v }
         ar_instance_type = self::Instance(ActiveRecord::Base).constrained(&:persisted?)

@@ -1,4 +1,9 @@
-<!-- TODO: 5.1.1 -->
+## v5.1.1
+
+### Misc:
+
+- Switched to `dry-types` for input validation
+- Switched to `dry-configurable` for configuration management
 
 ## v5.1.0
 

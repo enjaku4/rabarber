@@ -36,6 +36,7 @@ module Rabarber
 
       def resolve_context(controller_instance)
         case context
+        # TODO: error types and messages
         when Proc then Rabarber::Inputs.process(controller_instance.instance_exec(&context), as: :context)
         when Symbol then Rabarber::Inputs.process(controller_instance.send(context), as: :context)
         else context

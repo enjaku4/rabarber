@@ -4,7 +4,7 @@ require "dry-types"
 
 module Rabarber
   module Inputs
-    # TODO: simplify this mess
+    # TODO: simplify
     extend self
 
     include Dry.Types()

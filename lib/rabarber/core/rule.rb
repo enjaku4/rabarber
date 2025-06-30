@@ -35,12 +35,12 @@ module Rabarber
       end
 
       def resolve_context(controller_instance)
-        case context
-        # TODO: error types and messages
-        when Proc then Rabarber::Inputs.process(controller_instance.instance_exec(&context), as: :context)
-        when Symbol then Rabarber::Inputs.process(controller_instance.send(context), as: :context)
-        else context
-        end
+        resolved_context = case context
+                           when Proc then controller_instance.instance_exec(&context)
+                           when Symbol then controller_instance.send(context)
+                           else context
+                           end
+        Rabarber::Inputs.process(resolved_context, as: :context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{resolved_context.inspect}")
       end
     end
   end

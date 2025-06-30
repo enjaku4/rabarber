@@ -4,7 +4,7 @@ require "dry-types"
 
 module Rabarber
   module Inputs
-    # TODO: make sure correct error messages are returned everywhere inputs are used, then simplify this mess, and test using the deleted tests as reference
+    # TODO: simplify this mess
     extend self
 
     include Dry.Types()
@@ -66,7 +66,7 @@ module Rabarber
       checker = checker.optional if optional
 
       checker[value]
-    rescue Dry::Types::CoercionError, TypeError => e
+    rescue Dry::Types::CoercionError => e
       raise error, message || e.message
     end
 

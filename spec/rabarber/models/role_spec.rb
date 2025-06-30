@@ -92,7 +92,9 @@ RSpec.describe Rabarber::Role do
   end
 
   describe ".add" do
-    subject { described_class.add(:admin, context:) }
+    subject { described_class.add(name, context:) }
+
+    let(:name) { :admin }
 
     context "when the role does not exist" do
       let(:context) { nil }
@@ -129,10 +131,32 @@ RSpec.describe Rabarber::Role do
 
       it { is_expected.to be true }
     end
+
+    context "when given an invalid name" do
+      let(:name) { :"Invalid-Name" }
+      let(:context) { Project.create! }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe ".rename" do
-    subject { described_class.rename(:admin, :manager, context:, force:) }
+    subject { described_class.rename(old_name, new_name, context:, force:) }
+
+    let(:old_name) { :admin }
+    let(:new_name) { :manager }
+    let(:context) { Project.create! }
+    let(:force) { false }
 
     shared_examples_for "it does nothing" do |role_exists: true|
       if role_exists
@@ -268,10 +292,40 @@ RSpec.describe Rabarber::Role do
         end
       end
     end
+
+    context "when given an invalid old name" do
+      let(:old_name) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid new name" do
+      let(:new_name) { :"Invalid-Name" }
+
+      before { described_class.create!(name: :admin, context_type: context.class.name, context_id: context.id) }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe ".remove" do
-    subject { described_class.remove(:admin, context:, force:) }
+    subject { described_class.remove(name, context:, force:) }
+
+    let(:name) { :admin }
+    let(:context) { Project.create! }
+    let(:force) { false }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -360,6 +414,22 @@ RSpec.describe Rabarber::Role do
         end
       end
     end
+
+    context "when given an invalid name" do
+      let(:name) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe ".assignees" do
@@ -396,6 +466,23 @@ RSpec.describe Rabarber::Role do
       before { described_class.create!(name: "admin", context_type: "Project", context_id: nil) }
 
       it { is_expected.to be_empty }
+    end
+
+    context "when given an invalid name" do
+      let(:role) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:role) { :admin }
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
     end
   end
 

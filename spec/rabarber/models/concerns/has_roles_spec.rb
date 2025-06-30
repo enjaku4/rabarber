@@ -76,6 +76,14 @@ RSpec.describe Rabarber::HasRoles do
 
       it_behaves_like "it caches user roles", { context_type: "Project", context_id: nil }, [:admin, :developer]
     end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe "#all_roles" do
@@ -183,6 +191,15 @@ RSpec.describe Rabarber::HasRoles do
       before { user.assign_roles(:admin, context:) }
 
       it { is_expected.to be true }
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+      let(:roles) { [:admin] }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
     end
   end
 
@@ -376,6 +393,17 @@ RSpec.describe Rabarber::HasRoles do
         it { is_expected.to match_array(roles) }
       end
     end
+
+    context "when given an invalid context" do
+      let(:user) { User.create! }
+      let(:roles) { [:admin] }
+      let(:context) { 123 }
+      let(:create_new) { true }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe "#revoke_roles" do
@@ -434,6 +462,14 @@ RSpec.describe Rabarber::HasRoles do
 
       it { is_expected.to be_empty }
     end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe "#revoke_all_roles" do
@@ -479,6 +515,17 @@ RSpec.describe Rabarber::HasRoles do
           [user.id, :all]
         )
         subject
+      end
+    end
+
+    context "when the user has roles with an invalid context key" do
+      before do
+        user.assign_roles(:admin)
+        allow(user).to receive(:all_roles).and_return({ 123 => [:admin] })
+      end
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end

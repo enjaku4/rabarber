@@ -33,7 +33,7 @@ RSpec.describe Rabarber::Inputs do
     subject { described_class.process(value, as: :non_empty_string, error: Rabarber::Error, message: "Error") }
 
     context "when the given value is valid" do
-      ["foo", "bar", " ", "0", "test123"].each do |valid_value|
+      ["foo", "bar", "0", "test123"].each do |valid_value|
         context "when #{valid_value.inspect} is given" do
           let(:value) { valid_value }
 
@@ -43,7 +43,7 @@ RSpec.describe Rabarber::Inputs do
     end
 
     context "when the given value is invalid" do
-      [nil, "", [], {}, 123, :foo, false, true].each do |invalid_value|
+      [nil, "", " ", [], {}, 123, :foo, false, true].each do |invalid_value|
         context "when #{invalid_value.inspect} is given" do
           let(:value) { invalid_value }
 
@@ -122,7 +122,7 @@ RSpec.describe Rabarber::Inputs do
     subject { described_class.process(value, as: :model, error: Rabarber::Error, message: "Error") }
 
     context "when the given value is valid" do
-      ["User", "Project", User].each do |valid_value|
+      ["User", "Project"].each do |valid_value|
         context "when #{valid_value} is given" do
           let(:value) { valid_value }
           let(:expected_value) { valid_value.to_s.constantize }
@@ -133,7 +133,7 @@ RSpec.describe Rabarber::Inputs do
     end
 
     context "when the given value is invalid" do
-      [true, :user, 1, nil, [User], "user"].each do |invalid_value|
+      [true, :user, 1, nil, [User], User, "user"].each do |invalid_value|
         context "when '#{invalid_value}' is given" do
           let(:value) { invalid_value }
 

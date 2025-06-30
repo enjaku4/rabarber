@@ -11,12 +11,12 @@ module Rabarber
 
     TYPES = {
       boolean: -> { self::Strict::Bool },
-      non_empty_string: -> { self::Strict::String.constrained(min_size: 1) },
-      symbol: -> { (self::Strict::Symbol | self::Strict::String.constrained(min_size: 1)).constrained(format: /\A.+\z/).constructor(&:to_sym) },
-      role: -> { (self::Strict::Symbol | self::Strict::String.constrained(min_size: 1)).constrained(format: /\A[a-z0-9_]+\z/).constructor(&:to_sym) },
-      model: -> { self::Strict::Class.constructor { _1.try(:safe_constantize) || _1 }.constrained(lt: ActiveRecord::Base) },
-      roles: -> { self::Array.of((self::Strict::Symbol | self::Strict::String.constrained(min_size: 1)).constrained(format: /\A[a-z0-9_]+\z/)).constructor { |input| Kernel::Array(input).map(&:to_sym) } },
-      dynamic_rule: -> { self::Strict::Symbol.constructor { |v| v.is_a?(::String) ? v.to_sym : v }.constrained(format: /\A.+\z/) | self::Instance(Proc) },
+      non_empty_string: -> { self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 } },
+      symbol: -> { self::Coercible::Symbol.constrained(min_size: 1) },
+      role: -> { self::Coercible::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/) },
+      model: -> { self::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base) },
+      roles: -> { self::Array.of(self::Strict::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/)).constructor { Kernel::Array(_1).map(&:to_sym) } },
+      dynamic_rule: -> { self::Coercible::Symbol.constrained(min_size: 1) | self::Instance(Proc) },
       context: -> {
         (self::Strict::Class | self::Instance(ActiveRecord::Base) | self::Hash.schema(context_type: self::Strict::String | self::Nil, context_id: self::Strict::String | self::Strict::Integer | self::Nil) | self::Nil)
           .constructor do |value|

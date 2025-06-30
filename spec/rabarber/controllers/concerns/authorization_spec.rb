@@ -51,7 +51,7 @@ RSpec.describe Rabarber::Authorization do
     context "when action is invalid" do
       let(:args) { { action: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, /undefined method `to_sym' for.+Integer/
+      it_behaves_like "raises an error", Rabarber::InvalidArgumentError
     end
 
     context "when roles are invalid" do

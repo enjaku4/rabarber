@@ -36,7 +36,7 @@ module Rabarber
             constructor: -> (value) do
               Rabarber::Inputs.process(
                 value,
-                as: :non_empty_string,
+                as: :string,
                 error: Rabarber::ConfigurationError,
                 message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{value.inspect}"
               )

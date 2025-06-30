@@ -40,7 +40,7 @@ module Rabarber
                            when Symbol then controller_instance.send(context)
                            else context
                            end
-        Rabarber::Inputs.process(resolved_context, as: :context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{resolved_context.inspect}")
+        Rabarber::Inputs.process(resolved_context, as: :role_context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{resolved_context.inspect}")
       end
     end
   end

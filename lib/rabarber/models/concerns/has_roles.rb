@@ -89,7 +89,7 @@ module Rabarber
     end
 
     def process_context(context)
-      Rabarber::Inputs.process(context, as: :context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}")
+      Rabarber::Inputs.process(context, as: :role_context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}")
     end
 
     def delete_roleable_cache(contexts:)

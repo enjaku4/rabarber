@@ -29,8 +29,8 @@ RSpec.describe Rabarber::Inputs do
     end
   end
 
-  describe ".process for :non_empty_string type" do
-    subject { described_class.process(value, as: :non_empty_string, error: Rabarber::Error, message: "Error") }
+  describe ".process for :string type" do
+    subject { described_class.process(value, as: :string, error: Rabarber::Error, message: "Error") }
 
     context "when the given value is valid" do
       ["foo", "bar", "0", "test123"].each do |valid_value|
@@ -224,7 +224,7 @@ RSpec.describe Rabarber::Inputs do
   end
 
   describe ".process for :context type" do
-    subject { described_class.process(context, as: :context, error: Rabarber::InvalidArgumentError, message: "Context must be a Class or an instance of ActiveRecord model") }
+    subject { described_class.process(context, as: :role_context, error: Rabarber::InvalidArgumentError, message: "Context must be a Class or an instance of ActiveRecord model") }
 
     context "when the given context is valid" do
       context "when a class is given" do

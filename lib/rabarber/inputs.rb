@@ -4,7 +4,6 @@ require "dry-types"
 
 module Rabarber
   module Inputs
-    # TODO: simplify
     extend self
 
     include Dry.Types()
@@ -13,44 +12,35 @@ module Rabarber
       predicate(:predicate?) { |predicate, input| input.public_send(predicate) }
     end
 
+    CONTEXT_TYPE = self::Strict::Class | self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
+                   self::Hash.schema(
+                     context_type: self::Strict::String | self::Nil,
+                     context_id: self::Strict::String | self::Strict::Integer | self::Nil
+                   ) | self::Nil
+
+    PROC_TYPE = self::Instance(Proc)
+    SYMBOL_TYPE = self::Coercible::Symbol.constrained(min_size: 1)
+    ROLE_TYPE = Rabarber::Inputs::SYMBOL_TYPE.constrained(format: /\A[a-z0-9_]+\z/)
+
     TYPES = {
       boolean: -> { self::Strict::Bool },
-      non_empty_string: -> { self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 } },
-      symbol: -> { self::Coercible::Symbol.constrained(min_size: 1) },
-      role: -> { self::Coercible::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/) },
+      string: -> { self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 } },
+      symbol: -> { Rabarber::Inputs::SYMBOL_TYPE },
+      role: -> { Rabarber::Inputs::ROLE_TYPE },
       model: -> { self::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base) },
-      roles: -> { self::Array.of(self::Coercible::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/)).constructor { Kernel::Array(_1) } },
-      dynamic_rule: -> { self::Coercible::Symbol.constrained(min_size: 1) | self::Instance(Proc) },
-      context: -> {
-        (
-          self::Strict::Class | self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
-          self::Hash.schema(
-            context_type: self::Strict::String | self::Nil,
-            context_id: self::Strict::String | self::Strict::Integer | self::Nil
-          ) | self::Nil
-        )
-      },
-      authorization_context: -> {
-        (
-          self::Coercible::Symbol.constrained(min_size: 1) | self::Strict::Class | self::Instance(Proc) |
-          self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
-          self::Hash.schema(
-            context_type: self::Strict::String | self::Nil,
-            context_id: self::Strict::String | self::Strict::Integer | self::Nil
-          ) | self::Nil
-        )
-      }
+      roles: -> { self::Array.of(Rabarber::Inputs::ROLE_TYPE).constructor { Kernel::Array(_1) } },
+      dynamic_rule: -> { Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE },
+      role_context: -> { Rabarber::Inputs::CONTEXT_TYPE },
+      authorization_context: -> { Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE | Rabarber::Inputs::CONTEXT_TYPE }
     }.freeze
 
     def process(value, as:, optional: false, error: Rabarber::InvalidArgumentError, message: nil)
       checker = type_for(as)
       checker = checker.optional if optional
 
-      if [:context, :authorization_context].include?(as)
-        resolve_context(checker[value])
-      else
-        checker[value]
-      end
+      result = checker[value]
+
+      [:role_context, :authorization_context].include?(as) ? resolve_context(result) : result
     rescue Dry::Types::CoercionError => e
       raise error, message || e.message
     end

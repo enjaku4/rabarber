@@ -12,26 +12,28 @@ module Rabarber
       predicate(:predicate?) { |predicate, input| input.public_send(predicate) }
     end
 
-    CONTEXT_TYPE = self::Strict::Class | self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
+    PROC_TYPE = self::Instance(Proc)
+    SYMBOL_TYPE = self::Coercible::Symbol.constrained(min_size: 1)
+    ROLE_TYPE = self::SYMBOL_TYPE.constrained(format: /\A[a-z0-9_]+\z/)
+
+    CONTEXT_TYPE = self::Strict::Class |
+                   self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
                    self::Hash.schema(
                      context_type: self::Strict::String | self::Nil,
                      context_id: self::Strict::String | self::Strict::Integer | self::Nil
-                   ) | self::Nil
-
-    PROC_TYPE = self::Instance(Proc)
-    SYMBOL_TYPE = self::Coercible::Symbol.constrained(min_size: 1)
-    ROLE_TYPE = Rabarber::Inputs::SYMBOL_TYPE.constrained(format: /\A[a-z0-9_]+\z/)
+                   ) |
+                   self::Nil
 
     TYPES = {
       boolean: self::Strict::Bool,
       string: self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 },
-      symbol: Rabarber::Inputs::SYMBOL_TYPE,
-      role: Rabarber::Inputs::ROLE_TYPE,
+      symbol: self::SYMBOL_TYPE,
+      role: self::ROLE_TYPE,
+      roles: self::Array.of(self::ROLE_TYPE).constructor { Kernel::Array(_1) },
       model: self::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base),
-      roles: self::Array.of(Rabarber::Inputs::ROLE_TYPE).constructor { Kernel::Array(_1) },
-      dynamic_rule: Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE,
-      role_context: Rabarber::Inputs::CONTEXT_TYPE,
-      authorization_context: Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE | Rabarber::Inputs::CONTEXT_TYPE
+      dynamic_rule: self::SYMBOL_TYPE | self::PROC_TYPE,
+      role_context: self::CONTEXT_TYPE,
+      authorization_context: self::SYMBOL_TYPE | self::PROC_TYPE | self::CONTEXT_TYPE
     }.freeze
 
     def process(value, as:, optional: false, error: Rabarber::InvalidArgumentError, message: nil)
@@ -47,7 +49,7 @@ module Rabarber
 
     private
 
-    def type_for(name) = Rabarber::Inputs::TYPES.fetch(name)
+    def type_for(name) = self::TYPES.fetch(name)
 
     def resolve_context(value)
       case value

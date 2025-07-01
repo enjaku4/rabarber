@@ -63,8 +63,7 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
-        find_by(name: process_role_name(name), **process_context(context))&.roleables ||
-          Rabarber::Configuration.user_model.none
+        find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
       end
 
       private
@@ -76,11 +75,19 @@ module Rabarber
       end
 
       def process_role_name(name)
-        Rabarber::Inputs.process(name, as: :role, message: "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{name.inspect}")
+        Rabarber::Inputs.process(
+          name,
+          as: :role,
+          message: "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{name.inspect}"
+        )
       end
 
       def process_context(context)
-        Rabarber::Inputs.process(context, as: :role_context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}")
+        Rabarber::Inputs.process(
+          context,
+          as: :role_context,
+          message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}"
+        )
       end
     end
 

@@ -23,15 +23,15 @@ module Rabarber
     ROLE_TYPE = Rabarber::Inputs::SYMBOL_TYPE.constrained(format: /\A[a-z0-9_]+\z/)
 
     TYPES = {
-      boolean: -> { self::Strict::Bool },
-      string: -> { self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 } },
-      symbol: -> { Rabarber::Inputs::SYMBOL_TYPE },
-      role: -> { Rabarber::Inputs::ROLE_TYPE },
-      model: -> { self::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base) },
-      roles: -> { self::Array.of(Rabarber::Inputs::ROLE_TYPE).constructor { Kernel::Array(_1) } },
-      dynamic_rule: -> { Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE },
-      role_context: -> { Rabarber::Inputs::CONTEXT_TYPE },
-      authorization_context: -> { Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE | Rabarber::Inputs::CONTEXT_TYPE }
+      boolean: self::Strict::Bool,
+      string: self::Strict::String.constrained(min_size: 1).constructor { _1.is_a?(::String) ? _1.strip : _1 },
+      symbol: Rabarber::Inputs::SYMBOL_TYPE,
+      role: Rabarber::Inputs::ROLE_TYPE,
+      model: self::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base),
+      roles: self::Array.of(Rabarber::Inputs::ROLE_TYPE).constructor { Kernel::Array(_1) },
+      dynamic_rule: Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE,
+      role_context: Rabarber::Inputs::CONTEXT_TYPE,
+      authorization_context: Rabarber::Inputs::SYMBOL_TYPE | Rabarber::Inputs::PROC_TYPE | Rabarber::Inputs::CONTEXT_TYPE
     }.freeze
 
     def process(value, as:, optional: false, error: Rabarber::InvalidArgumentError, message: nil)
@@ -47,7 +47,7 @@ module Rabarber
 
     private
 
-    def type_for(name) = Rabarber::Inputs::TYPES.fetch(name).call
+    def type_for(name) = Rabarber::Inputs::TYPES.fetch(name)
 
     def resolve_context(value)
       case value

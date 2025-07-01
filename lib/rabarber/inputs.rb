@@ -8,21 +8,14 @@ module Rabarber
 
     include Dry.Types()
 
-    Dry::Logic::Predicates.module_eval do
-      predicate(:predicate?) { |predicate, input| input.public_send(predicate) }
-    end
-
     PROC_TYPE = self::Instance(Proc)
     SYMBOL_TYPE = self::Coercible::Symbol.constrained(min_size: 1)
     ROLE_TYPE = self::SYMBOL_TYPE.constrained(format: /\A[a-z0-9_]+\z/)
 
-    CONTEXT_TYPE = self::Strict::Class |
-                   self::Instance(ActiveRecord::Base).constrained(predicate: :persisted?) |
-                   self::Hash.schema(
-                     context_type: self::Strict::String | self::Nil,
-                     context_id: self::Strict::String | self::Strict::Integer | self::Nil
-                   ) |
-                   self::Nil
+    CONTEXT_TYPE = self::Strict::Class | self::Instance(ActiveRecord::Base) | self::Hash.schema(
+      context_type: self::Strict::String | self::Nil,
+      context_id: self::Strict::String | self::Strict::Integer | self::Nil
+    ) | self::Nil
 
     TYPES = {
       boolean: self::Strict::Bool,
@@ -53,10 +46,16 @@ module Rabarber
 
     def resolve_context(value)
       case value
-      when nil then { context_type: nil, context_id: nil }
-      when Class then { context_type: value.to_s, context_id: nil }
-      when ActiveRecord::Base then { context_type: value.class.to_s, context_id: value.public_send(value.class.primary_key) }
-      else value
+      when nil
+        { context_type: nil, context_id: nil }
+      when Class
+        { context_type: value.to_s, context_id: nil }
+      when ActiveRecord::Base
+        raise Dry::Types::CoercionError, "instance context not persisted" unless value.persisted?
+
+        { context_type: value.class.to_s, context_id: value.public_send(value.class.primary_key) }
+      else
+        value
       end
     end
   end

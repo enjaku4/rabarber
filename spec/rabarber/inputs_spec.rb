@@ -146,7 +146,7 @@ RSpec.describe Rabarber::Inputs do
   end
 
   describe ".process for :roles type" do
-    subject { described_class.process(roles, as: :roles, error: Rabarber::InvalidArgumentError, message: "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores") }
+    subject { described_class.process(roles, as: :roles, error: Rabarber::InvalidArgumentError, message: "Error") }
 
     context "when the given roles are valid" do
       context "when an array of roles is given" do
@@ -174,10 +174,7 @@ RSpec.describe Rabarber::Inputs do
           let(:roles) { invalid_role }
 
           it "raises an error" do
-            expect { subject }.to raise_error(
-              Rabarber::InvalidArgumentError,
-              "Role names must be Symbols or Strings and may only contain lowercase letters, numbers, and underscores"
-            )
+            expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
           end
         end
       end
@@ -185,7 +182,7 @@ RSpec.describe Rabarber::Inputs do
   end
 
   describe ".process for :dynamic_rule type" do
-    subject { described_class.process(dynamic_rule, as: :dynamic_rule, error: Rabarber::InvalidArgumentError, message: "Dynamic rule must be a Symbol, a String, or a Proc") }
+    subject { described_class.process(dynamic_rule, as: :dynamic_rule, error: Rabarber::InvalidArgumentError, message: "Error") }
 
     context "when the given dynamic rule is valid" do
       context "when a string is given" do
@@ -213,10 +210,7 @@ RSpec.describe Rabarber::Inputs do
           let(:dynamic_rule) { invalid_dynamic_rule }
 
           it "raises an error" do
-            expect { subject }.to raise_error(
-              Rabarber::InvalidArgumentError,
-              "Dynamic rule must be a Symbol, a String, or a Proc"
-            )
+            expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
           end
         end
       end
@@ -224,7 +218,7 @@ RSpec.describe Rabarber::Inputs do
   end
 
   describe ".process for :context type" do
-    subject { described_class.process(context, as: :role_context, error: Rabarber::InvalidArgumentError, message: "Context must be a Class or an instance of ActiveRecord model") }
+    subject { described_class.process(context, as: :role_context, error: Rabarber::InvalidArgumentError, message: "Error") }
 
     context "when the given context is valid" do
       context "when a class is given" do
@@ -258,10 +252,7 @@ RSpec.describe Rabarber::Inputs do
           let(:context) { invalid_context }
 
           it "raises an error" do
-            expect { subject }.to raise_error(
-              Rabarber::InvalidArgumentError,
-              "Context must be a Class or an instance of ActiveRecord model"
-            )
+            expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
           end
         end
       end
@@ -270,17 +261,14 @@ RSpec.describe Rabarber::Inputs do
         let(:context) { Project.new }
 
         it "raises an error" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Context must be a Class or an instance of ActiveRecord model"
-          )
+          expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
         end
       end
     end
   end
 
   describe ".process for :authorization_context type" do
-    subject { described_class.process(context, as: :authorization_context, error: Rabarber::InvalidArgumentError, message: "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc") }
+    subject { described_class.process(context, as: :authorization_context, error: Rabarber::InvalidArgumentError, message: "Error") }
 
     context "when the given context is valid" do
       context "when a class is given" do
@@ -326,10 +314,7 @@ RSpec.describe Rabarber::Inputs do
           let(:context) { invalid_context }
 
           it "raises an error" do
-            expect { subject }.to raise_error(
-              Rabarber::InvalidArgumentError,
-              "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
-            )
+            expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
           end
         end
       end
@@ -338,10 +323,7 @@ RSpec.describe Rabarber::Inputs do
         let(:context) { Project.new }
 
         it "raises an error" do
-          expect { subject }.to raise_error(
-            Rabarber::InvalidArgumentError,
-            "Context must be a Class, an instance of ActiveRecord model, a Symbol, a String, or a Proc"
-          )
+          expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Error")
         end
       end
     end

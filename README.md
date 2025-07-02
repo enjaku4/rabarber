@@ -18,8 +18,8 @@ Rabarber is a role-based authorization library for Ruby on Rails that focuses on
 **Gem Usage:**
   - [Installation](#installation)
   - [Configuration](#configuration)
-  - [Role Management](#role-management)
   - [User Role Methods](#user-role-methods)
+  - [Role Management](#role-management)
   - [Controller Authorization](#controller-authorization)
   - [Dynamic Rules](#dynamic-rules)
   - [Multi-tenancy / Context](#multi-tenancy--context)
@@ -80,30 +80,6 @@ To clear the role cache manually:
 Rabarber::Cache.clear
 ```
 
-## Role Management
-
-### Direct Role Operations
-
-```rb
-# Create a new role
-Rabarber::Role.add(:admin)
-
-# Rename a role
-Rabarber::Role.rename(:admin, :administrator)
-Rabarber::Role.rename(:admin, :administrator, force: true) # Force if role is assigned to users
-
-# Remove a role
-Rabarber::Role.remove(:admin)
-Rabarber::Role.remove(:admin, force: true) # Force if role is assigned to users
-
-# List available roles
-Rabarber::Role.names
-Rabarber::Role.all_names # All roles grouped by context
-
-# Get users assigned to a role
-Rabarber::Role.assignees(:admin)
-```
-
 ## User Role Methods
 
 Your user model is automatically augmented with role management methods:
@@ -135,6 +111,30 @@ user.roles
 
 # Get all roles grouped by context
 user.all_roles
+```
+
+## Role Management
+
+### Direct Role Operations
+
+```rb
+# Create a new role
+Rabarber::Role.add(:admin)
+
+# Rename a role
+Rabarber::Role.rename(:admin, :administrator)
+Rabarber::Role.rename(:admin, :administrator, force: true) # Force if role is assigned to users
+
+# Remove a role
+Rabarber::Role.remove(:admin)
+Rabarber::Role.remove(:admin, force: true) # Force if role is assigned to users
+
+# List available roles
+Rabarber::Role.names
+Rabarber::Role.all_names # All roles grouped by context
+
+# Get users assigned to a role
+Rabarber::Role.assignees(:admin)
 ```
 
 ## Controller Authorization
@@ -182,9 +182,9 @@ class TicketsController < ApplicationController
     # Accessible to admin, manager, and support roles
   end
 
-  grant_access action: :destroy, roles: :admin
+  grant_access action: :destroy, roles: :owner, context: -> { Ticket.find(params[:id]) }
   def destroy
-    # Accessible to admin role only
+    # Accessible to admin and owner of the ticket
   end
 end
 ```
@@ -203,7 +203,9 @@ class InvoicesController < BaseController
 
   grant_access action: :index, roles: :manager
   grant_access action: :index, roles: :supervisor
-  # Index is accessible to admin, accountant, manager, and supervisor
+  def index
+    # Index is accessible to admin, accountant, manager, and supervisor
+  end
 end
 ```
 
@@ -218,7 +220,14 @@ end
 
 class MixedController < ApplicationController
   grant_access action: :index # Unrestricted index action
+  def index
+    # Accessible to all users
+  end
+
   grant_access action: :show, roles: :member # Restricted show action
+  def show
+    # Accessible to members only
+  end
 end
 ```
 
@@ -242,6 +251,8 @@ class ApplicationController < ActionController::Base
 end
 ```
 
+By default, Rabarber will redirect back (HTML format) or return 403 (other formats).
+
 ## Dynamic Rules
 
 Add conditional logic to authorization rules:
@@ -253,9 +264,15 @@ class OrdersController < ApplicationController
 
   # Proc-based conditions
   grant_access action: :show, roles: :client, if: -> { current_user.company_id == Order.find(params[:id]).company_id }
+  def show
+    # Accessible to company managers unless suspended, and to clients if the client's company matches the order's company
+  end
 
   # Dynamic-only rules (no roles required, can be used with custom policies)
   grant_access action: :index, if: -> { OrdersPolicy.new(current_user).can_access?(:index) }
+  def index
+    # Accessible to company managers unless suspended, and to users based on custom policy logic
+  end
 
   private
 
@@ -301,9 +318,15 @@ class ProjectsController < ApplicationController
 
   # Instance-based context (method)
   grant_access action: :show, roles: :member, context: :current_project
+  def show
+    # Accessible to Project admin and members of the current project
+  end
 
   # Instance-based context (proc)
   grant_access action: :update, roles: :owner, context: -> { Project.find(params[:id]) }
+  def update
+    # Accessible to Project admin and owner of the current project
+  end
 
   private
 

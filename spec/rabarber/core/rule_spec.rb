@@ -77,6 +77,16 @@ RSpec.describe Rabarber::Core::Rule do
         it { is_expected.to be false }
       end
     end
+
+    context "when context is invalid" do
+      let(:roles) { :admin }
+      let(:roleable) { User.create! }
+      let(:rule) { described_class.new(roles, 123, nil, nil) }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe "#dynamic_rules_followed?" do

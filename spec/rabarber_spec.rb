@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber do
-  let(:config) { Rabarber::Configuration.instance }
+  let(:config) { Rabarber::Configuration }
 
   it "has a version number" do
     expect(Rabarber::VERSION).not_to be_nil
@@ -38,16 +38,7 @@ RSpec.describe Rabarber do
       subject { described_class.configure { |config| config.cache_enabled = "invalid" } }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Configuration `cache_enabled` must be a Boolean")
-      end
-
-      it "uses Boolean input processor" do
-        double = instance_double(Rabarber::Input::Types::Boolean, process: false)
-        allow(Rabarber::Input::Types::Boolean).to receive(:new).with(
-          "invalid", Rabarber::ConfigurationError, "Configuration `cache_enabled` must be a Boolean"
-        ).and_return(double)
-        subject
-        expect(double).to have_received(:process)
+        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `cache_enabled`, expected a boolean, got \"invalid\"")
       end
     end
 
@@ -55,35 +46,25 @@ RSpec.describe Rabarber do
       subject { described_class.configure { |config| config.current_user_method = 123 } }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Configuration `current_user_method` must be a Symbol or a String")
-      end
-
-      it "uses Symbol input processor" do
-        double = instance_double(Rabarber::Input::Types::Symbol, process: :user)
-        allow(Rabarber::Input::Types::Symbol).to receive(:new).with(
-          123, Rabarber::ConfigurationError, "Configuration `current_user_method` must be a Symbol or a String"
-        ).and_return(double)
-        subject
-        expect(double).to have_received(:process)
+        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `current_user_method`, expected a symbol or a string, got 123")
       end
     end
 
     context "with user_model_name configuration is invalid" do
-      subject { Rabarber::Configuration.instance.user_model }
-
-      before { described_class.configure { |config| config.user_model_name = 123 } }
+      subject { described_class.configure { |config| config.user_model_name = 123 } }
 
       it "raises an error" do
-        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Configuration `user_model_name` must be an ActiveRecord model name")
+        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got 123")
       end
+    end
 
-      it "uses ArModel input processor" do
-        double = instance_double(Rabarber::Input::ArModel, process: Client)
-        allow(Rabarber::Input::ArModel).to receive(:new).with(
-          123, Rabarber::ConfigurationError, "Configuration `user_model_name` must be an ActiveRecord model name"
-        ).and_return(double)
-        subject
-        expect(double).to have_received(:process)
+    context "with user_model configuration is invalid" do
+      subject { described_class::Configuration.user_model }
+
+      before { described_class.configure { |config| config.user_model_name = "Rabarber" } }
+
+      it "raises an error" do
+        expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got \"Rabarber\"")
       end
     end
   end

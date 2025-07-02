@@ -9,10 +9,8 @@ require "action_controller/railtie"
 require "rspec/rails"
 
 RSpec.configure do |config|
-  # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
 
-  # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
 
   config.expose_dsl_globally = true
@@ -28,26 +26,39 @@ RSpec.configure do |config|
   ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
 
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.strategy = :deletion
     DatabaseCleaner.clean_with(:truncation)
   end
 
   config.around do |example|
+    Rabarber::Configuration.reset_config
+
     DatabaseCleaner.cleaning do
       example.run
-    end
-
-    reset_config = Rabarber::Configuration.send(:new)
-
-    Rabarber::Configuration.instance.instance_variables.each do |var|
-      Rabarber::Configuration.instance.instance_variable_set(var, reset_config.instance_variable_get(var))
     end
   end
 end
 
-load "#{File.dirname(__FILE__)}/support/schema.rb"
+if ENV["UUID_TESTS"]
+  load "#{File.dirname(__FILE__)}/support/uuid_schema.rb"
+else
+  load "#{File.dirname(__FILE__)}/support/id_schema.rb"
+end
 
 require "#{File.dirname(__FILE__)}/support/models"
 require "#{File.dirname(__FILE__)}/support/application"
+require "#{File.dirname(__FILE__)}/support/configuration"
 require "#{File.dirname(__FILE__)}/support/controllers"
 require "#{File.dirname(__FILE__)}/support/helpers"
+
+if ENV["UUID_TESTS"]
+  require "securerandom"
+
+  ActiveSupport.on_load(:active_record) do
+    [Rabarber::Role, User, Client, Project].each do |model_class|
+      model_class.before_create do
+        self.id = SecureRandom.uuid if id.blank?
+      end
+    end
+  end
+end

@@ -34,10 +34,10 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
-      - name: Bundle install
-        run: bundle install
+      - name: Install grepfruit
+        run: gem install grepfruit
       - name: Run grepfruit
-        run: bundle exec grepfruit s -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:40' --search-hidden
+        run: grepfruit s -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:40' --search-hidden
 
   tests:
     runs-on: ubuntu-latest
@@ -65,6 +65,27 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+      - name: Bundle install
+        run: bundle install
+      - name: Run RSpec
+        run: bundle exec rspec
+
+  uuid_tests:
+    runs-on: ubuntu-latest
+
+    name: UUID Tests
+    permissions:
+      contents: read
+
+    env:
+      UUID_TESTS: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
       - name: Bundle install
         run: bundle install
       - name: Run RSpec

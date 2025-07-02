@@ -18,7 +18,7 @@ module Rabarber
             end
           end
         end
-        user_model = Rabarber::Configuration.instance.user_model
+        user_model = Rabarber::Configuration.user_model
         user_model.include Rabarber::HasRoles unless user_model < Rabarber::HasRoles
       end
     end

@@ -39,13 +39,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to match_array(role_names) }
-
-      it "uses Input::Context to process the given context" do
-        input_processor = instance_double(Rabarber::Input::Context)
-        allow(Rabarber::Input::Context).to receive(:new).with(project).and_return(input_processor)
-        expect(input_processor).to receive(:process)
-        subject
-      end
     end
   end
 
@@ -98,19 +91,10 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  shared_examples_for "role name is processed" do |roles|
-    it "uses Input::Role to process the given roles" do
-      roles.each do |role|
-        input_processor = instance_double(Rabarber::Input::Role, process: role)
-        allow(Rabarber::Input::Role).to receive(:new).with(role).and_return(input_processor)
-        expect(input_processor).to receive(:process)
-      end
-      subject
-    end
-  end
-
   describe ".add" do
-    subject { described_class.add(:admin, context:) }
+    subject { described_class.add(name, context:) }
+
+    let(:name) { :admin }
 
     context "when the role does not exist" do
       let(:context) { nil }
@@ -120,8 +104,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be true }
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     context "when the role exists" do
@@ -134,8 +116,6 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be false }
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     context "when the role with the same name exists in a different context" do
@@ -150,13 +130,33 @@ RSpec.describe Rabarber::Role do
       end
 
       it { is_expected.to be true }
+    end
 
-      it_behaves_like "role name is processed", [:admin]
+    context "when given an invalid name" do
+      let(:name) { :"Invalid-Name" }
+      let(:context) { Project.create! }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
     end
   end
 
   describe ".rename" do
-    subject { described_class.rename(:admin, :manager, context:, force:) }
+    subject { described_class.rename(old_name, new_name, context:, force:) }
+
+    let(:old_name) { :admin }
+    let(:new_name) { :manager }
+    let(:context) { Project.create! }
+    let(:force) { false }
 
     shared_examples_for "it does nothing" do |role_exists: true|
       if role_exists
@@ -171,8 +171,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin, :manager]
     end
 
     shared_examples_for "it renames the role" do |role_assigned: false, processed_context: nil|
@@ -186,8 +184,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:delete).with([user.id, processed_context], [user.id, :all]) if role_assigned
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin, :manager]
     end
 
     shared_examples_for "it raises an error" do
@@ -296,10 +292,40 @@ RSpec.describe Rabarber::Role do
         end
       end
     end
+
+    context "when given an invalid old name" do
+      let(:old_name) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid new name" do
+      let(:new_name) { :"Invalid-Name" }
+
+      before { described_class.create!(name: :admin, context_type: context.class.name, context_id: context.id) }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe ".remove" do
-    subject { described_class.remove(:admin, context:, force:) }
+    subject { described_class.remove(name, context:, force:) }
+
+    let(:name) { :admin }
+    let(:context) { Project.create! }
+    let(:force) { false }
 
     shared_examples_for "it does nothing" do
       before { described_class.create!(name: "manager") }
@@ -314,8 +340,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     shared_examples_for "it deletes the role" do |role_assigned: false, processed_context: nil|
@@ -329,8 +353,6 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:delete).with([user.id, processed_context], [user.id, :all]) if role_assigned
         subject
       end
-
-      it_behaves_like "role name is processed", [:admin]
     end
 
     shared_examples_for "it raises an error" do
@@ -392,6 +414,22 @@ RSpec.describe Rabarber::Role do
         end
       end
     end
+
+    context "when given an invalid name" do
+      let(:name) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
   end
 
   describe ".assignees" do
@@ -407,16 +445,12 @@ RSpec.describe Rabarber::Role do
 
       context "when the role is not assigned to any user" do
         it { is_expected.to be_empty }
-
-        it_behaves_like "role name is processed", ["admin"]
       end
 
       context "when the role is assigned to some users" do
         before { users.each { |user| user.assign_roles(:admin, context:) } }
 
         it { is_expected.to match_array(users) }
-
-        it_behaves_like "role name is processed", ["admin"]
       end
     end
 
@@ -424,8 +458,6 @@ RSpec.describe Rabarber::Role do
       let(:role) { "client" }
 
       it { is_expected.to be_empty }
-
-      it_behaves_like "role name is processed", ["client"]
     end
 
     context "when the role with the same name exists in a different context" do
@@ -434,8 +466,23 @@ RSpec.describe Rabarber::Role do
       before { described_class.create!(name: "admin", context_type: "Project", context_id: nil) }
 
       it { is_expected.to be_empty }
+    end
 
-      it_behaves_like "role name is processed", ["admin"]
+    context "when given an invalid name" do
+      let(:role) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:role) { :admin }
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
     end
   end
 

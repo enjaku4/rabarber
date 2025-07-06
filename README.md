@@ -136,6 +136,8 @@ Rabarber::Role.all_names # All roles grouped by context
 # Get users assigned to a role
 Rabarber::Role.assignees(:admin)
 ```
+<!-- TODO: maybe all these methods should be namespaced under Rabarber, i.e. Rabarber.add_role to hide existence of the model -->
+<!-- TODO: in this case names and all_names will become Rabarber.roles and Rabarber.all_roles respectively, seems more readable -->
 
 ## Controller Authorization
 
@@ -180,11 +182,6 @@ class TicketsController < ApplicationController
   grant_access action: :index, roles: [:manager, :support]
   def index
     # Accessible to admin, manager, and support roles
-  end
-
-  grant_access action: :destroy, roles: :owner, context: -> { Ticket.find(params[:id]) }
-  def destroy
-    # Accessible to admin and owner of the ticket
   end
 end
 ```
@@ -244,9 +241,7 @@ class ApplicationController < ActionController::Base
   private
 
   def when_unauthorized
-    # Default behavior: redirect back (HTML) or return 403 (other formats)
-    # Custom behavior example:
-    head :not_found # Hide existence of protected resources
+    head :not_found # Custom behavior to hide existence of protected resources
   end
 end
 ```
@@ -288,7 +283,7 @@ end
 
 ## Multi-tenancy / Context
 
-All Rabarber methods accept a `context` parameter, allowing you to work with roles within specific scopes rather than globally.
+All Rabarber methods accept a `context` parameter, allowing you to work with roles within specific scopes. By default, context is `nil`, meaning roles are global.
 
 ### Contextual Role Assignment
 
@@ -303,6 +298,9 @@ user.assign_roles(:admin, context: Project)
 # Check contextual roles
 user.has_role?(:owner, context: project)
 user.has_role?(:admin, context: Project)
+
+# Revoke roles within a specific context
+user.revoke_roles(:owner, context: project)
 
 # Get roles within context
 user.roles(context: project)
@@ -341,11 +339,11 @@ end
 Handle context changes when models are renamed or removed. These are irreversible data migrations.
 
 ```rb
-# Rename a context class (e.g., when you rename your Project model to Campaign)
-migrate_authorization_context!("Project", "Campaign")
+# Rename a context class (e.g., when you rename your Ticket model to Task)
+migrate_authorization_context!("Ticket", "Task")
 
-# Remove orphaned context data (e.g., when you delete a model entirely)
-delete_authorization_context!("DeletedModel")
+# Remove orphaned context data (e.g., when you delete Ticket model entirely)
+delete_authorization_context!("Ticket")
 ```
 
 ## View Helpers

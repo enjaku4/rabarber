@@ -35,6 +35,7 @@ module Rabarber
 
       result = checker[value]
 
+      # TODO: intuitively doesn't feel right
       [:role_context, :authorization_context].include?(as) ? resolve_context(result) : result
     rescue Dry::Types::CoercionError => e
       raise error, message || e.message
@@ -44,6 +45,7 @@ module Rabarber
 
     def type_for(name) = self::TYPES.fetch(name)
 
+    # TODO: there should be some separate context resolver or smth
     def resolve_context(value)
       case value
       when nil
@@ -51,6 +53,7 @@ module Rabarber
       when Class
         { context_type: value.to_s, context_id: nil }
       when ActiveRecord::Base
+        # TODO: this should be included in the type definition somehow, or maybe dry-validation?
         raise Dry::Types::CoercionError, "instance context not persisted" unless value.persisted?
 
         { context_type: value.class.to_s, context_id: value.public_send(value.class.primary_key) }

@@ -69,6 +69,7 @@ module Rabarber
       private
 
       def delete_roleables_cache(role, context:)
+        # TODO: maybe in_batches is not really needed
         role.roleables.in_batches(of: 1000) do |batch|
           Rabarber::Core::Cache.delete(*batch.pluck(:id).flat_map { [[_1, context], [_1, :all]] })
         end

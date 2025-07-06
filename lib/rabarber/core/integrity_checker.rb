@@ -20,6 +20,9 @@ module Rabarber
         end
       end
 
+      # TODO: maybe context pruning should be a part of public API
+      # TODO: although it would be cool if orphaned instance context roles could be deleted automatically along with the context itself
+      # TODO: maybe integrity checker is not needed at all, and developers should handle all by themselves
       def prune_missing_instance_context
         ids = Rabarber::Role.where.not(context_id: nil).includes(:context).filter_map do |role|
           role.context

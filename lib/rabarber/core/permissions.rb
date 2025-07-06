@@ -22,7 +22,7 @@ module Rabarber
       class << self
         def add(controller, action, roles, context, dynamic_rule, negated_dynamic_rule)
           rule = Rabarber::Core::Rule.new(roles, context, dynamic_rule, negated_dynamic_rule)
-          action ? action_rules[controller][action] += [rule] : controller_rules[controller] += [rule]
+          action ? action_rules[controller][action] << rule : controller_rules[controller] << rule
         end
 
         def controller_rules

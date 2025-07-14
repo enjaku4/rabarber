@@ -19,6 +19,9 @@ module Rabarber
       end
 
       def grant_access(action: nil, roles: nil, context: nil, if: nil, unless: nil)
+        if_rule = binding.local_variable_get(:if)
+        unless_rule = binding.local_variable_get(:unless)
+
         Rabarber::Core::Permissions.add(
           self,
           Rabarber::Inputs.process(
@@ -38,16 +41,16 @@ module Rabarber
             message: "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got #{context.inspect}"
           ),
           Rabarber::Inputs.process(
-            binding.local_variable_get(:if),
+            if_rule,
             as: :dynamic_rule,
             optional: true,
-            message: "Expected a symbol, a string, or a proc, got #{binding.local_variable_get(:if).inspect}"
+            message: "Expected a symbol, a string, or a proc, got #{if_rule.inspect}"
           ),
           Rabarber::Inputs.process(
-            binding.local_variable_get(:unless),
+            unless_rule,
             as: :dynamic_rule,
             optional: true,
-            message: "Expected a symbol, a string, or a proc, got #{binding.local_variable_get(:unless).inspect}"
+            message: "Expected a symbol, a string, or a proc, got #{unless_rule.inspect}"
           )
         )
       end

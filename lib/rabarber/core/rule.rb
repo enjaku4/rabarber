@@ -3,8 +3,6 @@
 module Rabarber
   module Core
     class Rule
-      attr_reader :roles, :context, :dynamic_rule, :negated_dynamic_rule
-
       DEFAULT_DYNAMIC_RULE = -> { true }.freeze
       DEFAULT_NEGATED_DYNAMIC_RULE = -> { false }.freeze
       private_constant :DEFAULT_DYNAMIC_RULE, :DEFAULT_NEGATED_DYNAMIC_RULE
@@ -21,11 +19,11 @@ module Rabarber
       end
 
       def roles_permitted?(roleable, controller_instance)
-        roles.empty? || roleable.has_role?(*roles, context: resolve_context(controller_instance))
+        @roles.empty? || roleable.has_role?(*@roles, context: resolve_context(controller_instance))
       end
 
       def dynamic_rules_followed?(controller_instance)
-        execute_rule(controller_instance, dynamic_rule) && !execute_rule(controller_instance, negated_dynamic_rule)
+        execute_rule(controller_instance, @dynamic_rule) && !execute_rule(controller_instance, @negated_dynamic_rule)
       end
 
       private
@@ -35,10 +33,10 @@ module Rabarber
       end
 
       def resolve_context(controller_instance)
-        resolved_context = case context
-                           when Proc then controller_instance.instance_exec(&context)
-                           when Symbol then controller_instance.send(context)
-                           else context
+        resolved_context = case @context
+                           when Proc then controller_instance.instance_exec(&@context)
+                           when Symbol then controller_instance.send(@context)
+                           else @context
                            end
         Rabarber::Inputs.process(resolved_context, as: :role_context, message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{resolved_context.inspect}")
       end

@@ -24,34 +24,29 @@ module Rabarber
 
         Rabarber::Core::Permissions.add(
           self,
-          Rabarber::Inputs.process(
+          Rabarber::Inputs::Symbol.new(
             action,
-            as: :symbol,
             optional: true,
             message: "Expected a symbol or a string, got #{action.inspect}"
-          ),
-          Rabarber::Inputs.process(
+          ).process,
+          Rabarber::Inputs::Roles.new(
             roles,
-            as: :roles,
             message: "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got #{roles.inspect}"
-          ),
-          Rabarber::Inputs.process(
+          ).process,
+          Rabarber::Inputs::Contexts::Authorizational.new(
             context,
-            as: :authorization_context,
             message: "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got #{context.inspect}"
-          ),
-          Rabarber::Inputs.process(
+          ).resolve,
+          Rabarber::Inputs::DynamicRule.new(
             if_rule,
-            as: :dynamic_rule,
             optional: true,
             message: "Expected a symbol, a string, or a proc, got #{if_rule.inspect}"
-          ),
-          Rabarber::Inputs.process(
+          ).process,
+          Rabarber::Inputs::DynamicRule.new(
             unless_rule,
-            as: :dynamic_rule,
             optional: true,
             message: "Expected a symbol, a string, or a proc, got #{unless_rule.inspect}"
-          )
+          ).process
         )
       end
     end

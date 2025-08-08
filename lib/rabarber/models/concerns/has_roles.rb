@@ -81,19 +81,17 @@ module Rabarber
     end
 
     def process_role_names(role_names)
-      Rabarber::Inputs.process(
+      Rabarber::Inputs::Roles.new(
         role_names,
-        as: :roles,
         message: "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got #{role_names.inspect}"
-      )
+      ).process
     end
 
     def process_context(context)
-      Rabarber::Inputs.process(
+      Rabarber::Inputs::Context.new(
         context,
-        as: :role_context,
         message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}"
-      )
+      ).resolve
     end
 
     def delete_roleable_cache(contexts:)

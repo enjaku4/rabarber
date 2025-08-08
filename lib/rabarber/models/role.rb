@@ -76,19 +76,17 @@ module Rabarber
       end
 
       def process_role_name(name)
-        Rabarber::Inputs.process(
+        Rabarber::Inputs::Role.new(
           name,
-          as: :role,
           message: "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{name.inspect}"
-        )
+        ).process
       end
 
       def process_context(context)
-        Rabarber::Inputs.process(
+        Rabarber::Inputs::Context.new(
           context,
-          as: :role_context,
           message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}"
-        )
+        ).resolve
       end
     end
 

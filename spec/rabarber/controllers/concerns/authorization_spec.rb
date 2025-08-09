@@ -63,7 +63,7 @@ RSpec.describe Rabarber::Authorization do
     context "when context is invalid" do
       let(:args) { { context: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got 1"
+      it_behaves_like "raises an error", Rabarber::InvalidContextError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got 1"
     end
 
     context "when dynamic rule is invalid" do

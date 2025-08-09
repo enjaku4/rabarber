@@ -1,3 +1,10 @@
+## v5.1.2
+
+### Misc:
+
+- Minor performance improvements and code cleanup
+- Relaxed dependency versions
+
 ## v5.1.1
 
 ### Misc:

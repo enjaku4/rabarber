@@ -81,7 +81,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:context) { 123 }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end
@@ -198,7 +198,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:roles) { [:admin] }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end
@@ -401,7 +401,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:create_new) { true }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end
@@ -467,7 +467,7 @@ RSpec.describe Rabarber::HasRoles do
       let(:context) { 123 }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end
@@ -525,7 +525,7 @@ RSpec.describe Rabarber::HasRoles do
       end
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
       end
     end
   end

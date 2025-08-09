@@ -20,8 +20,9 @@ require_relative "rabarber/configuration"
 
 module Rabarber
   class Error < StandardError; end
-  class ConfigurationError < Rabarber::Error; end
   class InvalidArgumentError < Rabarber::Error; end
+  class ConfigurationError < Rabarber::InvalidArgumentError; end
+  class InvalidContextError < Rabarber::InvalidArgumentError; end
   class NotFoundError < Rabarber::Error; end
 
   delegate :configure, to: Rabarber::Configuration

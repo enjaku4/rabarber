@@ -18,13 +18,17 @@ module Rabarber
         type_checker = @optional ? type.optional : type
         type_checker[@value]
       rescue Dry::Types::CoercionError
-        raise @error, @message
+        raise_error
       end
 
       private
 
       def type
         raise NotImplementedError
+      end
+
+      def raise_error
+        raise @error, @message
       end
     end
   end

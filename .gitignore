@@ -21,11 +21,10 @@ Gemfile.lock
 # byebug
 .byebug_history
 
-# RubyMine
+# editors
 .idea
-
-# VS Code
 .vscode
+.zed
 
-# solargraph
+# lsp
 .solargraph.yml

@@ -35,6 +35,7 @@ module Rabarber
           ).process,
           Rabarber::Inputs::Contexts::Authorizational.new(
             context,
+            error: Rabarber::InvalidContextError,
             message: "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got #{context.inspect}"
           ).resolve,
           Rabarber::Inputs::DynamicRule.new(

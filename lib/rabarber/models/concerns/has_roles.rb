@@ -90,6 +90,7 @@ module Rabarber
     def process_context(context)
       Rabarber::Inputs::Context.new(
         context,
+        error: Rabarber::InvalidContextError,
         message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}"
       ).resolve
     end

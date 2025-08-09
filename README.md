@@ -340,7 +340,7 @@ Handle context changes when models are renamed or removed. These are irreversibl
 # Rename a context class (e.g., when you rename your Ticket model to Task)
 migrate_authorization_context!("Ticket", "Task")
 
-# Remove orphaned context data (e.g., when you delete Ticket model entirely)
+# Remove orphaned context data (e.g., when you delete the Ticket model entirely)
 delete_authorization_context!("Ticket")
 ```
 

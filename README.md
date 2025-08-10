@@ -305,6 +305,21 @@ user.revoke_roles(:owner, context: project)
 
 # Get roles within context
 user.roles(context: project)
+```
+
+### Contextual Role Management
+
+```rb
+# Create a new role within a specific context
+Rabarber::Role.add(:admin, context: Project)
+
+# Rename a role within a specific context
+Rabarber::Role.rename(:admin, :owner, context: Project)
+
+# Remove a role within a specific context
+Rabarber::Role.remove(:admin, context: project)
+
+# Get roles within context
 Rabarber::Role.names(context: Project)
 ```
 
@@ -372,9 +387,10 @@ Use conditional rendering based on roles:
   </div>
 <% end %>
 
-<!-- With context -->
 <%= visible_to(:owner, context: @project) do %>
-  <button>Delete Project</button>
+  <div class="project-owner-panel">
+    <!-- Content visible to project owners -->
+  </div>
 <% end %>
 ```
 

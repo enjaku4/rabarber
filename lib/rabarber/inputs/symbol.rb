@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class Symbol < Base
+    class Symbol < Rabarber::Inputs::Base
       private
 
       def type = self.class::Coercible::Symbol.constrained(min_size: 1)

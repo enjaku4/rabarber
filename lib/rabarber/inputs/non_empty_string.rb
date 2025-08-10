@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class NonEmptyString < Base
+    class NonEmptyString < Rabarber::Inputs::Base
       private
 
       def type = self.class::Strict::String.constrained(min_size: 1)

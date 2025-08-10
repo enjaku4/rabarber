@@ -136,8 +136,8 @@ Rabarber::Role.all_names # All roles grouped by context
 # Get users assigned to a role
 Rabarber::Role.assignees(:admin)
 ```
-<!-- TODO: maybe all these methods should be namespaced under Rabarber, i.e. Rabarber.add_role to hide existence of the model -->
-<!-- TODO: in this case names and all_names will become Rabarber.roles and Rabarber.all_roles respectively, seems more readable -->
+<!-- TODO: all Rabarber::Role methods should be namespaced under Rabarber to hide existence of the model -->
+<!-- TODO: i.e. names and all_names will become Rabarber.roles(context) and Rabarber.all_roles, etc. -->
 
 ## Controller Authorization
 

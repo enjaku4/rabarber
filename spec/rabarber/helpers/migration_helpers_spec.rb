@@ -38,7 +38,7 @@ RSpec.describe Rabarber::MigrationHelpers do
   end
 
   describe "#delete_authorization_context!" do
-    it "deletes roles roles for the given context" do
+    it "deletes roles for the given context" do
       roles = Rabarber::Role.where(context_type: "User")
 
       expect(roles.count).to eq(2)

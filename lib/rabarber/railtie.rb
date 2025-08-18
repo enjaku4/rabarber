@@ -9,7 +9,7 @@ module Rabarber
         Rabarber::Core::IntegrityChecker.run!
         Rabarber::Core::Permissions.reset! unless app.config.eager_load
         user_model = Rabarber::Configuration.user_model
-        user_model.include Rabarber::HasRoles unless user_model < Rabarber::HasRoles
+        user_model.include Rabarber::Roleable unless user_model < Rabarber::Roleable
       end
     end
 

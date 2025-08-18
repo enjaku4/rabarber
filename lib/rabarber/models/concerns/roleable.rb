@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module Rabarber
-  module HasRoles
+  module Roleable
     extend ActiveSupport::Concern
 
     included do
-      raise Rabarber::Error, "Rabarber::HasRoles can only be included once" if defined?(@@included) && @@included != name
+      raise Rabarber::Error, "Rabarber::Roleable can only be included once" if defined?(@@included) && @@included != name
 
       @@included = name
 

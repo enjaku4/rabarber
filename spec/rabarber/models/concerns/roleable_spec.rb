@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::HasRoles do
+RSpec.describe Rabarber::Roleable do
   describe "can be included only once" do
     it "raises an error when included twice" do
       expect { Client.include(described_class) }

@@ -1,3 +1,5 @@
+<!--TODO-->
+
 # Rabarber: Role-Based Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -136,9 +138,6 @@ Rabarber::Role.all_names # All roles grouped by context
 # Get users assigned to a role
 Rabarber::Role.assignees(:admin)
 ```
-<!-- TODO: all Rabarber::Role methods should be namespaced under Rabarber to hide existence of the model -->
-<!-- TODO: i.e. names and all_names will become Rabarber.roles(context:) and Rabarber.all_roles, etc. -->
-<!-- TODO: assignees should probably go to roleable model, e.g. User.with_role(role, context:) -->
 
 ## Controller Authorization
 

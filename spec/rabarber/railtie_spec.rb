@@ -9,11 +9,6 @@ RSpec.describe Rabarber::Railtie do
         expect(Rabarber::Core::Permissions).not_to receive(:reset!)
         subject
       end
-
-      it "runs IntegrityChecker" do
-        expect(Rabarber::Core::IntegrityChecker).to receive(:run!)
-        subject
-      end
     end
 
     context "when eager_load is false" do
@@ -25,11 +20,6 @@ RSpec.describe Rabarber::Railtie do
       it "resets permissions" do
         subject
         expect(Rabarber::Core::Permissions).to have_received(:reset!)
-      end
-
-      it "runs IntegrityChecker" do
-        expect(Rabarber::Core::IntegrityChecker).to receive(:run!)
-        subject
       end
     end
   end

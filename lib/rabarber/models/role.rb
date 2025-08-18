@@ -63,10 +63,13 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
+        deprecator.warn("`Rabarber::Role.assignees` method is deprecated, use `User.with_roles` instead.")
         find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
       end
 
       private
+
+      def deprecator = ActiveSupport::Deprecation.new("6.0.0", "rabarber")
 
       def delete_roleables_cache(role, context:)
         Rabarber::Core::Cache.delete(*role.roleables.pluck(:id).flat_map { [[_1, context], [_1, :all]] })

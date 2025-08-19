@@ -34,6 +34,7 @@ module Rabarber
     def create_role(name, context: nil) = Rabarber::Role.add(name, context:)
     def rename_role(old_name, new_name, context: nil, force: false) = Rabarber::Role.rename(old_name, new_name, context:, force:)
     def delete_role(name, context: nil, force: false) = Rabarber::Role.remove(name, context:, force:)
+    def prune_roles = Rabarber::Role.prune
   end
 end
 

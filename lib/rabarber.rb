@@ -27,7 +27,7 @@ module Rabarber
 
   delegate :configure, to: Rabarber::Configuration
   module_function :configure
-  # TOOD: specs
+  # TODO: specs
   class << self
     def roles(context: nil) = Rabarber::Role.names(context:)
     def all_roles = Rabarber::Role.all_names

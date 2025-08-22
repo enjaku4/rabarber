@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Railtie do
+  # TODO: perhaps this should be tested differently
   context "to_prepare" do
     subject { DummyApplication.config.to_prepare_blocks.each(&:call) }
 

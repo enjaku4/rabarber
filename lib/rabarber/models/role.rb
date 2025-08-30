@@ -12,12 +12,14 @@ module Rabarber
 
     class << self
       def names(context: nil)
-        deprecator.warn("`Rabarber::Role.names` method is deprecated, use `Rabarber.roles` instead.") if caller_locations.map(&:label).exclude?("roles")
+        deprecation_warning("names", "Rabarber.roles")
+
         where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
       def all_names
-        deprecator.warn("`Rabarber::Role.all_names` method is deprecated, use `Rabarber.all_roles` instead.") if caller_locations.map(&:label).exclude?("all_roles")
+        deprecation_warning("all_names", "Rabarber.all_roles")
+
         includes(:context).each_with_object({}) do |role, hash|
           (hash[role.context] ||= []) << role.name.to_sym
         rescue ActiveRecord::RecordNotFound
@@ -28,7 +30,8 @@ module Rabarber
       end
 
       def add(name, context: nil)
-        deprecator.warn("`Rabarber::Role.add` method is deprecated, use `Rabarber.create_role` instead.") if caller_locations.map(&:label).exclude?("create_role")
+        deprecation_warning("add", "Rabarber.create_role")
+
         name = process_role_name(name)
         processed_context = process_context(context)
 
@@ -38,7 +41,8 @@ module Rabarber
       end
 
       def rename(old_name, new_name, context: nil, force: false)
-        deprecator.warn("`Rabarber::Role.rename` method is deprecated, use `Rabarber.rename_role` instead.") if caller_locations.map(&:label).exclude?("rename_role")
+        deprecation_warning("rename", "Rabarber.rename_role")
+
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
 
@@ -54,7 +58,8 @@ module Rabarber
       end
 
       def remove(name, context: nil, force: false)
-        deprecator.warn("`Rabarber::Role.remove` method is deprecated, use `Rabarber.delete_role` instead.") if caller_locations.map(&:label).exclude?("delete_role")
+        deprecation_warning("remove", "Rabarber.delete_role")
+
         processed_context = process_context(context)
         role = find_by(name: process_role_name(name), **processed_context)
 
@@ -68,7 +73,8 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
-        deprecator.warn("`Rabarber::Role.assignees` method is deprecated, use `User.with_roles` instead.")
+        deprecation_warning("assignees", "User.with_role")
+
         find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
       end
 
@@ -89,14 +95,16 @@ module Rabarber
               ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", ids]
             )
           )
-          # TODO: maybe this is enough now
+          # TODO: maybe this is actually all we need
           where(id: ids).delete_all
         end
       end
 
       private
 
-      def deprecator = ActiveSupport::Deprecation.new("6.0.0", "rabarber")
+      def deprecation_warning(method, alternative)
+        ActiveSupport::Deprecation.new("6.0.0", "rabarber").warn("`Rabarber::Role.#{method}` method is deprecated and will be removed in the next major version, use `#{alternative}` instead.") if caller_locations.map(&:label).exclude?(alternative)
+      end
 
       def delete_roleables_cache(role, context:)
         Rabarber::Core::Cache.delete(*role.roleables.pluck(:id).flat_map { [[_1, context], [_1, :all]] })

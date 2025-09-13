@@ -78,7 +78,6 @@ module Rabarber
         find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
       end
 
-      # TODO: specs
       def prune
         ids = where.not(context_id: nil).includes(:context).filter_map do |role|
           role.context
@@ -95,7 +94,6 @@ module Rabarber
               ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", ids]
             )
           )
-          # TODO: maybe this is actually all we need
           where(id: ids).delete_all
         end
       end

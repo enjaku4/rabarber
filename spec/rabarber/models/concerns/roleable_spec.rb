@@ -19,6 +19,60 @@ RSpec.describe Rabarber::Roleable do
     end
   end
 
+  describe ".with_role" do
+    subject { User.with_role(role, context:) }
+
+    let(:users) { [User.create!, User.create!] }
+    let(:context) { Project.create! }
+
+    context "when the role exists" do
+      let(:role) { "admin" }
+
+      before { Rabarber::Role.create!(name: "admin", context_type: "Project", context_id: context.id) }
+
+      context "when the role is not assigned to any user" do
+        it { is_expected.to be_empty }
+      end
+
+      context "when the role is assigned to some users" do
+        before { users.each { |user| user.assign_roles(:admin, context:) } }
+
+        it { is_expected.to match_array(users) }
+      end
+    end
+
+    context "when the role does not exist" do
+      let(:role) { "client" }
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when the role with the same name exists in a different context" do
+      let(:role) { "admin" }
+
+      before { Rabarber::Role.create!(name: "admin", context_type: "Project", context_id: nil) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context "when given an invalid name" do
+      let(:role) { :"Invalid-Name" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got [:\"Invalid-Name\"]")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:role) { :admin }
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+      end
+    end
+  end
+
   describe "#roles" do
     subject { user.roles(context:) }
 

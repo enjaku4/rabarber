@@ -13,6 +13,12 @@ module Rabarber
                                                foreign_key: "roleable_id",
                                                join_table: "rabarber_roles_roleables"
 
+      scope :with_role, -> (*role_names, context: nil) {
+        joins(:rabarber_roles).where(
+          rabarber_roles: { name: process_role_names(role_names), **process_context(context) }
+        ).distinct
+      }
+
       class << self
         def process_role_names(role_names)
           Rabarber::Inputs::Roles.new(
@@ -29,13 +35,6 @@ module Rabarber
           ).resolve
         end
       end
-
-      # TODO: specs
-      scope :with_role, -> (*role_names, context: nil) {
-        joins(:rabarber_roles).where(
-          rabarber_roles: { name: process_role_names(role_names), **process_context(context) }
-        ).distinct
-      }
     end
 
     def roles(context: nil)

@@ -1,5 +1,3 @@
-<!--TODO-->
-
 # Rabarber: Role-Based Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
@@ -113,6 +111,9 @@ user.roles
 
 # Get all roles grouped by context
 user.all_roles
+
+# Get users with a role
+User.with_role(:admin)
 ```
 
 ## Role Management
@@ -121,22 +122,19 @@ user.all_roles
 
 ```rb
 # Create a new role
-Rabarber::Role.add(:admin)
+Rabarber.create_role(:admin)
 
 # Rename a role
-Rabarber::Role.rename(:admin, :administrator)
-Rabarber::Role.rename(:admin, :administrator, force: true) # Force if role is assigned to users
+Rabarber.rename_role(:admin, :administrator)
+Rabarber.rename_role(:admin, :administrator, force: true) # Force if role is assigned to users
 
 # Remove a role
-Rabarber::Role.remove(:admin)
-Rabarber::Role.remove(:admin, force: true) # Force if role is assigned to users
+Rabarber.delete_role(:admin)
+Rabarber.delete_role(:admin, force: true) # Force if role is assigned to users
 
 # List available roles
-Rabarber::Role.names
-Rabarber::Role.all_names # All roles grouped by context
-
-# Get users assigned to a role
-Rabarber::Role.assignees(:admin)
+Rabarber.roles
+Rabarber.all_roles # All roles grouped by context
 ```
 
 ## Controller Authorization
@@ -304,22 +302,25 @@ user.revoke_roles(:owner, context: project)
 
 # Get roles within context
 user.roles(context: project)
+
+# Get users with a role in a specific context
+User.with_role(:member, context: project)
 ```
 
 ### Contextual Role Management
 
 ```rb
 # Create a new role within a specific context
-Rabarber::Role.add(:admin, context: Project)
+Rabarber.create_role(:admin, context: Project)
 
 # Rename a role within a specific context
-Rabarber::Role.rename(:admin, :owner, context: Project)
+Rabarber.rename_role(:admin, :owner, context: Project)
 
 # Remove a role within a specific context
-Rabarber::Role.remove(:admin, context: project)
+Rabarber.delete_role(:admin, context: project)
 
 # Get roles within context
-Rabarber::Role.names(context: Project)
+Rabarber.roles(context: Project)
 ```
 
 ### Contextual Authorization
@@ -347,6 +348,15 @@ class ProjectsController < ApplicationController
     @current_project ||= Project.find(params[:id])
   end
 end
+```
+
+### Orphaned Context
+
+When a context object is deleted from your database, its associated roles become orphaned and ignored by Rabarber.
+
+```rb
+# Clean up orphaned context roles
+Rabarber.prune
 ```
 
 ### Context Migrations

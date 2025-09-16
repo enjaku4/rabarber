@@ -79,22 +79,21 @@ module Rabarber
       end
 
       def prune
-        ids = where.not(context_id: nil).includes(:context).filter_map do |role|
-          role.context
-          nil
+        orphaned_roles = where.not(context_id: nil).includes(:context).filter_map do |role|
+          !role.context
         rescue ActiveRecord::RecordNotFound
           role.id
         end
 
-        return if ids.empty?
+        return if orphaned_roles.empty?
 
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute(
             ActiveRecord::Base.sanitize_sql(
-              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", ids]
+              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", orphaned_roles]
             )
           )
-          where(id: ids).delete_all
+          where(id: orphaned_roles).delete_all
         end
       end
 

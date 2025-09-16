@@ -73,7 +73,7 @@ module Rabarber
       end
 
       def assignees(name, context: nil)
-        deprecation_warning("assignees", "User.with_role")
+        deprecation_warning("assignees", "#{Rabarber::Configuration.user_model_name}.with_role")
 
         find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
       end

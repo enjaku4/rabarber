@@ -100,6 +100,8 @@ user.revoke_roles(:accountant, :manager)
 user.revoke_all_roles
 ```
 
+All role-assignment methods return the list of roles currently assigned to the user.
+
 ### Role Queries
 
 ```rb
@@ -109,11 +111,11 @@ user.has_role?(:accountant, :manager)
 # Get user's roles in the global context
 user.roles
 
-# Get all roles grouped by context
+# Get all user's roles grouped by context
 user.all_roles
 
-# Get users with a role
-User.with_role(:admin)
+# Get users with any of the specified roles
+User.with_role(:admin, :manager)
 ```
 
 ## Role Management
@@ -122,20 +124,20 @@ User.with_role(:admin)
 
 ```rb
 # Create a new role
-Rabarber.create_role(:admin) # => true if created, false if it already exists
+Rabarber.create_role(:admin) # => true if created, false if already exists
 
 # Rename a role
-Rabarber.rename_role(:admin, :administrator) # => true if renamed, false if the new name already exists, or the role is assigned to users
-Rabarber.rename_role(:admin, :administrator, force: true) # Force if role is assigned to users
+Rabarber.rename_role(:admin, :administrator) # => true if renamed, false if new name exists or role is assigned
+Rabarber.rename_role(:admin, :administrator, force: true) # Force rename even if role is assigned
 
 # Remove a role
-Rabarber.delete_role(:admin) # => true if deleted, false if the role is assigned to users
-Rabarber.delete_role(:admin, force: true) # Force if role is assigned to users
+Rabarber.delete_role(:admin) # => true if deleted, false if role is assigned
+Rabarber.delete_role(:admin, force: true) # Force deletion even if role is assigned
 
 # List available roles in the global context
 Rabarber.roles
 
-# List available roles grouped by context
+# List all available roles grouped by context
 Rabarber.all_roles
 ```
 
@@ -335,13 +337,13 @@ Rabarber.roles(context: project)
 class ProjectsController < ApplicationController
   grant_access roles: :admin, context: Project
 
-  # Method-based context computation
+  # Method-based context resolution
   grant_access action: :show, roles: :member, context: :current_project
   def show
     # Accessible to Project admin and members of the current project
   end
 
-  # Proc-based context computation
+  # Proc-based context resolution
   grant_access action: :update, roles: :owner, context: -> { Project.find(params[:id]) }
   def update
     # Accessible to Project admin and owner of the current project

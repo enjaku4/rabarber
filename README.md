@@ -25,7 +25,6 @@ Rabarber is a role-based authorization library for Ruby on Rails that focuses on
   - [Multi-tenancy / Context](#multi-tenancy--context)
   - [View Helpers](#view-helpers)
 
-
 **Community Resources:**
   - [Getting Help and Contributing](#getting-help-and-contributing)
   - [License](#license)
@@ -100,7 +99,7 @@ user.revoke_roles(:accountant, :manager)
 user.revoke_all_roles
 ```
 
-All role-assignment methods return the list of roles currently assigned to the user.
+All role assignment methods return the list of roles currently assigned to the user.
 
 ### Role Queries
 

@@ -106,7 +106,7 @@ user.revoke_all_roles
 # Check if user has any of the specified roles
 user.has_role?(:accountant, :manager)
 
-# Get user's roles
+# Get user's roles in the global context
 user.roles
 
 # Get all roles grouped by context
@@ -122,19 +122,21 @@ User.with_role(:admin)
 
 ```rb
 # Create a new role
-Rabarber.create_role(:admin)
+Rabarber.create_role(:admin) # => true if created, false if it already exists
 
 # Rename a role
-Rabarber.rename_role(:admin, :administrator)
+Rabarber.rename_role(:admin, :administrator) # => true if renamed, false if the new name already exists, or the role is assigned to users
 Rabarber.rename_role(:admin, :administrator, force: true) # Force if role is assigned to users
 
 # Remove a role
-Rabarber.delete_role(:admin)
+Rabarber.delete_role(:admin) # => true if deleted, false if the role is assigned to users
 Rabarber.delete_role(:admin, force: true) # Force if role is assigned to users
 
-# List available roles
+# List available roles in the global context
 Rabarber.roles
-Rabarber.all_roles # All roles grouped by context
+
+# List available roles grouped by context
+Rabarber.all_roles
 ```
 
 ## Controller Authorization
@@ -155,7 +157,7 @@ class InvoicesController < ApplicationController
 end
 ```
 
-Authorization requires an authenticated user.
+Authorization requires an authenticated user to be present.
 
 ### Skip Authorization
 
@@ -180,6 +182,10 @@ class TicketsController < ApplicationController
   grant_access action: :index, roles: [:manager, :support]
   def index
     # Accessible to admin, manager, and support roles
+  end
+
+  def destroy
+    # Accessible to admin role only
   end
 end
 ```
@@ -210,7 +216,7 @@ Omit roles to allow unrestricted access:
 
 ```rb
 class UnrestrictedController < ApplicationController
-  grant_access # Allow all users
+  grant_access # Allow all users to access all actions
 end
 
 class MixedController < ApplicationController
@@ -256,13 +262,13 @@ class OrdersController < ApplicationController
   grant_access roles: :manager, if: :company_manager?, unless: :suspended?
 
   # Proc-based conditions
-  grant_access action: :show, roles: :client, if: -> { current_user.company_id == Order.find(params[:id]).company_id }
+  grant_access action: :show, roles: :client, if: -> { current_user.company == Order.find(params[:id]).company }
   def show
     # Accessible to company managers unless suspended, and to clients if the client's company matches the order's company
   end
 
   # Dynamic-only rules (no roles required, can be used with custom policies)
-  grant_access action: :index, if: -> { OrdersPolicy.new(current_user).can_access?(:index) }
+  grant_access action: :index, if: -> { OrdersPolicy.new(current_user).index? }
   def index
     # Accessible to company managers unless suspended, and to users based on custom policy logic
   end
@@ -290,53 +296,52 @@ All Rabarber methods accept a `context` parameter, allowing you to work with rol
 user.assign_roles(:owner, context: project)
 user.assign_roles(:member, context: project)
 
-# Assign roles within a model class (e.g., project admin)
+# Assign roles within a model class
 user.assign_roles(:admin, context: Project)
 
 # Check contextual roles
 user.has_role?(:owner, context: project)
 user.has_role?(:admin, context: Project)
 
-# Revoke roles within a specific context
+# Revoke roles
 user.revoke_roles(:owner, context: project)
 
-# Get roles within context
-user.roles(context: project)
+# Get user roles
+user.roles(context: Project)
 
-# Get users with a role in a specific context
+# Get users with a role
 User.with_role(:member, context: project)
 ```
 
 ### Contextual Role Management
 
 ```rb
-# Create a new role within a specific context
+# Create a new role within a context
 Rabarber.create_role(:admin, context: Project)
 
-# Rename a role within a specific context
-Rabarber.rename_role(:admin, :owner, context: Project)
+# Rename a role within a context
+Rabarber.rename_role(:admin, :owner, context: project)
 
-# Remove a role within a specific context
+# Remove a contextual role
 Rabarber.delete_role(:admin, context: project)
 
-# Get roles within context
-Rabarber.roles(context: Project)
+# List available roles within a specific context
+Rabarber.roles(context: project)
 ```
 
 ### Contextual Authorization
 
 ```rb
 class ProjectsController < ApplicationController
-  # Class-based context
   grant_access roles: :admin, context: Project
 
-  # Instance-based context (method)
+  # Method-based context computation
   grant_access action: :show, roles: :member, context: :current_project
   def show
     # Accessible to Project admin and members of the current project
   end
 
-  # Instance-based context (proc)
+  # Proc-based context computation
   grant_access action: :update, roles: :owner, context: -> { Project.find(params[:id]) }
   def update
     # Accessible to Project admin and owner of the current project

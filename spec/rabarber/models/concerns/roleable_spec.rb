@@ -540,6 +540,8 @@ RSpec.describe Rabarber::Roleable do
         expect(Rabarber::Core::Cache).not_to receive(:delete)
         subject
       end
+
+      it { is_expected.to eq([]) }
     end
 
     context "when the user has some roles" do
@@ -570,6 +572,8 @@ RSpec.describe Rabarber::Roleable do
         )
         subject
       end
+
+      it { is_expected.to eq([]) }
     end
 
     context "when the user has roles with an invalid context key" do

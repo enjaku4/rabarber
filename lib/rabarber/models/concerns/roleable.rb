@@ -88,13 +88,15 @@ module Rabarber
     end
 
     def revoke_all_roles
-      return if rabarber_roles.none?
+      return [] if rabarber_roles.none?
 
       contexts = all_roles.keys.map { process_context(_1) }
 
       rabarber_roles.clear
 
       delete_roleable_cache(contexts:)
+
+      []
     end
 
     private

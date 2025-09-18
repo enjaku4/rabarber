@@ -6,6 +6,7 @@
 
 ### Misc:
 
+- `revoke_all_roles` now returns an empty array instead of `nil` for consistency with other role-assignment methods
 - Deprecated the following role management methods in favor of new counterparts:
   - `Rabarber::Role.names` -> `Rabarber.roles`
   - `Rabarber::Role.all_names` -> `Rabarber.all_roles`

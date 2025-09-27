@@ -55,6 +55,7 @@ jobs:
           - "~> 7.1.0"
           - "~> 7.2.0"
           - "~> 8.0.0"
+          - "8.1.0.beta1"
 
     env:
       RAILS_VERSION: "${{ matrix.rails }}"

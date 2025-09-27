@@ -67,13 +67,13 @@ Configure Rabarber in an initializer if customization is needed:
 
 ```rb
 Rabarber.configure do |config|
-  config.cache_enabled = true                 # Enable role caching (default: true)
+  config.cache_enabled = true                 # Enable/disable role caching (default: true)
   config.current_user_method = :current_user  # Method to access current user (default: :current_user)
   config.user_model_name = "User"             # User model name (default: "User")
 end
 ```
 
-To clear the role cache manually:
+Roles are cached by default for performance. To clear the role cache manually:
 
 ```rb
 Rabarber::Cache.clear

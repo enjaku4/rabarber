@@ -251,7 +251,7 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-By default, Rabarber will redirect back (HTML format) or return 403 (other formats).
+By default, when unauthorized, Rabarber will redirect back (HTML format) or return 403 (other formats).
 
 ## Dynamic Rules
 
@@ -360,8 +360,9 @@ end
 
 When a context object is deleted from your database, its associated roles become orphaned and ignored by Rabarber.
 
+To clean up orphaned context roles, use:
+
 ```rb
-# Clean up orphaned context roles
 Rabarber.prune
 ```
 

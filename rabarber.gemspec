@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "rabarber"
   spec.version = Rabarber::VERSION
   spec.authors = ["enjaku4", "trafium"]
-  spec.homepage = "https://github.com/brownboxdev/rabarber"
+  spec.homepage = "https://github.com/enjaku4/rabarber"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"

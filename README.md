@@ -1,7 +1,7 @@
 # Rabarber: Role-Based Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
-[![Github Actions badge](https://github.com/brownboxdev/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/brownboxdev/rabarber/actions/workflows/ci.yml)
+[![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 
 Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic.
 
@@ -415,13 +415,13 @@ Use conditional rendering based on roles:
 ## Getting Help and Contributing
 
 ### Getting Help
-Have a question or need assistance? Open a discussion in our [discussions section](https://github.com/brownboxdev/rabarber/discussions) for:
+Have a question or need assistance? Open a discussion in our [discussions section](https://github.com/enjaku4/rabarber/discussions) for:
 - Usage questions
 - Implementation guidance
 - Feature suggestions
 
 ### Reporting Issues
-Found a bug? Please [create an issue](https://github.com/brownboxdev/rabarber/issues) with:
+Found a bug? Please [create an issue](https://github.com/enjaku4/rabarber/issues) with:
 - A clear description of the problem
 - Steps to reproduce the issue
 - Your environment details (Rails version, Ruby version, etc.)
@@ -430,21 +430,21 @@ Found a bug? Please [create an issue](https://github.com/brownboxdev/rabarber/is
 Ready to contribute? You can:
 - Fix bugs by submitting pull requests
 - Improve documentation
-- Add new features (please discuss first in our [discussions section](https://github.com/brownboxdev/rabarber/discussions))
+- Add new features (please discuss first in our [discussions section](https://github.com/enjaku4/rabarber/discussions))
 
-Before contributing, please read the [contributing guidelines](https://github.com/brownboxdev/rabarber/blob/main/CONTRIBUTING.md)
+Before contributing, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md)
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://github.com/brownboxdev/rabarber/blob/main/LICENSE.txt).
+The gem is available as open source under the terms of the [MIT License](https://github.com/enjaku4/rabarber/blob/main/LICENSE.txt).
 
 ## Code of Conduct
 
-Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/brownboxdev/rabarber/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Rabarber project is expected to follow the [code of conduct](https://github.com/enjaku4/rabarber/blob/main/CODE_OF_CONDUCT.md).
 
 ## Old Versions
 
 Only the latest major version is supported. Older versions are obsolete and not maintained, but their READMEs are available here for reference:
 
-[v4.x.x](https://github.com/brownboxdev/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/brownboxdev/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
- | [v2.x.x](https://github.com/brownboxdev/rabarber/blob/875b357ea949404ddc3645ad66eddea7ed4e2ee4/README.md) | [v1.x.x](https://github.com/brownboxdev/rabarber/blob/b81428429404e197d70317b763e7b2a21e02c296/README.md)
+[v4.x.x](https://github.com/enjaku4/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/enjaku4/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
+ | [v2.x.x](https://github.com/enjaku4/rabarber/blob/875b357ea949404ddc3645ad66eddea7ed4e2ee4/README.md) | [v1.x.x](https://github.com/enjaku4/rabarber/blob/b81428429404e197d70317b763e7b2a21e02c296/README.md)

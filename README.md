@@ -140,7 +140,7 @@ Rabarber.roles
 Rabarber.all_roles
 ```
 
-> **Note:** Some methods have been deprecated in favor of the new API shown above. The deprecated methods still work but will be removed in a future major version. See the [changelog](https://github.com/brownboxdev/rabarber/blob/main/CHANGELOG.md#v520) for the complete list of deprecated methods and their new counterparts.
+> **Note:** Some methods have been deprecated in favor of the new API shown above. The deprecated methods still work but will be removed in a future major version. See the [changelog](https://github.com/enjaku4/rabarber/blob/main/CHANGELOG.md#v520) for the complete list of deprecated methods and their new counterparts.
 
 ## Controller Authorization
 

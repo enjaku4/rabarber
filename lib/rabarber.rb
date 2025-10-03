@@ -27,6 +27,15 @@ module Rabarber
 
   delegate :configure, to: Rabarber::Configuration
   module_function :configure
+
+  class << self
+    def roles(context: nil) = Rabarber::Role.names(context:)
+    def all_roles = Rabarber::Role.all_names
+    def create_role(name, context: nil) = Rabarber::Role.add(name, context:)
+    def rename_role(old_name, new_name, context: nil, force: false) = Rabarber::Role.rename(old_name, new_name, context:, force:)
+    def delete_role(name, context: nil, force: false) = Rabarber::Role.remove(name, context:, force:)
+    def prune = Rabarber::Role.prune
+  end
 end
 
 require_relative "rabarber/core/cache"
@@ -36,10 +45,9 @@ require_relative "rabarber/core/roleable"
 require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/helpers/migration_helpers"
-require_relative "rabarber/models/concerns/has_roles"
+require_relative "rabarber/models/concerns/roleable"
 require_relative "rabarber/models/role"
 
 require_relative "rabarber/core/permissions"
-require_relative "rabarber/core/integrity_checker"
 
 require_relative "rabarber/railtie"

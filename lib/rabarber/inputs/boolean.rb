@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class Boolean < Base
+    class Boolean < Rabarber::Inputs::Base
       private
 
       def type = self.class::Strict::Bool

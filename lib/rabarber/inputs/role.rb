@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class Role < Base
+    class Role < Rabarber::Inputs::Base
       private
 
       def type = self.class::Coercible::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/)

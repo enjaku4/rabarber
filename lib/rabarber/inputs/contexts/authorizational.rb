@@ -3,7 +3,7 @@
 module Rabarber
   module Inputs
     module Contexts
-      class Authorizational < Context
+      class Authorizational < Rabarber::Inputs::Context
         private
 
         def type = self.class::Coercible::Symbol.constrained(min_size: 1) | self.class::Instance(Proc) | super

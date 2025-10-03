@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class Roles < Base
+    class Roles < Rabarber::Inputs::Base
       private
 
       def type

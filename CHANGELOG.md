@@ -1,3 +1,20 @@
+## v5.2.0
+
+### Features:
+
+- Added `Rabarber.prune` method to allow manual pruning of roles with deleted contexts
+
+### Misc:
+
+- `revoke_all_roles` now returns an empty array instead of `nil` for consistency with other role assignment methods
+- Deprecated the following role management methods in favor of new counterparts:
+  - `Rabarber::Role.names` -> `Rabarber.roles`
+  - `Rabarber::Role.all_names` -> `Rabarber.all_roles`
+  - `Rabarber::Role.add` -> `Rabarber.create_role`
+  - `Rabarber::Role.rename` -> `Rabarber.rename_role`
+  - `Rabarber::Role.remove` -> `Rabarber.delete_role`
+  - `Rabarber::Role.assignees` -> `User.with_role`
+
 ## v5.1.2
 
 ### Misc:

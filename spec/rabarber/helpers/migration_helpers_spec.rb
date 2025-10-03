@@ -38,7 +38,7 @@ RSpec.describe Rabarber::MigrationHelpers do
   end
 
   describe "#delete_authorization_context!" do
-    it "deletes roles roles for the given context" do
+    it "deletes roles for the given context" do
       roles = Rabarber::Role.where(context_type: "User")
 
       expect(roles.count).to eq(2)
@@ -48,11 +48,13 @@ RSpec.describe Rabarber::MigrationHelpers do
       expect(Rabarber::Role.exists?(id: roles.pluck(:id))).to be false
     end
 
-    [nil, " ", 1, [1, 2], {}].each do |invalid_context|
-      it "raises if context class is invalid: #{invalid_context.inspect}" do
-        expect { dummy_migration.delete_authorization_context!(invalid_context) }.to raise_error(
-          Rabarber::InvalidArgumentError, "No roles exist in context #{invalid_context.inspect}"
-        )
+    context "errors" do
+      [nil, " ", 1, [1, 2], {}].each do |invalid_context|
+        it "raises if context class is invalid: #{invalid_context.inspect}" do
+          expect { dummy_migration.delete_authorization_context!(invalid_context) }.to raise_error(
+            Rabarber::InvalidArgumentError, "No roles exist in context #{invalid_context.inspect}"
+          )
+        end
       end
     end
   end

@@ -6,26 +6,18 @@ module Rabarber
   class Railtie < Rails::Railtie
     initializer "rabarber.to_prepare" do |app|
       app.config.to_prepare do
-        unless app.config.eager_load
-          Rabarber::Core::Permissions.reset!
-          ApplicationController.class_eval do
-            before_action :check_integrity
-
-            private
-
-            def check_integrity
-              Rabarber::Core::IntegrityChecker.run!
-            end
+        if ActiveRecord::Base.connection.data_source_exists?("rabarber_roles")
+          Rabarber::Role.where.not(context_type: nil).distinct.pluck(:context_type).each do |context_class|
+            context_class.constantize
+          rescue NameError => e
+            raise Rabarber::Error, "Context not found: class `#{e.name}` may have been renamed or deleted"
           end
         end
-        user_model = Rabarber::Configuration.user_model
-        user_model.include Rabarber::HasRoles unless user_model < Rabarber::HasRoles
-      end
-    end
 
-    initializer "rabarber.after_initialize" do |app|
-      app.config.after_initialize do
-        Rabarber::Core::IntegrityChecker.run! if app.config.eager_load
+        Rabarber::Core::Permissions.reset! unless app.config.eager_load
+
+        user_model = Rabarber::Configuration.user_model
+        user_model.include Rabarber::Roleable unless user_model < Rabarber::Roleable
       end
     end
 

@@ -2,7 +2,7 @@
 
 module Rabarber
   module Inputs
-    class Context < Base
+    class Context < Rabarber::Inputs::Base
       def resolve
         case context = process
         when nil

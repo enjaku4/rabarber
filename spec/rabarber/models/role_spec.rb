@@ -524,4 +524,31 @@ RSpec.describe Rabarber::Role do
       end
     end
   end
+
+  describe "#prune" do
+    subject { described_class.prune }
+
+    let(:project) { Project.create! }
+    let!(:role) { described_class.create!(name: "manager", context_type: "Project", context_id: project.id) }
+
+    before { described_class.create!(name: "manager", context_type: "Project", context_id: Project.create!.id) }
+
+    context "when context is missing" do
+      before { project.destroy! }
+
+      it "deletes the roles with missing context" do
+        expect { subject }.to change { described_class.find_by(id: role.id) }.from(role).to(nil)
+      end
+
+      it "does not delete the roles with existing context" do
+        expect { subject }.to change(described_class, :count).from(2).to(1)
+      end
+    end
+
+    context "when context is not missing" do
+      it "does not delete any roles" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+    end
+  end
 end

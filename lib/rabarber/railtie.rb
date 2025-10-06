@@ -15,7 +15,7 @@ module Rabarber
             end
           end
         rescue ActiveRecord::NoDatabaseError, ActiveRecord::ConnectionNotEstablished
-          # Database does not exist yet or connection not established, skip
+          # Database not created or connected — skip
         end
 
         Rabarber::Core::Permissions.reset! unless app.config.eager_load

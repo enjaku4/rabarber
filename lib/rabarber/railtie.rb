@@ -4,9 +4,15 @@ require "rails/railtie"
 
 module Rabarber
   class Railtie < Rails::Railtie
+    def self.table_exists?
+      ActiveRecord::Base.connection.data_source_exists?("rabarber_roles")
+    rescue ActiveRecord::NoDatabaseError, ActiveRecord::ConnectionNotEstablished
+      false
+    end
+
     initializer "rabarber.to_prepare" do |app|
       app.config.to_prepare do
-        if ActiveRecord::Base.connection.data_source_exists?("rabarber_roles")
+        if Rabarber::Railtie.table_exists?
           Rabarber::Role.where.not(context_type: nil).distinct.pluck(:context_type).each do |context_class|
             context_class.constantize
           rescue NameError => e

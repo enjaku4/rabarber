@@ -1,3 +1,9 @@
+## v5.2.1
+
+### Bugs:
+
+- Fixed error raised on Rails console commands when the database was not yet set up
+
 ## v5.2.0
 
 ### Features:

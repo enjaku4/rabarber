@@ -5,9 +5,7 @@ require "rails/railtie"
 module Rabarber
   class Railtie < Rails::Railtie
     def self.table_exists?
-      ActiveRecord::Base.with_connection do |connection|
-        connection.data_source_exists?("rabarber_roles")
-      end
+      ActiveRecord::Base.connection.data_source_exists?("rabarber_roles")
     rescue ActiveRecord::NoDatabaseError, ActiveRecord::ConnectionNotEstablished
       false
     end

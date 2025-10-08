@@ -306,7 +306,7 @@ RSpec.describe Rabarber::Roleable do
         end
 
         it "creates new roles" do
-          expect { subject }.to change(Rabarber::Role, :names).from([]).to(roles)
+          expect { subject }.to change(Rabarber, :roles).from([]).to(roles)
         end
 
         it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }
@@ -325,7 +325,7 @@ RSpec.describe Rabarber::Roleable do
         end
 
         it "creates new roles" do
-          expect { subject }.to change(Rabarber::Role, :names).from([roles.first]).to(roles)
+          expect { subject }.to change(Rabarber, :roles).from([roles.first]).to(roles)
         end
 
         it_behaves_like "it deletes the cache", { context_type: nil, context_id: nil }

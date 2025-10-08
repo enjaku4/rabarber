@@ -1,3 +1,9 @@
+## v5.2.2
+
+### Bugs:
+
+-  Fixed deprecation warnings showing when calling non-deprecated methods
+
 ## v5.2.1
 
 ### Bugs:

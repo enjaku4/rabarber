@@ -100,7 +100,11 @@ module Rabarber
       private
 
       def deprecation_warning(method, alternative)
-        ActiveSupport::Deprecation.new("6.0.0", "rabarber").warn("`Rabarber::Role.#{method}` method is deprecated and will be removed in the next major version, use `#{alternative}` instead.") if caller_locations.map(&:label).exclude?(alternative)
+        callers = caller_locations.map(&:label)
+
+        return if callers.include?(alternative) || callers.include?("ActiveRecord::Relation#scoping")
+
+        ActiveSupport::Deprecation.new("6.0.0", "rabarber").warn("`Rabarber::Role.#{method}` method is deprecated and will be removed in the next major version, use `#{alternative}` instead.")
       end
 
       def delete_roleables_cache(role, context:)

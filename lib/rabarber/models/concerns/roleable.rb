@@ -102,7 +102,7 @@ module Rabarber
     private
 
     def create_new_roles(role_names, context:)
-      new_roles = role_names - Rabarber::Role.names(context:)
+      new_roles = role_names - Rabarber.roles(context:)
       new_roles.each { |role_name| Rabarber::Role.create!(name: role_name, **context) }
     end
 

@@ -1,3 +1,9 @@
+## v5.2.3
+
+### Bugs:
+
+- Fixed context validation blocking Rails console and database commands when orphaned context classes exist
+
 ## v5.2.2
 
 ### Bugs:

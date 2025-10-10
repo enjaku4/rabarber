@@ -1,7 +1,9 @@
-# Rabarber: Role-Based Authorization for Rails
+# Rabarber: Simple Role-Based Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)
+[![Downloads](https://img.shields.io/gem/dt/rabarber.svg)](https://rubygems.org/gems/rabarber)
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/brownboxdev/rabarber.svg)](LICENSE)
 
 Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic.
 
@@ -12,6 +14,23 @@ Rabarber is a role-based authorization library for Ruby on Rails that focuses on
 - Multi-tenancy support through contextual roles
 - Dynamic authorization with conditional logic
 - View helpers for role-based content rendering
+
+And this is how your controller might look with Rabarber:
+
+```rb
+class TicketsController < ApplicationController
+  grant_access roles: :admin
+
+  grant_access action: :index, roles: :manager
+  def index
+    # Accessible to admin and manager roles
+  end
+
+  def destroy
+    # Accessible to admin role only
+  end
+end
+```
 
 ## Table of Contents
 

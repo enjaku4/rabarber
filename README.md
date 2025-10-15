@@ -5,15 +5,7 @@
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/enjaku4/rabarber.svg)](LICENSE)
 
-Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic.
-
-**Key Features:**
-
-- Role-based authorization
-- Controller-level access control
-- Multi-tenancy support through contextual roles
-- Dynamic authorization with conditional logic
-- View helpers for role-based content rendering
+Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic. It supports multi-tenancy through contextual roles, dynamic authorization with conditional logic, and includes view helpers for role-based content rendering.
 
 **Example of Usage:**
 

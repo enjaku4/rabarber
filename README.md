@@ -15,19 +15,33 @@ Rabarber is a role-based authorization library for Ruby on Rails that focuses on
 - Dynamic authorization with conditional logic
 - View helpers for role-based content rendering
 
-And this is how your controller might look with Rabarber:
+**Example of Usage:**
+
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `analyst` has access to marketing-related data. You can define such authorization rules easily with Rabarber.
+
+And here's how your controller might look:
 
 ```rb
-class TicketsController < ApplicationController
-  grant_access roles: :admin
+class InvoicesController < ApplicationController
+  grant_access roles: :admin # Admin can access everything
 
-  grant_access action: :index, roles: :manager
+  grant_access action: :index, roles: [:accountant, :analyst]
   def index
-    # Accessible to admin and manager roles
+    # Accessible to both analysts and accountants
+  end
+
+  grant_access action: :show, roles: :accountant
+  def show
+    # Accessible to accountants
+  end
+
+  grant_access action: :analytics, roles: :analyst
+  def analytics
+    # Accessible to analysts
   end
 
   def destroy
-    # Accessible to admin role only
+    # Accessible to admins only
   end
 end
 ```

@@ -1,3 +1,9 @@
+## v5.2.4
+
+### Misc:
+
+- Added support for Rails 8.1
+
 ## v5.2.3
 
 ### Bugs:

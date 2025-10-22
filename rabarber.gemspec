@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "dry-configurable", "~> 1.1"
   spec.add_dependency "dry-types", "~> 1.7"
-  spec.add_dependency "rails", ">= 7.1", "< 8.1"
+  spec.add_dependency "rails", ">= 7.1", "< 8.2"
 end

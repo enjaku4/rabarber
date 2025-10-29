@@ -5,11 +5,13 @@
 [![Github Actions badge](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml/badge.svg)](https://github.com/enjaku4/rabarber/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/enjaku4/rabarber.svg)](LICENSE)
 
-Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic. It supports multi-tenancy through contextual roles, dynamic authorization with conditional logic, and includes view helpers for role-based content rendering.
+Rabarber is a role-based authorization library for Ruby on Rails that focuses on controller-level access control. Rather than answering domain questions like "can this user create a post?", Rabarber answers "can this user access the create post endpoint?", providing a clean separation between authorization and business logic.
+
+Rabarber supports multi-tenancy through contextual roles, dynamic authorization rules with conditional logic, and includes view helpers for role-based content rendering.
 
 **Example of Usage:**
 
-Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can interact with invoices but cannot access marketing information, while the role `analyst` has access to marketing-related data. You can define such authorization rules easily with Rabarber.
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access invoice data but not marketing information, while the role `analyst` can view marketing data but not detailed financial records. You can define such authorization rules easily with Rabarber.
 
 And here's how your controller might look:
 
@@ -70,7 +72,7 @@ Install the gem:
 bundle install
 ```
 
-Generate the migration for role storage (replace `users` with your user table name if different):
+Generate the migration to store roles (replace `users` with your user table name if different):
 
 ```shell
 # For standard integer IDs
@@ -88,7 +90,7 @@ rails db:migrate
 
 ## Configuration
 
-Configure Rabarber in an initializer if customization is needed:
+Create an initializer to customize Rabarber's behavior (optional):
 
 ```rb
 Rabarber.configure do |config|
@@ -98,7 +100,7 @@ Rabarber.configure do |config|
 end
 ```
 
-Roles are cached by default for performance. To clear the role cache manually:
+Roles are cached by default for better performance. Clear the cache manually when needed:
 
 ```rb
 Rabarber::Cache.clear
@@ -165,7 +167,7 @@ Rabarber.roles
 Rabarber.all_roles
 ```
 
-> **Note:** Some methods have been deprecated in favor of the new API shown above. The deprecated methods still work but will be removed in a future major version. See the [changelog](https://github.com/enjaku4/rabarber/blob/main/CHANGELOG.md#v520) for the complete list of deprecated methods and their new counterparts.
+> **Note:** Some methods have been deprecated in favor of the new API shown above. Deprecated methods still work but will be removed in a future major version. See the [changelog](https://github.com/enjaku4/rabarber/blob/main/CHANGELOG.md#v520) for the complete list of deprecated methods and their replacements.
 
 ## Controller Authorization
 
@@ -220,7 +222,7 @@ end
 
 ### Additive Rules
 
-Rules are additive across inheritance chains and for the same actions:
+Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action:
 
 ```rb
 class BaseController < ApplicationController
@@ -282,7 +284,7 @@ By default, when unauthorized, Rabarber will redirect back (HTML format) or retu
 
 ## Dynamic Rules
 
-Add conditional logic to authorization rules:
+Enhance authorization rules with conditional logic:
 
 ```rb
 class OrdersController < ApplicationController

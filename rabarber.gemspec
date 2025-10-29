@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.metadata["documentation_uri"] = "#{spec.homepage}/blob/main/README.md"
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.summary = "Simple role-based authorization library for Ruby on Rails"
-  spec.description = "Rabarber provides role-based authorization for Ruby on Rails applications with support for multi-tenancy, dynamic rules, and clean controller-level access control that separates authorization from business logic"
+  spec.description = "Simple role-based authorization for Rails applications with multi-tenancy support"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2", "< 3.5"
 

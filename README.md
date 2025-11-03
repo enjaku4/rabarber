@@ -394,7 +394,7 @@ Rabarber.prune
 
 ### Context Migrations
 
-When you rename or remove models used as contexts, you need to update Rabarber's stored context data accordingly. Use these irreversible data migrations.
+When you rename or remove models used as contexts, you need to update Rabarber's stored context data accordingly. Use these irreversible data migrations:
 
 ```rb
 # Rename a context class (e.g., when you rename your Ticket model to Task)

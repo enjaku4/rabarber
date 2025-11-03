@@ -9,7 +9,7 @@ Rabarber is a role-based authorization library for Ruby on Rails. It provides a 
 
 **Example of Usage:**
 
-Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access invoice data but not marketing information, while the role `analyst` can view marketing data but not detailed financial records. Such authorization can be easily managed using Rabarber.
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access invoice data but not marketing information, while the role `analyst` can view marketing data but not detailed financial records. You can define such authorization rules easily with Rabarber.
 
 ___
 
@@ -30,7 +30,7 @@ class TicketsController < ApplicationController
 end
 ```
 
-This means that `admin` users can access everything in `TicketsController`, while `manager` role can access only `index` action.
+This means that `admin` users can access everything in `TicketsController`, while the `manager` role can access only the `index` action.
 
 ## Table of Contents
 
@@ -42,7 +42,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Authorization](#authorization)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
   - [When Unauthorized](#when-unauthorized)
-  - [Multi-tenancy / Context](#multi-tenancy--context)
+  - [Context / Multi-tenancy](#context-multi-tenancy)
   - [View Helpers](#view-helpers)
 
 **Community Resources:**
@@ -310,9 +310,11 @@ end
 
 The `when_unauthorized` method can be overridden in any controller to provide controller-specific unauthorized access handling.
 
-## Multi-tenancy / Context
+## Context / Multi-tenancy
 
-All Rabarber methods accept a `context` parameter, allowing you to work with roles within specific scopes. By default, context is `nil`, meaning roles are global. Context can also be an instance of an `ActiveRecord` model or a class.
+Rabarber supports multi-tenancy through its context feature. All Rabarber methods accept a `context` parameter, allowing you to work with roles within specific scopes. By default, context is `nil`, meaning roles are global. Context can also be an instance of an `ActiveRecord` model or a class.
+
+For example, in a project management app, you might want users to have different roles in different projects - someone could be an `owner` in one project but just a `member` in another.
 
 ### Contextual Role Assignment And Queries
 

@@ -39,7 +39,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Configuration](#configuration)
   - [User Role Methods](#user-role-methods)
   - [Direct Role Management](#direct-role-management)
-  - [Authorization](#authorization-rules)
+  - [Authorization](#authorization)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
   - [When Unauthorized](#when-unauthorized)
   - [Multi-tenancy / Context](#multi-tenancy--context)
@@ -253,7 +253,7 @@ class MixedController < ApplicationController
 end
 ```
 
-## Dynamic Rules
+## Dynamic Authorization Rules
 
 For more complex scenarios, Rabarber supports dynamic authorization rules:
 

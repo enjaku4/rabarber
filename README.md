@@ -42,7 +42,7 @@ This means that `admin` users can access everything in `TicketsController`, whil
   - [Authorization](#authorization)
   - [Dynamic Authorization Rules](#dynamic-authorization-rules)
   - [When Unauthorized](#when-unauthorized)
-  - [Context / Multi-tenancy](#context-multi-tenancy)
+  - [Context / Multi-tenancy](#context--multi-tenancy)
   - [View Helpers](#view-helpers)
 
 **Community Resources:**

@@ -267,7 +267,7 @@ class OrdersController < ApplicationController
   end
 
   private
-  
+
   def user_company_matches_order?
     current_user.company == Order.find(params[:id]).company
   end
@@ -284,14 +284,14 @@ class InvoicesController < ApplicationController
   def update
     # ...
   end
-  
+
   grant_access action: :destroy, if: :destroy_allowed?
   def destroy
     # ...
   end
-  
+
   private
-  
+
   def destroy_allowed?
     InvoicePolicy.new(current_user).destroy?(Invoice.find(params[:id]))
   end

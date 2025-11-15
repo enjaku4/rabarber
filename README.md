@@ -259,36 +259,44 @@ For more complex scenarios, Rabarber supports dynamic authorization rules:
 
 ```rb
 class OrdersController < ApplicationController
-  # Method-based conditions
-  grant_access roles: :manager, if: :company_manager?, unless: :suspended?
+  grant_access roles: :manager, unless: -> { current_user.suspended? }
 
-  # Proc-based conditions
-  grant_access action: :show, roles: :client, if: -> { current_user.company == Order.find(params[:id]).company }
+  grant_access action: :show, roles: :client, if: :user_company_matches_order?
   def show
-    # Accessible to company managers unless suspended, and to clients if the client's company matches the order's company
-  end
-
-  # Dynamic-only rules (no roles required, can be used with custom policies)
-  grant_access action: :index, if: -> { OrdersPolicy.new(current_user).index? }
-  def index
-    # Accessible to company managers unless suspended, and to users based on custom policy logic
+    # ...
   end
 
   private
-
-  def company_manager?
-    current_user.manager_of?(Company.find(params[:company_id]))
-  end
-
-  def suspended?
-    current_user.suspended?
+  
+  def user_company_matches_order?
+    current_user.company == Order.find(params[:id]).company
   end
 end
 ```
 
-You can pass a dynamic rule as an `if` or `unless` argument, which can be a symbol (method name) or a proc. Symbols refer to instance methods, and procs are evaluated in the controller at request time.
+You can pass a dynamic rule as an `if` or `unless` argument, which can be a symbol or a proc. Symbols refer to instance methods, and procs are evaluated in the controller at request time.
 
-Dynamic rules can be combined with role-based rules. But they can also be used alone, which allows you to use Rabarber as a policy-based authorization library by calling your own custom policy when needed.
+Dynamic rules can also be used without roles at all, allowing you to define custom logic or even delegate to custom policy objects:
+
+```rb
+class InvoicesController < ApplicationController
+  grant_access action: :update, unless: -> { Date.current.on_weekend? }
+  def update
+    # ...
+  end
+  
+  grant_access action: :destroy, if: :destroy_allowed?
+  def destroy
+    # ...
+  end
+  
+  private
+  
+  def destroy_allowed?
+    InvoicePolicy.new(current_user).destroy?(Invoice.find(params[:id]))
+  end
+end
+```
 
 ## When Unauthorized
 
@@ -316,7 +324,7 @@ Rabarber supports multi-tenancy through its context feature. All Rabarber method
 
 For example, in a project management app, you might want users to have different roles in different projects - someone could be an `owner` in one project but just a `member` in another.
 
-### Contextual Role Assignment And Queries
+### Contextual Role Assignment and Queries
 
 ```rb
 # Assign roles within a specific model instance

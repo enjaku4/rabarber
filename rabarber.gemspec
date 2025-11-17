@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Simple role-based authorization library for Ruby on Rails"
   spec.description = "Simple role-based authorization for Rails applications with multi-tenancy support"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2", "< 3.5"
+  spec.required_ruby_version = ">= 3.2", "< 4.1"
 
   spec.files = [
     "rabarber.gemspec", "README.md", "CHANGELOG.md", "LICENSE.txt"

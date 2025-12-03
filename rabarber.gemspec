@@ -6,13 +6,15 @@ Gem::Specification.new do |spec|
   spec.name = "rabarber"
   spec.version = Rabarber::VERSION
   spec.authors = ["enjaku4", "trafium"]
-  spec.email = ["enjaku4@icloud.com"]
+  spec.email = ["contact@brownbox.dev"]
   spec.homepage = "https://github.com/enjaku4/rabarber"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
   spec.metadata["documentation_uri"] = "#{spec.homepage}/blob/main/README.md"
+  spec.metadata["mailing_list_uri"] = "#{spec.homepage}/discussions"
+  spec.metadata["funding_uri"] = "https://github.com/sponsors/enjaku4"
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.summary = "Simple role-based authorization library for Ruby on Rails"
   spec.description = "Simple role-based authorization for Rails applications with multi-tenancy support"

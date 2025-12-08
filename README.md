@@ -188,7 +188,7 @@ class InvoicesController < ApplicationController
 end
 ```
 
-Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization, and use `with_authorization` and `skip_authorization` to control authorization checks.
+Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization.
 
 ### Authorization Rules
 
@@ -211,8 +211,6 @@ class TicketsController < ApplicationController
 end
 ```
 
-### Additive Rules
-
 Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action:
 
 ```rb
@@ -230,8 +228,6 @@ class InvoicesController < BaseController
   end
 end
 ```
-
-### Unrestricted Access
 
 It's possible to omit roles to allow unrestricted access:
 

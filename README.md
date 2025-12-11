@@ -388,11 +388,11 @@ class ProjectsController < ApplicationController
 end
 ```
 
-### Orphaned Context
+### Orphaned Contextual Roles
 
 When a context object is deleted from your database, its associated roles become orphaned and ignored by Rabarber.
 
-To clean up orphaned context roles, use:
+To clean up orphaned roles, use:
 
 ```rb
 Rabarber.prune

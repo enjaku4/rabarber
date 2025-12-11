@@ -406,7 +406,7 @@ When you rename or remove models used as contexts, you need to update Rabarber's
 # Rename a context class (e.g., when you rename your Ticket model to Task)
 migrate_authorization_context!("Ticket", "Task")
 
-# Remove orphaned context data (e.g., when you delete the Ticket model entirely)
+# Remove context data (e.g., when you delete the Ticket model entirely)
 delete_authorization_context!("Ticket")
 ```
 

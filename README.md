@@ -188,7 +188,7 @@ class InvoicesController < ApplicationController
 end
 ```
 
-Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization, and use `with_authorization` and `skip_authorization` to control authorization checks.
+Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization.
 
 ### Authorization Rules
 
@@ -211,8 +211,6 @@ class TicketsController < ApplicationController
 end
 ```
 
-### Additive Rules
-
 Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action:
 
 ```rb
@@ -230,8 +228,6 @@ class InvoicesController < BaseController
   end
 end
 ```
-
-### Unrestricted Access
 
 It's possible to omit roles to allow unrestricted access:
 
@@ -392,11 +388,11 @@ class ProjectsController < ApplicationController
 end
 ```
 
-### Orphaned Context
+### Orphaned Contextual Roles
 
 When a context object is deleted from your database, its associated roles become orphaned and ignored by Rabarber.
 
-To clean up orphaned context roles, use:
+To clean up orphaned roles, use:
 
 ```rb
 Rabarber.prune
@@ -410,7 +406,7 @@ When you rename or remove models used as contexts, you need to update Rabarber's
 # Rename a context class (e.g., when you rename your Ticket model to Task)
 migrate_authorization_context!("Ticket", "Task")
 
-# Remove orphaned context data (e.g., when you delete the Ticket model entirely)
+# Remove context data (e.g., when you delete the Ticket model entirely)
 delete_authorization_context!("Ticket")
 ```
 

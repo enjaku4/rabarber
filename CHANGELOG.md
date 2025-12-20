@@ -1,4 +1,8 @@
-<!--TODO: new version-->
+## v5.2.5
+
+### Misc:
+
+- Added support for Ruby 4
 
 ## v5.2.4
 

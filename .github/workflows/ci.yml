@@ -51,8 +51,7 @@ jobs:
           - "3.2"
           - "3.3"
           - "3.4"
-          # TODO: support new ruby
-          - "4.0.0-preview3"
+          - "4.0"
         rails:
           - "~> 7.1.0"
           - "~> 7.2.0"

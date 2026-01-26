@@ -18,6 +18,9 @@ Gemfile.lock
 # rbenv
 .ruby-version
 
+# asdf
+.tool-versions
+
 # byebug
 .byebug_history
 

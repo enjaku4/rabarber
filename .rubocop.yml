@@ -22,6 +22,9 @@ Layout/SpaceInLambdaLiteral:
 Lint/AmbiguousOperatorPrecedence:
   Enabled: false
 
+Lint/UselessDefaultValueArgument:
+  Enabled: false
+
 Metrics/AbcSize:
   Enabled: false
 

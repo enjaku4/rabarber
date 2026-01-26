@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-require "digest/sha2"
+require "digest/md5"
 
 module Rabarber
   module Core
     module Cache
       module_function
 
-      def fetch(uid, &)
+      def fetch(roleable_id, scope, &)
         return yield unless enabled?
 
-        Rails.cache.fetch(prepare_key(uid), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
+        Rails.cache.fetch(prepare_key(roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
 
-      def delete(*uids)
+      def delete(*pairs)
         return unless enabled?
 
-        Rails.cache.delete_multi(uids.map { prepare_key(_1) }) if uids.any?
+        Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) }) if pairs.any?
       end
 
       def enabled?
@@ -27,8 +27,8 @@ module Rabarber
         Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
       end
 
-      def prepare_key(uid)
-        "#{CACHE_PREFIX}:#{Digest::SHA2.hexdigest(Marshal.dump(uid))}"
+      def prepare_key(roleable_id, scope)
+        "#{CACHE_PREFIX}:#{roleable_id}:#{Digest::MD5.base64digest(Marshal.dump(scope))}"
       end
 
       CACHE_PREFIX = "rabarber"

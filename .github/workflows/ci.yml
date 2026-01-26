@@ -16,7 +16,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2
+          ruby-version: 3.3
       - name: Bundle install
         run: bundle install
       - name: Run RuboCop
@@ -33,7 +33,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2
+          ruby-version: 3.3
       - name: Install grepfruit
         run: gem install grepfruit
       - name: Run grepfruit
@@ -48,12 +48,10 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - "3.2"
           - "3.3"
           - "3.4"
           - "4.0"
         rails:
-          - "~> 7.1.0"
           - "~> 7.2.0"
           - "~> 8.0.0"
           - "~> 8.1.0"
@@ -87,7 +85,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2
+          ruby-version: 3.3
       - name: Bundle install
         run: bundle install
       - name: Run RSpec

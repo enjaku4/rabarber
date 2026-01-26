@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Simple role-based authorization library for Ruby on Rails"
   spec.description = "Simple role-based authorization for Rails applications with multi-tenancy support"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2", "< 4.1"
+  spec.required_ruby_version = ">= 3.3", "< 4.1"
 
   spec.files = [
     "rabarber.gemspec", "README.md", "CHANGELOG.md", "LICENSE.txt"
@@ -29,5 +29,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "dry-configurable", "~> 1.1"
   spec.add_dependency "dry-types", "~> 1.7"
-  spec.add_dependency "rails", ">= 7.1", "< 8.2"
+  spec.add_dependency "rails", ">= 7.2", "< 8.2"
 end

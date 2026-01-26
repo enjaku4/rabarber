@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-ENV["RAILS_ENV"] = "test"
-
 require "byebug"
 require "rabarber"
 require "database_cleaner/active_record"
@@ -11,13 +9,7 @@ require "rspec/rails"
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
 
-  config.disable_monkey_patching!
-
   config.expose_dsl_globally = true
-
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
 
   config.mock_with :rspec do |mocks|
     mocks.verify_doubled_constant_names = true

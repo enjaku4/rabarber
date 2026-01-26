@@ -1,3 +1,5 @@
+<!--TODO: readme-->
+
 # Rabarber: Simple Role-Based Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)

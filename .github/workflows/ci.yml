@@ -58,6 +58,7 @@ jobs:
 
     env:
       RAILS_VERSION: "${{ matrix.rails }}"
+      BUNDLE_PATH: "vendor/bundle"
 
     steps:
       - uses: actions/checkout@v6

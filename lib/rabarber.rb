@@ -14,7 +14,7 @@ require_relative "rabarber/inputs/model"
 require_relative "rabarber/inputs/non_empty_string"
 require_relative "rabarber/inputs/role"
 require_relative "rabarber/inputs/roles"
-require_relative "rabarber/inputs/symbol"
+require_relative "rabarber/inputs/non_empty_symbol"
 
 require_relative "rabarber/configuration"
 

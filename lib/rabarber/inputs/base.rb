@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
-require "dry-types"
-
 module Rabarber
   module Inputs
     class Base
-      include Dry.Types()
-
       def initialize(value, optional: false, error: Rabarber::InvalidArgumentError, message: nil)
         @value = value
         @optional = optional
@@ -15,15 +11,14 @@ module Rabarber
       end
 
       def process
-        type_checker = @optional ? type.optional : type
-        type_checker[@value]
-      rescue Dry::Types::CoercionError
-        raise_error
+        return @value if @value.nil? && @optional
+
+        processor.call
       end
 
       private
 
-      def type
+      def processor
         raise NotImplementedError
       end
 

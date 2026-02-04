@@ -19,14 +19,15 @@ module Rabarber
 
       private
 
-      def type
-        self.class::Strict::Class |
-          self.class::Instance(ActiveRecord::Base) |
-          self.class::Hash.schema(
-            context_type: self.class::Strict::String | self.class::Nil,
-            context_id: self.class::Strict::String | self.class::Strict::Integer | self.class::Nil
-          ) |
-          self.class::Nil
+      def processor
+        -> {
+          return @value if @value.nil?
+          return @value if @value.is_a?(Class)
+          return @value if @value.is_a?(ActiveRecord::Base)
+          return @value if @value in { context_type: String | nil, context_id: String | Integer | nil }
+
+          raise_error
+        }
       end
     end
   end

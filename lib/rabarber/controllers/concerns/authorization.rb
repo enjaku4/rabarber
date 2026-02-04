@@ -24,7 +24,7 @@ module Rabarber
 
         Rabarber::Core::Permissions.add(
           self,
-          Rabarber::Inputs::Symbol.new(
+          Rabarber::Inputs::NonEmptySymbol.new(
             action,
             optional: true,
             message: "Expected a symbol or a string, got #{action.inspect}"

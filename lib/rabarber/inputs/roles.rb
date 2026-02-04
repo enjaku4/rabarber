@@ -5,8 +5,8 @@ module Rabarber
     class Roles < Rabarber::Inputs::Base
       private
 
-      def type
-        self.class::Array.of(self.class::Coercible::Symbol.constrained(min_size: 1, format: /\A[a-z0-9_]+\z/)).constructor { Kernel::Array(_1) }
+      def processor
+        -> { Array(@value).map { |role| Rabarber::Inputs::Role.new(role, error: @error, message: @message).process } }
       end
     end
   end

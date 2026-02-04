@@ -5,7 +5,13 @@ module Rabarber
     class DynamicRule < Rabarber::Inputs::Base
       private
 
-      def type = self.class::Coercible::Symbol.constrained(min_size: 1) | self.class::Instance(Proc)
+      def processor
+        -> {
+          return @value if @value.is_a?(Proc)
+
+          Rabarber::Inputs::NonEmptySymbol.new(@value, error: @error, message: @message).process
+        }
+      end
     end
   end
 end

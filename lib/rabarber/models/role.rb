@@ -72,12 +72,6 @@ module Rabarber
         !!role.destroy!
       end
 
-      def assignees(name, context: nil)
-        deprecation_warning("assignees", "#{Rabarber::Configuration.user_model_name}.with_role")
-
-        find_by(name: process_role_name(name), **process_context(context))&.roleables || Rabarber::Configuration.user_model.none
-      end
-
       def prune
         orphaned_roles = where.not(context_id: nil).includes(:context).filter_map do |role|
           !role.context

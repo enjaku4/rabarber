@@ -9,28 +9,22 @@ Rabarber is a role-based authorization library for Ruby on Rails. It provides a 
 
 **Example of Usage:**
 
-Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access invoice data but not marketing information, while the role `analyst` can view marketing data but not detailed financial records. You can define such authorization rules easily with Rabarber.
-
-___
-
-And this is how your controller might look with Rabarber:
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access and manage invoice data, while the role `analyst` can only view it. Here's how you'd define that with Rabarber:
 
 ```rb
-class TicketsController < ApplicationController
-  grant_access roles: :admin
+class InvoicesController < ApplicationController
+  grant_access roles: :accountant
 
-  grant_access action: :index, roles: :manager
+  grant_access action: :index, roles: :analyst
   def index
-    # ...
+    # Accessible to accountant and analyst
   end
 
-  def destroy
-    # ...
+  def update
+    # Accessible to accountant only
   end
 end
 ```
-
-This means that `admin` users can access everything in `TicketsController`, while the `manager` role can access only the `index` action.
 
 ## Table of Contents
 
@@ -189,6 +183,8 @@ end
 Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization.
 
 ### Authorization Rules
+
+Rabarber follows a deny-by-default principle: if no `grant_access` rule is defined for an action or controller, access is denied to everyone.
 
 Define authorization rules using `grant_access`:
 

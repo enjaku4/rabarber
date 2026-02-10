@@ -31,3 +31,4 @@ Gemfile.lock
 
 # lsp
 .solargraph.yml
+.ruby-lsp

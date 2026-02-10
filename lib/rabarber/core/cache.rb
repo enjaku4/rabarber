@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require "digest/md5"
+require "securerandom"
 
 module Rabarber
   module Core
     module Cache
-      module_function
+      extend self
 
       def fetch(roleable_id, scope, &)
         return yield unless enabled?
@@ -19,20 +20,32 @@ module Rabarber
         Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) }) if pairs.any?
       end
 
+      def clear
+        Rails.cache.write(VERSION_KEY, SecureRandom.alphanumeric(8))
+      end
+
+      private
+
       def enabled?
         Rabarber::Configuration.cache_enabled
       end
 
-      def clear
-        Rails.cache.delete_matched(/^#{CACHE_PREFIX}/o)
-      end
-
       def prepare_key(roleable_id, scope)
-        "#{CACHE_PREFIX}:#{roleable_id}:#{Digest::MD5.base64digest(Marshal.dump(scope))}"
+        Digest::MD5.base64digest(Marshal.dump([current_version, roleable_id, scope]))
       end
 
-      CACHE_PREFIX = "rabarber"
-      private_constant :CACHE_PREFIX
+      def current_version
+        version = Rails.cache.read(VERSION_KEY).presence
+
+        return version if version
+
+        clear
+
+        Rails.cache.read(VERSION_KEY)
+      end
+
+      VERSION_KEY = "rabarber"
+      private_constant :VERSION_KEY
     end
   end
 

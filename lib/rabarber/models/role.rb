@@ -12,14 +12,10 @@ module Rabarber
 
     class << self
       def names(context: nil)
-        deprecation_warning("names", "Rabarber.roles")
-
         where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
       def all_names
-        deprecation_warning("all_names", "Rabarber.all_roles")
-
         includes(:context).each_with_object({}) do |role, hash|
           (hash[role.context] ||= []) << role.name.to_sym
         rescue ActiveRecord::RecordNotFound
@@ -30,8 +26,6 @@ module Rabarber
       end
 
       def add(name, context: nil)
-        deprecation_warning("add", "Rabarber.create_role")
-
         name = process_role_name(name)
         processed_context = process_context(context)
 
@@ -41,8 +35,6 @@ module Rabarber
       end
 
       def rename(old_name, new_name, context: nil, force: false)
-        deprecation_warning("rename", "Rabarber.rename_role")
-
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
 
@@ -58,8 +50,6 @@ module Rabarber
       end
 
       def remove(name, context: nil, force: false)
-        deprecation_warning("remove", "Rabarber.delete_role")
-
         processed_context = process_context(context)
         role = find_by(name: process_role_name(name), **processed_context)
 
@@ -92,14 +82,6 @@ module Rabarber
       end
 
       private
-
-      def deprecation_warning(method, alternative)
-        callers = caller_locations.map(&:label)
-
-        return if callers.include?(alternative) || callers.include?("ActiveRecord::Relation#scoping")
-
-        ActiveSupport::Deprecation.new("6.0.0", "rabarber").warn("`Rabarber::Role.#{method}` method is deprecated and will be removed in the next major version, use `#{alternative}` instead.")
-      end
 
       def delete_roleables_cache(role, context:)
         Rabarber::Core::Cache.delete(*role.roleables.pluck(:id).flat_map { [[_1, context], [_1, :all]] })

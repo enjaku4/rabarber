@@ -49,7 +49,7 @@ RSpec.describe Rabarber::Core::Cache do
   end
 
   describe ".delete" do
-    subject { described_class.delete(*roleable_ids.map { |roleable_id| [roleable_id, scope] }) }
+    subject { described_class.delete(*roleable_ids.map { [_1, scope] }) }
 
     let(:roleable_ids) { [42, 13] }
     let(:scope) { { context_type: Project, context_id: 13 } }

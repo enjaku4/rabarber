@@ -81,9 +81,12 @@ Create an initializer to customize Rabarber's behavior (optional):
 
 ```rb
 Rabarber.configure do |config|
-  config.cache_enabled = true                 # Enable/disable role caching (default: true)
-  config.current_user_method = :current_user  # Method to access current user (default: :current_user)
-  config.user_model_name = "User"             # User model name (default: "User")
+  # Enable/disable role caching (default: true)
+  config.cache_enabled = true
+  # Method to access current user (default: :current_user)
+  config.current_user_method = :current_user
+  # User model name (default: "User")
+  config.user_model_name = "User"
 end
 ```
 
@@ -137,15 +140,22 @@ You can also manage roles directly:
 
 ```rb
 # Create a new role
-Rabarber.create_role(:admin) # => true if created, false if already exists
+Rabarber.create_role(:admin)
+# => true if created, false if already exists
 
 # Rename a role
-Rabarber.rename_role(:admin, :administrator) # => true if renamed, false if new name exists or role is assigned
-Rabarber.rename_role(:admin, :administrator, force: true) # Force rename even if role is assigned
+Rabarber.rename_role(:admin, :administrator)
+# => true if renamed, false if new name exists or role is assigned
+
+# Force rename even if role is assigned
+Rabarber.rename_role(:admin, :administrator, force: true)
 
 # Remove a role
-Rabarber.delete_role(:admin) # => true if deleted, false if role is assigned
-Rabarber.delete_role(:admin, force: true) # Force deletion even if role is assigned
+Rabarber.delete_role(:admin)
+# => true if deleted, false if role is assigned
+
+# Force deletion even if role is assigned
+Rabarber.delete_role(:admin, force: true)
 
 # List available roles in the global context
 Rabarber.roles
@@ -164,7 +174,8 @@ Include `Rabarber::Authorization` module in your controllers and configure prote
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  with_authorization # Enable authorization check for all actions in all controllers by default
+  # Enable authorization check for all actions in all controllers by default
+  with_authorization
 end
 ```
 
@@ -172,11 +183,13 @@ You can also enable authorization checks selectively. Both `with_authorization` 
 
 ```rb
 class TicketsController < ApplicationController
-  skip_authorization only: [:index, :show] # Skip authorization for specific actions
+  # Skip authorization for specific actions
+  skip_authorization only: [:index, :show]
 end
 
 class InvoicesController < ApplicationController
-  with_authorization except: [:index] # Enable authorization for all actions except index
+  # Enable authorization for all actions except index
+  with_authorization except: [:index]
 end
 ```
 
@@ -209,11 +222,13 @@ Authorization rules are additive - they combine across inheritance chains and wh
 
 ```rb
 class BaseController < ApplicationController
-  grant_access roles: :admin # Admin can access everything
+  # Admin can access everything
+  grant_access roles: :admin
 end
 
 class InvoicesController < BaseController
-  grant_access roles: :accountant # Accountant can also access InvoicesController (along with admin)
+  # Accountant can also access InvoicesController (along with admin)
+  grant_access roles: :accountant
 
   grant_access action: :index, roles: :manager
   grant_access action: :index, roles: :supervisor
@@ -227,16 +242,19 @@ It's possible to omit roles to allow unrestricted access:
 
 ```rb
 class UnrestrictedController < ApplicationController
-  grant_access # Allow all users to access all actions
+  # Allow all users to access all actions
+  grant_access
 end
 
 class MixedController < ApplicationController
-  grant_access action: :index # Unrestricted index action
+  # Unrestricted index action
+  grant_access action: :index
   def index
     # Accessible to all users
   end
 
-  grant_access action: :show, roles: :member # Restricted show action
+  # Restricted show action
+  grant_access action: :show, roles: :member
   def show
     # Accessible to members only
   end
@@ -301,7 +319,8 @@ class ApplicationController < ActionController::Base
   private
 
   def when_unauthorized
-    head :not_found # Custom behavior to hide existence of protected resources
+    # Custom behavior to hide existence of protected resources
+    head :not_found
   end
 end
 ```

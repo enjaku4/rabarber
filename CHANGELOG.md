@@ -2,9 +2,9 @@
 
 ### Breaking:
 
+- Removed methods deprecated in v5.2.0 from the public API
 - Dropped support for Ruby 3.2
 - Dropped support for Rails 7.1
-- Removed methods deprecated in [v5.2.0](https://github.com/enjaku4/rabarber/blob/main/CHANGELOG.md#v520)
 
 ### Bugs:
 
@@ -12,11 +12,10 @@
 
 ### Misc:
 
-- Dropped some unnecessary dependencies
 - Optimized cache key generation
+- Dropped some unnecessary dependencies
 
-<!-- TODO: add migration guide link -->
-To upgrade to v6.0.0, please refer to the [migration guide](#)
+To upgrade to v6.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/101)
 
 ## v5.2.5
 

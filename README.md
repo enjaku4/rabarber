@@ -445,7 +445,7 @@ Use conditional rendering based on roles:
 ## Getting Help and Contributing
 
 ### Getting Help
-Have a question or need assistance? Open a discussion in our [discussions section](https://github.com/enjaku4/rabarber/discussions) for:
+Have a question or need assistance? Open a discussion in the [discussions section](https://github.com/enjaku4/rabarber/discussions) for:
 - Usage questions
 - Implementation guidance
 - Feature suggestions
@@ -460,7 +460,7 @@ Found a bug? Please [create an issue](https://github.com/enjaku4/rabarber/issues
 Ready to contribute? You can:
 - Fix bugs by submitting pull requests
 - Improve documentation
-- Add new features (please discuss first in our [discussions section](https://github.com/enjaku4/rabarber/discussions))
+- Add new features (please discuss first in the [discussions section](https://github.com/enjaku4/rabarber/discussions))
 
 Before contributing, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md)
 

@@ -7,7 +7,7 @@ module Rabarber
 
       def processor
         -> {
-          raise_error unless (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.size >= 1
+          raise_error unless (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.present?
 
           @value.to_sym
         }

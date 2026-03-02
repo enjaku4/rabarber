@@ -6,7 +6,11 @@ module Rabarber
       private
 
       def processor
-        -> { Array(@value).map { |role| Rabarber::Inputs::Role.new(role, error: @error, message: @message).process } }
+        -> {
+          Array(@value).map do |role|
+            Rabarber::Inputs::Role.new(role, error: @error, message: @message).process
+          end
+        }
       end
     end
   end

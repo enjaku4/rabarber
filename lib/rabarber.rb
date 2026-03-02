@@ -38,7 +38,7 @@ require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/helpers/migration_helpers"
 require_relative "rabarber/models/concerns/roleable"
 require_relative "rabarber/models/role"
-require_relative "rabarber/role_management"
+require_relative "rabarber/models/role_management"
 
 Rabarber.extend Rabarber::RoleManagement
 

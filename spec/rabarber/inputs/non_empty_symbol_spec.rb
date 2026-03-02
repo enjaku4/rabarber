@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Rabarber::Inputs::Symbol do
+RSpec.describe Rabarber::Inputs::NonEmptySymbol do
   describe "#process" do
     subject { described_class.new(value, error: Rabarber::Error, message: "Error").process }
 

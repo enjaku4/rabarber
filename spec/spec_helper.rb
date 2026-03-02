@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-ENV["RAILS_ENV"] = "test"
-
 require "byebug"
 require "rabarber"
 require "database_cleaner/active_record"
@@ -11,13 +9,7 @@ require "rspec/rails"
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
 
-  config.disable_monkey_patching!
-
   config.expose_dsl_globally = true
-
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
 
   config.mock_with :rspec do |mocks|
     mocks.verify_doubled_constant_names = true
@@ -31,7 +23,7 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
-    Rabarber::Configuration.reset_config
+    Rabarber::Configuration.reset_to_defaults!
 
     DatabaseCleaner.cleaning do
       example.run
@@ -47,7 +39,6 @@ end
 
 require "#{File.dirname(__FILE__)}/support/models"
 require "#{File.dirname(__FILE__)}/support/application"
-require "#{File.dirname(__FILE__)}/support/configuration"
 require "#{File.dirname(__FILE__)}/support/controllers"
 require "#{File.dirname(__FILE__)}/support/helpers"
 

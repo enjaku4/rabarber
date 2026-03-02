@@ -5,7 +5,14 @@ module Rabarber
     class Model < Rabarber::Inputs::Base
       private
 
-      def type = self.class::Strict::Class.constructor { _1.try(:safe_constantize) }.constrained(lt: ActiveRecord::Base)
+      def processor
+        -> {
+          model = @value.try(:safe_constantize)
+          raise_error unless model.is_a?(Class) && model < ActiveRecord::Base
+
+          model
+        }
+      end
     end
   end
 end

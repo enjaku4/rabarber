@@ -80,7 +80,7 @@ RSpec.describe Rabarber::Roleable do
 
     shared_examples_for "it caches user roles" do |processed_context, role_names|
       it "caches user roles" do
-        expect(Rabarber::Core::Cache).to receive(:fetch).with([user.id, processed_context]) do |&block|
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id, processed_context) do |&block|
           result = block.call
           expect(result).to match_array(role_names)
           result
@@ -147,7 +147,7 @@ RSpec.describe Rabarber::Roleable do
 
     shared_examples_for "it caches all user roles" do
       it "caches user roles" do
-        expect(Rabarber::Core::Cache).to receive(:fetch).with([user.id, :all]) do |&block|
+        expect(Rabarber::Core::Cache).to receive(:fetch).with(user.id, :all) do |&block|
           result = block.call
           expect(result).to eq(all_roles)
           result

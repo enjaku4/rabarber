@@ -5,7 +5,7 @@ module Rabarber
     class NonEmptyString < Rabarber::Inputs::Base
       private
 
-      def type = self.class::Strict::String.constrained(min_size: 1)
+      def processor = -> { @value.is_a?(String) && @value.present? ? @value : raise_error }
     end
   end
 end

@@ -5,12 +5,10 @@ module Rabarber
     class Role < Rabarber::Inputs::Base
       private
 
-      def processor
-        -> {
-          raise_error unless (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.to_s.match?(/\A[a-z0-9_]+\z/)
+      def validate_and_normalize
+        raise_error unless (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.to_s.match?(/\A[a-z0-9_]+\z/)
 
-          @value.to_sym
-        }
+        @value.to_sym
       end
     end
   end

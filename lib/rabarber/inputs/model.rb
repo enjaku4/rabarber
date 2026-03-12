@@ -5,13 +5,11 @@ module Rabarber
     class Model < Rabarber::Inputs::Base
       private
 
-      def processor
-        -> {
-          model = @value.try(:safe_constantize)
-          raise_error unless model.is_a?(Class) && model < ActiveRecord::Base
+      def validate_and_normalize
+        model = @value.try(:safe_constantize)
+        raise_error unless model.is_a?(Class) && model < ActiveRecord::Base
 
-          model
-        }
+        model
       end
     end
   end

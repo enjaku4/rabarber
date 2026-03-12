@@ -13,13 +13,11 @@ module Rabarber
 
         private
 
-        def processor
-          -> {
-            return @value if @value.is_a?(Proc)
-            return @value.to_sym if (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.present?
+        def validate_and_normalize
+          return @value if @value.is_a?(Proc)
+          return @value.to_sym if (@value.is_a?(String) || @value.is_a?(Symbol)) && @value.present?
 
-            super.call
-          }
+          super
         end
       end
     end

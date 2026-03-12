@@ -19,15 +19,13 @@ module Rabarber
 
       private
 
-      def processor
-        -> {
-          return @value if @value.nil?
-          return @value if @value.is_a?(Class)
-          return @value if @value.is_a?(ActiveRecord::Base)
-          return @value if @value in { context_type: String | nil, context_id: String | Integer | nil }
+      def validate_and_normalize
+        return @value if @value.nil?
+        return @value if @value.is_a?(Class)
+        return @value if @value.is_a?(ActiveRecord::Base)
+        return @value if @value in { context_type: String | nil, context_id: String | Integer | nil }
 
-          raise_error
-        }
+        raise_error
       end
     end
   end

@@ -5,12 +5,10 @@ module Rabarber
     class Roles < Rabarber::Inputs::Base
       private
 
-      def processor
-        -> {
-          Array(@value).map do |role|
-            Rabarber::Inputs::Role.new(role, error: @error, message: @message).process
-          end
-        }
+      def validate_and_normalize
+        Array(@value).map do |role|
+          Rabarber::Inputs::Role.new(role, error: @error, message: @message).process
+        end
       end
     end
   end

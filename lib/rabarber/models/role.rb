@@ -11,11 +11,11 @@ module Rabarber
                                         join_table: "rabarber_roles_roleables"
 
     class << self
-      def names(context: nil)
+      def list(context: nil)
         where(process_context(context)).pluck(:name).map(&:to_sym)
       end
 
-      def all_names
+      def list_all
         includes(:context).each_with_object({}) do |role, hash|
           (hash[role.context] ||= []) << role.name.to_sym
         rescue ActiveRecord::RecordNotFound
@@ -25,7 +25,7 @@ module Rabarber
         raise Rabarber::NotFoundError, "Context not found: class #{e.name} may have been renamed or deleted"
       end
 
-      def add(name, context: nil)
+      def register(name, context: nil)
         name = process_role_name(name)
         processed_context = process_context(context)
 
@@ -34,7 +34,7 @@ module Rabarber
         !!create!(name:, **processed_context)
       end
 
-      def rename(old_name, new_name, context: nil, force: false)
+      def amend(old_name, new_name, context: nil, force: false)
         processed_context = process_context(context)
         role = find_by(name: process_role_name(old_name), **processed_context)
 
@@ -49,7 +49,7 @@ module Rabarber
         role.update!(name:)
       end
 
-      def remove(name, context: nil, force: false)
+      def drop(name, context: nil, force: false)
         processed_context = process_context(context)
         role = find_by(name: process_role_name(name), **processed_context)
 

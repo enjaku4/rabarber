@@ -70,36 +70,36 @@ RSpec.describe Rabarber do
   end
 
   describe ".roles" do
-    it "delegates to Rabarber::Role.names" do
-      expect(Rabarber::Role).to receive(:names).with(context: Project)
+    it "delegates to Rabarber::Role.list" do
+      expect(Rabarber::Role).to receive(:list).with(context: Project)
       described_class.roles(context: Project)
     end
   end
 
   describe ".all_roles" do
-    it "delegates to Rabarber::Role.all_names" do
-      expect(Rabarber::Role).to receive(:all_names)
+    it "delegates to Rabarber::Role.list_all" do
+      expect(Rabarber::Role).to receive(:list_all)
       described_class.all_roles
     end
   end
 
   describe ".create_role" do
-    it "delegates to Rabarber::Role.add" do
-      expect(Rabarber::Role).to receive(:add).with(:editor, context: Project)
+    it "delegates to Rabarber::Role.register" do
+      expect(Rabarber::Role).to receive(:register).with(:editor, context: Project)
       described_class.create_role(:editor, context: Project)
     end
   end
 
   describe ".rename_role" do
-    it "delegates to Rabarber::Role.rename" do
-      expect(Rabarber::Role).to receive(:rename).with(:editor, :contributor, context: Project, force: true)
+    it "delegates to Rabarber::Role.amend" do
+      expect(Rabarber::Role).to receive(:amend).with(:editor, :contributor, context: Project, force: true)
       described_class.rename_role(:editor, :contributor, context: Project, force: true)
     end
   end
 
   describe ".delete_role" do
-    it "delegates to Rabarber::Role.remove" do
-      expect(Rabarber::Role).to receive(:remove).with(:editor, context: Project, force: true)
+    it "delegates to Rabarber::Role.drop" do
+      expect(Rabarber::Role).to receive(:drop).with(:editor, context: Project, force: true)
       described_class.delete_role(:editor, context: Project, force: true)
     end
   end

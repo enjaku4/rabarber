@@ -40,11 +40,11 @@ module Rabarber
 
     def roles(context: nil)
       processed_context = process_context(context)
-      Rabarber::Core::Cache.fetch(roleable_id, processed_context) { rabarber_roles.names(context: processed_context) }
+      Rabarber::Core::Cache.fetch(roleable_id, processed_context) { rabarber_roles.list(context: processed_context) }
     end
 
     def all_roles
-      Rabarber::Core::Cache.fetch(roleable_id, :all) { rabarber_roles.all_names }
+      Rabarber::Core::Cache.fetch(roleable_id, :all) { rabarber_roles.list_all }
     end
 
     def has_role?(*role_names, context: nil)
@@ -60,7 +60,7 @@ module Rabarber
       create_new_roles(processed_role_names, context: processed_context) if create_new
 
       roles_to_assign = Rabarber::Role.where(
-        name: (processed_role_names - rabarber_roles.names(context: processed_context)), **processed_context
+        name: (processed_role_names - rabarber_roles.list(context: processed_context)), **processed_context
       )
 
       if roles_to_assign.any?
@@ -76,7 +76,7 @@ module Rabarber
       processed_context = process_context(context)
 
       roles_to_revoke = Rabarber::Role.where(
-        name: processed_role_names.intersection(rabarber_roles.names(context: processed_context)), **processed_context
+        name: processed_role_names.intersection(rabarber_roles.list(context: processed_context)), **processed_context
       )
 
       if roles_to_revoke.any?

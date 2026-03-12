@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Role do
-  describe ".names" do
-    subject { described_class.names(context:) }
+  describe ".list" do
+    subject { described_class.list(context:) }
 
     let(:context) { nil }
 
@@ -42,8 +42,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".all_names" do
-    subject { described_class.all_names }
+  describe ".list_all" do
+    subject { described_class.list_all }
 
     context "when there are no roles" do
       it { is_expected.to eq({}) }
@@ -55,14 +55,14 @@ RSpec.describe Rabarber::Role do
       let(:user) { User.create! }
 
       before do
-        described_class.add(:admin)
-        described_class.add(:accountant)
-        described_class.add(:admin, context: Project)
-        described_class.add(:manager, context: Project)
-        described_class.add(:manager, context: project1)
-        described_class.add(:viewer, context: project2)
-        described_class.add(:manager, context: project2)
-        described_class.add(:editor, context: user)
+        described_class.register(:admin)
+        described_class.register(:accountant)
+        described_class.register(:admin, context: Project)
+        described_class.register(:manager, context: Project)
+        described_class.register(:manager, context: project1)
+        described_class.register(:viewer, context: project2)
+        described_class.register(:manager, context: project2)
+        described_class.register(:editor, context: user)
       end
 
       it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager], user => [:editor]) }
@@ -91,8 +91,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".add" do
-    subject { described_class.add(name, context:) }
+  describe ".register" do
+    subject { described_class.register(name, context:) }
 
     let(:name) { :admin }
 
@@ -150,8 +150,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".rename" do
-    subject { described_class.rename(old_name, new_name, context:, force:) }
+  describe ".amend" do
+    subject { described_class.amend(old_name, new_name, context:, force:) }
 
     let(:old_name) { :admin }
     let(:new_name) { :manager }
@@ -320,8 +320,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".remove" do
-    subject { described_class.remove(name, context:, force:) }
+  describe ".drop" do
+    subject { described_class.drop(name, context:, force:) }
 
     let(:name) { :admin }
     let(:context) { Project.create! }

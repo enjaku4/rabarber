@@ -303,7 +303,7 @@ class InvoicesController < ApplicationController
   def destroy_allowed?
     InvoicePolicy.new(current_user).destroy?(invoice)
   end
-  
+
   def invoice
     @invoice ||= Invoice.find(params[:id])
   end

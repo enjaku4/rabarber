@@ -116,7 +116,7 @@ user.revoke_roles(:admin, :manager)
 user.revoke_all_roles
 ```
 
-All role assignment methods return the list of roles currently assigned to the user.
+All role assignment and revocation methods return the list of roles currently assigned to the user.
 
 ### Role Queries
 
@@ -136,7 +136,7 @@ User.with_role(:admin, :manager)
 
 ## Direct Role Management
 
-You can also manage roles directly:
+You can also directly manage roles available in the application:
 
 ```rb
 # Create a new role
@@ -168,7 +168,7 @@ Rabarber.all_roles
 
 ### Setup
 
-Include `Rabarber::Authorization` module in your controllers and configure protection:
+Include `Rabarber::Authorization` module in your controllers and configure authorization:
 
 ```rb
 class ApplicationController < ActionController::Base
@@ -218,7 +218,7 @@ class TicketsController < ApplicationController
 end
 ```
 
-Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action:
+Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action or controller:
 
 ```rb
 class BaseController < ApplicationController
@@ -288,7 +288,7 @@ Dynamic rules can also be used without roles at all, allowing you to define cust
 
 ```rb
 class InvoicesController < ApplicationController
-  grant_access action: :update, unless: -> { Date.current.on_weekend? }
+  grant_access action: :update, unless: -> { invoice.period_closed? }
   def update
     # ...
   end
@@ -301,7 +301,11 @@ class InvoicesController < ApplicationController
   private
 
   def destroy_allowed?
-    InvoicePolicy.new(current_user).destroy?(Invoice.find(params[:id]))
+    InvoicePolicy.new(current_user).destroy?(invoice)
+  end
+  
+  def invoice
+    @invoice ||= Invoice.find(params[:id])
   end
 end
 ```

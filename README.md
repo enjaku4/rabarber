@@ -9,28 +9,22 @@ Rabarber is a role-based authorization library for Ruby on Rails. It provides a 
 
 **Example of Usage:**
 
-Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access invoice data but not marketing information, while the role `analyst` can view marketing data but not detailed financial records. You can define such authorization rules easily with Rabarber.
-
-___
-
-And this is how your controller might look with Rabarber:
+Consider a CRM system where users with different roles have distinct access levels. For instance, the role `accountant` can access and manage invoice data, while the role `analyst` can only view it. Here's how you'd define that with Rabarber:
 
 ```rb
-class TicketsController < ApplicationController
-  grant_access roles: :admin
+class InvoicesController < ApplicationController
+  grant_access roles: :accountant
 
-  grant_access action: :index, roles: :manager
+  grant_access action: :index, roles: :analyst
   def index
-    # ...
+    # Accessible to accountant and analyst
   end
 
-  def destroy
-    # ...
+  def update
+    # Accessible to accountant only
   end
 end
 ```
-
-This means that `admin` users can access everything in `TicketsController`, while the `manager` role can access only the `index` action.
 
 ## Table of Contents
 
@@ -87,9 +81,12 @@ Create an initializer to customize Rabarber's behavior (optional):
 
 ```rb
 Rabarber.configure do |config|
-  config.cache_enabled = true                 # Enable/disable role caching (default: true)
-  config.current_user_method = :current_user  # Method to access current user (default: :current_user)
-  config.user_model_name = "User"             # User model name (default: "User")
+  # Enable/disable role caching (default: true)
+  config.cache_enabled = true
+  # Method to access current user (default: :current_user)
+  config.current_user_method = :current_user
+  # User model name (default: "User")
+  config.user_model_name = "User"
 end
 ```
 
@@ -119,7 +116,7 @@ user.revoke_roles(:admin, :manager)
 user.revoke_all_roles
 ```
 
-All role assignment methods return the list of roles currently assigned to the user.
+All role assignment and revocation methods return the list of roles currently assigned to the user.
 
 ### Role Queries
 
@@ -139,19 +136,26 @@ User.with_role(:admin, :manager)
 
 ## Direct Role Management
 
-You can also manage roles directly:
+You can also directly manage roles available in the application:
 
 ```rb
 # Create a new role
-Rabarber.create_role(:admin) # => true if created, false if already exists
+Rabarber.create_role(:admin)
+# => true if created, false if already exists
 
 # Rename a role
-Rabarber.rename_role(:admin, :administrator) # => true if renamed, false if new name exists or role is assigned
-Rabarber.rename_role(:admin, :administrator, force: true) # Force rename even if role is assigned
+Rabarber.rename_role(:admin, :administrator)
+# => true if renamed, false if new name exists or role is assigned
+
+# Force rename even if role is assigned
+Rabarber.rename_role(:admin, :administrator, force: true)
 
 # Remove a role
-Rabarber.delete_role(:admin) # => true if deleted, false if role is assigned
-Rabarber.delete_role(:admin, force: true) # Force deletion even if role is assigned
+Rabarber.delete_role(:admin)
+# => true if deleted, false if role is assigned
+
+# Force deletion even if role is assigned
+Rabarber.delete_role(:admin, force: true)
 
 # List available roles in the global context
 Rabarber.roles
@@ -160,19 +164,18 @@ Rabarber.roles
 Rabarber.all_roles
 ```
 
-> **Note:** Some methods have been deprecated in favor of the new API shown above. Deprecated methods still work but will be removed in a future major version. See the [changelog](https://github.com/enjaku4/rabarber/blob/main/CHANGELOG.md#v520) for the complete list of deprecated methods and their replacements.
-
 ## Authorization
 
 ### Setup
 
-Include `Rabarber::Authorization` module in your controllers and configure protection:
+Include `Rabarber::Authorization` module in your controllers and configure authorization:
 
 ```rb
 class ApplicationController < ActionController::Base
   include Rabarber::Authorization
 
-  with_authorization # Enable authorization check for all actions in all controllers by default
+  # Enable authorization check for all actions in all controllers by default
+  with_authorization
 end
 ```
 
@@ -180,17 +183,21 @@ You can also enable authorization checks selectively. Both `with_authorization` 
 
 ```rb
 class TicketsController < ApplicationController
-  skip_authorization only: [:index, :show] # Skip authorization for specific actions
+  # Skip authorization for specific actions
+  skip_authorization only: [:index, :show]
 end
 
 class InvoicesController < ApplicationController
-  with_authorization except: [:index] # Enable authorization for all actions except index
+  # Enable authorization for all actions except index
+  with_authorization except: [:index]
 end
 ```
 
 Authorization requires an authenticated user. Rabarber will raise an error if no user is found via the configured `current_user_method`. Ensure authentication happens before authorization.
 
 ### Authorization Rules
+
+Rabarber follows a deny-by-default principle: if no `grant_access` rule is defined for an action or controller, access is denied to everyone.
 
 Define authorization rules using `grant_access`:
 
@@ -211,15 +218,17 @@ class TicketsController < ApplicationController
 end
 ```
 
-Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action:
+Authorization rules are additive - they combine across inheritance chains and when defined multiple times for the same action or controller:
 
 ```rb
 class BaseController < ApplicationController
-  grant_access roles: :admin # Admin can access everything
+  # Admin can access everything
+  grant_access roles: :admin
 end
 
 class InvoicesController < BaseController
-  grant_access roles: :accountant # Accountant can also access InvoicesController (along with admin)
+  # Accountant can also access InvoicesController (along with admin)
+  grant_access roles: :accountant
 
   grant_access action: :index, roles: :manager
   grant_access action: :index, roles: :supervisor
@@ -233,16 +242,19 @@ It's possible to omit roles to allow unrestricted access:
 
 ```rb
 class UnrestrictedController < ApplicationController
-  grant_access # Allow all users to access all actions
+  # Allow all users to access all actions
+  grant_access
 end
 
 class MixedController < ApplicationController
-  grant_access action: :index # Unrestricted index action
+  # Unrestricted index action
+  grant_access action: :index
   def index
     # Accessible to all users
   end
 
-  grant_access action: :show, roles: :member # Restricted show action
+  # Restricted show action
+  grant_access action: :show, roles: :member
   def show
     # Accessible to members only
   end
@@ -276,7 +288,7 @@ Dynamic rules can also be used without roles at all, allowing you to define cust
 
 ```rb
 class InvoicesController < ApplicationController
-  grant_access action: :update, unless: -> { Date.current.on_weekend? }
+  grant_access action: :update, unless: -> { invoice.period_closed? }
   def update
     # ...
   end
@@ -289,7 +301,11 @@ class InvoicesController < ApplicationController
   private
 
   def destroy_allowed?
-    InvoicePolicy.new(current_user).destroy?(Invoice.find(params[:id]))
+    InvoicePolicy.new(current_user).destroy?(invoice)
+  end
+
+  def invoice
+    @invoice ||= Invoice.find(params[:id])
   end
 end
 ```
@@ -307,7 +323,8 @@ class ApplicationController < ActionController::Base
   private
 
   def when_unauthorized
-    head :not_found # Custom behavior to hide existence of protected resources
+    # Custom behavior to hide existence of protected resources
+    head :not_found
   end
 end
 ```
@@ -476,5 +493,5 @@ Everyone interacting in the Rabarber project is expected to follow the [code of 
 
 Only the latest major version is supported. Older versions are obsolete and not maintained, but their READMEs are available here for reference:
 
-[v4.x.x](https://github.com/enjaku4/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/enjaku4/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
+[v5.x.x](https://github.com/enjaku4/rabarber/blob/12a23858e974f5cc0a4ebddfc18bdf84171dd554/README.md) | [v4.x.x](https://github.com/enjaku4/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/enjaku4/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
  | [v2.x.x](https://github.com/enjaku4/rabarber/blob/875b357ea949404ddc3645ad66eddea7ed4e2ee4/README.md) | [v1.x.x](https://github.com/enjaku4/rabarber/blob/b81428429404e197d70317b763e7b2a21e02c296/README.md)

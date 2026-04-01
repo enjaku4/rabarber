@@ -1,3 +1,22 @@
+## v6.0.0
+
+### Breaking:
+
+- Removed methods deprecated in v5.2.0 from the public API
+- Dropped support for Ruby 3.2
+- Dropped support for Rails 7.1
+
+### Bugs:
+
+- Fixed cache clearing not working with Memcached
+
+### Misc:
+
+- Optimized cache key generation
+- Dropped some unnecessary dependencies
+
+To upgrade to v6.0.0, please refer to the [migration guide](https://github.com/enjaku4/rabarber/discussions/101)
+
 ## v5.2.5
 
 ### Misc:

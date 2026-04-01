@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Role do
-  describe ".names" do
-    subject { described_class.names(context:) }
+  describe ".list" do
+    subject { described_class.list(context:) }
 
     let(:context) { nil }
 
@@ -42,8 +42,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".all_names" do
-    subject { described_class.all_names }
+  describe ".list_all" do
+    subject { described_class.list_all }
 
     context "when there are no roles" do
       it { is_expected.to eq({}) }
@@ -55,14 +55,14 @@ RSpec.describe Rabarber::Role do
       let(:user) { User.create! }
 
       before do
-        described_class.add(:admin)
-        described_class.add(:accountant)
-        described_class.add(:admin, context: Project)
-        described_class.add(:manager, context: Project)
-        described_class.add(:manager, context: project1)
-        described_class.add(:viewer, context: project2)
-        described_class.add(:manager, context: project2)
-        described_class.add(:editor, context: user)
+        described_class.register(:admin)
+        described_class.register(:accountant)
+        described_class.register(:admin, context: Project)
+        described_class.register(:manager, context: Project)
+        described_class.register(:manager, context: project1)
+        described_class.register(:viewer, context: project2)
+        described_class.register(:manager, context: project2)
+        described_class.register(:editor, context: user)
       end
 
       it { is_expected.to eq(nil => [:admin, :accountant], Project => [:admin, :manager], project1 => [:manager], project2 => [:viewer, :manager], user => [:editor]) }
@@ -91,8 +91,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".add" do
-    subject { described_class.add(name, context:) }
+  describe ".register" do
+    subject { described_class.register(name, context:) }
 
     let(:name) { :admin }
 
@@ -150,8 +150,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".rename" do
-    subject { described_class.rename(old_name, new_name, context:, force:) }
+  describe ".amend" do
+    subject { described_class.amend(old_name, new_name, context:, force:) }
 
     let(:old_name) { :admin }
     let(:new_name) { :manager }
@@ -320,8 +320,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".remove" do
-    subject { described_class.remove(name, context:, force:) }
+  describe ".drop" do
+    subject { described_class.drop(name, context:, force:) }
 
     let(:name) { :admin }
     let(:context) { Project.create! }
@@ -424,60 +424,6 @@ RSpec.describe Rabarber::Role do
     end
 
     context "when given an invalid context" do
-      let(:context) { 123 }
-
-      it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
-      end
-    end
-  end
-
-  describe ".assignees" do
-    subject { described_class.assignees(role, context:) }
-
-    let(:users) { [User.create!, User.create!] }
-    let(:context) { Project.create! }
-
-    context "when the role exists" do
-      let(:role) { "admin" }
-
-      before { described_class.create!(name: "admin", context_type: "Project", context_id: context.id) }
-
-      context "when the role is not assigned to any user" do
-        it { is_expected.to be_empty }
-      end
-
-      context "when the role is assigned to some users" do
-        before { users.each { |user| user.assign_roles(:admin, context:) } }
-
-        it { is_expected.to match_array(users) }
-      end
-    end
-
-    context "when the role does not exist" do
-      let(:role) { "client" }
-
-      it { is_expected.to be_empty }
-    end
-
-    context "when the role with the same name exists in a different context" do
-      let(:role) { "admin" }
-
-      before { described_class.create!(name: "admin", context_type: "Project", context_id: nil) }
-
-      it { is_expected.to be_empty }
-    end
-
-    context "when given an invalid name" do
-      let(:role) { :"Invalid-Name" }
-
-      it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got :\"Invalid-Name\"")
-      end
-    end
-
-    context "when given an invalid context" do
-      let(:role) { :admin }
       let(:context) { 123 }
 
       it "raises with correct message" do

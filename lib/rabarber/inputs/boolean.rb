@@ -5,7 +5,7 @@ module Rabarber
     class Boolean < Rabarber::Inputs::Base
       private
 
-      def type = self.class::Strict::Bool
+      def validate_and_normalize = @value == true || @value == false ? @value : raise_error
     end
   end
 end

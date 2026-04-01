@@ -9,8 +9,8 @@ plugins:
   - rubocop-thread_safety
 
 AllCops:
-  TargetRailsVersion: 7.1
-  TargetRubyVersion: 3.2
+  TargetRailsVersion: 7.2
+  TargetRubyVersion: 3.3
   NewCops: enable
 
 Layout/LineLength:
@@ -20,6 +20,9 @@ Layout/SpaceInLambdaLiteral:
   EnforcedStyle: require_space
 
 Lint/AmbiguousOperatorPrecedence:
+  Enabled: false
+
+Lint/UselessDefaultValueArgument:
   Enabled: false
 
 Metrics/AbcSize:

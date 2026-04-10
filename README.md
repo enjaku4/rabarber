@@ -475,8 +475,8 @@ Found a bug? Please [create an issue](https://github.com/enjaku4/rabarber/issues
 
 ### Contributing Code
 Ready to contribute? You can:
-- Fix bugs by submitting pull requests
-- Improve documentation
+- Fix bugs or improve existing code
+- Expand or clarify documentation
 - Add new features (please discuss first in the [discussions section](https://github.com/enjaku4/rabarber/discussions))
 
 Before contributing, please read the [contributing guidelines](https://github.com/enjaku4/rabarber/blob/main/CONTRIBUTING.md)
@@ -491,7 +491,7 @@ Everyone interacting in the Rabarber project is expected to follow the [code of 
 
 ## Old Versions
 
-Only the latest major version is supported. Older versions are obsolete and not maintained, but their READMEs are available here for reference:
+Only the latest major version is actively maintained. READMEs for older versions are available here for reference:
 
 [v5.x.x](https://github.com/enjaku4/rabarber/blob/12a23858e974f5cc0a4ebddfc18bdf84171dd554/README.md) | [v4.x.x](https://github.com/enjaku4/rabarber/blob/9353e70281971154d5acd70693620197a132c543/README.md) | [v3.x.x](https://github.com/enjaku4/rabarber/blob/3bb273de7e342004abc7ef07fa4d0a9a3ce3e249/README.md)
  | [v2.x.x](https://github.com/enjaku4/rabarber/blob/875b357ea949404ddc3645ad66eddea7ed4e2ee4/README.md) | [v1.x.x](https://github.com/enjaku4/rabarber/blob/b81428429404e197d70317b763e7b2a21e02c296/README.md)

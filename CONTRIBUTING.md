@@ -11,9 +11,7 @@ If you want to contribute an enhancement or a fix:
 - Update the documentation if necessary.
 - Commit the changes and submit a pull request.
 
-By submitting a pull request, you indicate that you waive any rights or claims to the modifications you made and transfer the copyright of those changes to the Rabarber gem copyright owners.
-
-If you are unable or unwilling to transfer these rights, please refrain from submitting a pull request.
+By submitting a pull request, you agree that your contribution is licensed under the same MIT license as the project, and that you have the right to submit it under that license.
 
 ## Local Development
 

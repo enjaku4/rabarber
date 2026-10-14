@@ -164,6 +164,14 @@ RSpec.describe Rabarber::Roleable do
       end
     end
 
+    context "when the user has a role in a plain class context" do
+      let(:plain_context) { stub_const("PlainContext", Class.new) }
+
+      before { user.assign_roles(:auditor, context: plain_context) }
+
+      it { is_expected.to eq(plain_context => [:auditor]) }
+    end
+
     context "when the user has some roles" do
       let(:project) { Project.create! }
 
@@ -574,6 +582,16 @@ RSpec.describe Rabarber::Roleable do
       end
 
       it { is_expected.to eq([]) }
+    end
+
+    context "when the user has a role in a plain class context" do
+      let(:plain_context) { stub_const("PlainContext", Class.new) }
+
+      before { user.assign_roles(:auditor, context: plain_context) }
+
+      it "revokes it" do
+        expect { subject }.to change(user, :all_roles).from(plain_context => [:auditor]).to({})
+      end
     end
 
     context "when the user has roles with an invalid context key" do

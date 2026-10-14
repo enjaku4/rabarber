@@ -1,136 +1,37 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Railtie do
-  describe ".server_running?" do
-    context "when Rails::Server is defined" do
-      before do
-        stub_const("Rails::Server", Class.new)
-      end
-
-      it "returns true" do
-        expect(described_class.server_running?).to be true
-      end
-    end
-
-    context "when Rails::Server is not defined" do
-      it "returns false" do
-        expect(described_class.server_running?).to be false
-      end
-    end
-  end
-
-  describe ".table_exists?" do
-    let(:connection) { instance_double(ActiveRecord::ConnectionAdapters::AbstractAdapter) }
-
-    before do
-      allow(ActiveRecord::Base).to receive(:connection).and_return(connection)
-    end
-
-    context "when rabarber_roles table exists" do
-      before do
-        allow(connection).to receive(:data_source_exists?).with("rabarber_roles").and_return(true)
-      end
-
-      it "returns true" do
-        expect(described_class.table_exists?).to be true
-      end
-    end
-
-    context "when rabarber_roles table does not exist" do
-      before do
-        allow(connection).to receive(:data_source_exists?).with("rabarber_roles").and_return(false)
-      end
-
-      it "returns false" do
-        expect(described_class.table_exists?).to be false
-      end
-    end
-
-    context "when database does not exist" do
-      before do
-        allow(connection).to receive(:data_source_exists?).with("rabarber_roles").and_raise(ActiveRecord::NoDatabaseError)
-      end
-
-      it "returns false" do
-        expect(described_class.table_exists?).to be false
-      end
-    end
-
-    context "when connection is not established" do
-      before do
-        allow(connection).to receive(:data_source_exists?).with("rabarber_roles").and_raise(ActiveRecord::ConnectionNotEstablished)
-      end
-
-      it "returns false" do
-        expect(described_class.table_exists?).to be false
-      end
-    end
-  end
-
   context "to_prepare initializer" do
     subject { DummyApplication.config.to_prepare_blocks.each(&:call) }
 
-    before do
-      allow(described_class).to receive_messages(server_running?: server_running, table_exists?: table_exists)
+    after do
+      Rabarber::Configuration.reset_to_defaults!
+      DummyApplication.config.to_prepare_blocks.each(&:call)
     end
 
-    describe "context class checking" do
-      context "when server is running and table exists" do
-        let(:server_running) { true }
-        let(:table_exists) { true }
+    it "does not query the database" do
+      queries = []
 
-        before { Rabarber::Role.create!(context_type:, name: "foo") }
+      ActiveSupport::Notifications.subscribed(-> (*, payload) { queries << payload[:sql] }, "sql.active_record") { subject }
 
-        context "when context exists" do
-          let(:context_type) { "Project" }
+      expect(queries).to be_empty
+    end
 
-          it "does not raise an error" do
-            expect { subject }.not_to raise_error
-          end
-        end
+    context "when the configured user model does not exist" do
+      before { Rabarber::Configuration.user_model_name = "NonExistentModel" }
 
-        context "when context does not exist" do
-          let(:context_type) { "NonExistentClass" }
-
-          it "raises a Rabarber::Error" do
-            expect { subject }.to raise_error(
-              Rabarber::Error, "Context not found: class `NonExistentClass` may have been renamed or deleted"
-            )
-          end
-        end
-      end
-
-      context "when server is not running" do
-        let(:server_running) { false }
-        let(:table_exists) { true }
-
-        before do
-          Rabarber::Role.create!(context_type: "NonExistentClass", name: "foo")
-        end
-
-        it "skips context class checking and does not raise an error" do
-          expect { subject }.not_to raise_error
-        end
-      end
-
-      context "when table does not exist" do
-        let(:server_running) { true }
-        let(:table_exists) { false }
-
-        it "skips context class checking and does not raise an error" do
-          expect { subject }.not_to raise_error
-        end
+      it "does not raise an error" do
+        expect { subject }.not_to raise_error
       end
     end
 
     describe "permissions reset" do
-      let(:server_running) { true }
-      let(:table_exists) { true }
+      before { allow(Rabarber::Core::Permissions).to receive(:reset!) }
 
       context "when eager_load is true" do
         it "does not reset permissions" do
-          expect(Rabarber::Core::Permissions).not_to receive(:reset!)
           subject
+          expect(Rabarber::Core::Permissions).not_to have_received(:reset!)
         end
       end
 
@@ -138,83 +39,14 @@ RSpec.describe Rabarber::Railtie do
         before { allow(Rails.configuration).to receive(:eager_load).and_return(false) }
 
         it "resets permissions" do
-          expect(Rabarber::Core::Permissions).to receive(:reset!)
           subject
-        end
-      end
-    end
-
-    describe "roleable module inclusion" do
-      let(:server_running) { true }
-      let(:table_exists) { true }
-      let(:user_model) { class_double(User) }
-
-      before { allow(Rabarber::Configuration).to receive(:user_model).and_return(user_model) }
-
-      context "when user model already includes Rabarber::Roleable" do
-        before { allow(user_model).to receive(:<).with(Rabarber::Roleable).and_return(true) }
-
-        it "does not include Rabarber::Roleable again" do
-          expect(user_model).not_to receive(:include).with(Rabarber::Roleable)
-          subject
-        end
-      end
-
-      context "when user model does not include Rabarber::Roleable" do
-        before { allow(user_model).to receive(:<).with(Rabarber::Roleable).and_return(false) }
-
-        it "includes Rabarber::Roleable in the user model" do
-          expect(user_model).to receive(:include).with(Rabarber::Roleable)
-          subject
-        end
-      end
-    end
-
-    describe "missing user model handling" do
-      let(:table_exists) { false }
-
-      before { Rabarber::Configuration.user_model_name = "NonExistentModel" }
-
-      after do
-        Rabarber::Configuration.reset_to_defaults!
-        DummyApplication.config.to_prepare_blocks.each(&:call)
-      end
-
-      context "when server is running" do
-        let(:server_running) { true }
-
-        it "raises a configuration error" do
-          expect { subject }.to raise_error(
-            Rabarber::ConfigurationError,
-            "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got \"NonExistentModel\""
-          )
-        end
-      end
-
-      context "when server is not running" do
-        let(:server_running) { false }
-
-        it "skips roleable module inclusion and does not raise an error" do
-          expect { subject }.not_to raise_error
+          expect(Rabarber::Core::Permissions).to have_received(:reset!)
         end
       end
     end
 
     describe "roleables association declaration" do
-      let(:server_running) { false }
-      let(:table_exists) { false }
-      let(:user_model) { class_double(Client) }
-
-      before do
-        Rabarber::Configuration.user_model_name = "Client"
-        allow(user_model).to receive(:<).with(Rabarber::Roleable).and_return(true)
-        allow(Rabarber::Configuration).to receive(:user_model).and_return(user_model)
-      end
-
-      after do
-        Rabarber::Configuration.reset_to_defaults!
-        DummyApplication.config.to_prepare_blocks.each(&:call)
-      end
+      before { Rabarber::Configuration.user_model_name = "Client" }
 
       it "declares the association with the user model configured in the initializer" do
         subject
@@ -225,6 +57,24 @@ RSpec.describe Rabarber::Railtie do
         expect { 2.times { DummyApplication.config.to_prepare_blocks.each(&:call) } }.not_to raise_error
         expect(Rabarber::Role.reflect_on_association(:roleables).klass).to eq(Client)
       end
+    end
+  end
+
+  context "include_roleable initializer" do
+    it "includes Rabarber::Roleable in the configured user model when it is autoloaded" do
+      expect(User.ancestors).to include(Rabarber::Roleable)
+    end
+
+    it "does not include Rabarber::Roleable in other autoloaded models" do
+      expect(Project.ancestors).not_to include(Rabarber::Roleable)
+    end
+
+    it "registers the hook with every Rails autoloader" do
+      Rails.autoloaders.each { allow(_1).to receive(:on_load) }
+
+      described_class.initializers.detect { _1.name == "rabarber.include_roleable" }.run(DummyApplication)
+
+      expect(Rails.autoloaders.to_a).to all(have_received(:on_load))
     end
   end
 

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "action_view"
-
-class DummyHelper < ActionView::Base
+class DummyView < ActionView::Base
   include Rabarber::Helpers
 end

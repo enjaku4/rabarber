@@ -37,7 +37,7 @@ jobs:
       - name: Install grepfruit
         run: gem install grepfruit
       - name: Run grepfruit
-        run: grepfruit s -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:40' --search-hidden
+        run: grepfruit s -p -r TODO -e 'vendor,tmp,.yardoc,.git,ci.yml:40' --search-hidden
 
   tests:
     runs-on: ubuntu-latest

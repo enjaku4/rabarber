@@ -1,3 +1,9 @@
+## v6.0.3
+
+### Bugs:
+
+- Fixed `Rabarber.all_roles` raising `Rabarber::NotFoundError` when a role's context is a class that is not an ActiveRecord model
+
 ## v6.0.2
 
 ### Bugs:

@@ -3,7 +3,7 @@
 module Rabarber
   module Inputs
     class Base
-      def initialize(value, optional: false, error: Rabarber::InvalidArgumentError, message: nil)
+      def initialize(value, optional: false, error: nil, message: nil)
         @value = value
         @optional = optional
         @error = error
@@ -22,8 +22,11 @@ module Rabarber
         raise NotImplementedError
       end
 
+      def default_error = Rabarber::InvalidArgumentError
+      def default_message = nil
+
       def raise_error
-        raise @error, @message
+        raise @error || default_error, @message || default_message
       end
     end
   end

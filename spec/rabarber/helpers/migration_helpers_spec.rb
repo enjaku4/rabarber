@@ -24,13 +24,13 @@ RSpec.describe Rabarber::MigrationHelpers do
       [nil, " ", "NonExistent", 1, [1, 2], {}].each do |invalid_context|
         it "raises if old context class is invalid: #{invalid_context.inspect}" do
           expect { dummy_migration.migrate_authorization_context!(invalid_context, "Client") }.to raise_error(
-            Rabarber::InvalidArgumentError, "No roles exist in context #{invalid_context.inspect}"
+            Rabarber::InvalidArgumentError, "No roles exist in context `#{invalid_context.inspect}`"
           )
         end
 
         it "raises if new context class is invalid: #{invalid_context.inspect}" do
           expect { dummy_migration.migrate_authorization_context!("User", invalid_context) }.to raise_error(
-            Rabarber::InvalidArgumentError, "Cannot migrate context to #{invalid_context.inspect}: class does not exist"
+            Rabarber::InvalidArgumentError, "Cannot migrate context to `#{invalid_context.inspect}`: class does not exist"
           )
         end
       end
@@ -52,7 +52,7 @@ RSpec.describe Rabarber::MigrationHelpers do
       [nil, " ", 1, [1, 2], {}].each do |invalid_context|
         it "raises if context class is invalid: #{invalid_context.inspect}" do
           expect { dummy_migration.delete_authorization_context!(invalid_context) }.to raise_error(
-            Rabarber::InvalidArgumentError, "No roles exist in context #{invalid_context.inspect}"
+            Rabarber::InvalidArgumentError, "No roles exist in context `#{invalid_context.inspect}`"
           )
         end
       end

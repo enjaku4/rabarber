@@ -37,7 +37,7 @@ RSpec.describe Rabarber do
         subject { described_class.configure { |config| config.cache_enabled = "invalid" } }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `cache_enabled`, expected a boolean, got \"invalid\"")
+          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `cache_enabled`, expected a boolean, got `\"invalid\"`")
         end
       end
 
@@ -45,7 +45,7 @@ RSpec.describe Rabarber do
         subject { described_class.configure { |config| config.current_user_method = 123 } }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `current_user_method`, expected a symbol or a string, got 123")
+          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `current_user_method`, expected a symbol or a string, got `123`")
         end
       end
 
@@ -53,7 +53,7 @@ RSpec.describe Rabarber do
         subject { described_class.configure { |config| config.user_model_name = 123 } }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got 123")
+          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got `123`")
         end
       end
 
@@ -63,7 +63,7 @@ RSpec.describe Rabarber do
         before { described_class.configure { |config| config.user_model_name = "Rabarber" } }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got \"Rabarber\"")
+          expect { subject }.to raise_error(Rabarber::ConfigurationError, "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got `\"Rabarber\"`")
         end
       end
     end

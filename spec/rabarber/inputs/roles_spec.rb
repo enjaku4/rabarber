@@ -37,5 +37,13 @@ RSpec.describe Rabarber::Inputs::Roles do
         end
       end
     end
+
+    context "when no error and message are given" do
+      subject { described_class.new([:admin, "Admin"]).process }
+
+      it "raises the default error with the default message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:admin, "Admin"]`')
+      end
+    end
   end
 end

@@ -63,5 +63,13 @@ RSpec.describe Rabarber::Inputs::Contexts::Authorizational do
         end
       end
     end
+
+    context "when no error and message are given" do
+      subject { described_class.new(1).resolve }
+
+      it "raises the default error with the default message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got `1`")
+      end
+    end
   end
 end

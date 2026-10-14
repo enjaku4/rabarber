@@ -24,30 +24,11 @@ module Rabarber
 
         Rabarber::Core::Permissions.add(
           self,
-          Rabarber::Inputs::NonEmptySymbol.new(
-            action,
-            optional: true,
-            message: "Expected a symbol or a string, got #{action.inspect}"
-          ).process,
-          Rabarber::Inputs::Roles.new(
-            roles,
-            message: "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got #{roles.inspect}"
-          ).process,
-          Rabarber::Inputs::Contexts::Authorizational.new(
-            context,
-            error: Rabarber::InvalidContextError,
-            message: "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got #{context.inspect}"
-          ).resolve,
-          Rabarber::Inputs::DynamicRule.new(
-            if_rule,
-            optional: true,
-            message: "Expected a symbol, a string, or a proc, got #{if_rule.inspect}"
-          ).process,
-          Rabarber::Inputs::DynamicRule.new(
-            unless_rule,
-            optional: true,
-            message: "Expected a symbol, a string, or a proc, got #{unless_rule.inspect}"
-          ).process
+          Rabarber::Inputs::NonEmptySymbol.new(action, optional: true).process,
+          Rabarber::Inputs::Roles.new(roles).process,
+          Rabarber::Inputs::Contexts::Authorizational.new(context).resolve,
+          Rabarber::Inputs::DynamicRule.new(if_rule, optional: true).process,
+          Rabarber::Inputs::DynamicRule.new(unless_rule, optional: true).process
         )
       end
     end

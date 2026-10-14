@@ -16,7 +16,7 @@ module Rabarber
       @cache_enabled = Rabarber::Inputs::Boolean.new(
         value,
         error: Rabarber::ConfigurationError,
-        message: "Invalid configuration `cache_enabled`, expected a boolean, got #{value.inspect}"
+        message: "Invalid configuration `cache_enabled`, expected a boolean, got `#{value.inspect}`"
       ).process
     end
 
@@ -24,7 +24,7 @@ module Rabarber
       @current_user_method = Rabarber::Inputs::NonEmptySymbol.new(
         value,
         error: Rabarber::ConfigurationError,
-        message: "Invalid configuration `current_user_method`, expected a symbol or a string, got #{value.inspect}"
+        message: "Invalid configuration `current_user_method`, expected a symbol or a string, got `#{value.inspect}`"
       ).process
     end
 
@@ -32,7 +32,7 @@ module Rabarber
       @user_model_name = Rabarber::Inputs::NonEmptyString.new(
         value,
         error: Rabarber::ConfigurationError,
-        message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{value.inspect}"
+        message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got `#{value.inspect}`"
       ).process
     end
 
@@ -46,7 +46,7 @@ module Rabarber
       Rabarber::Inputs::Model.new(
         user_model_name,
         error: Rabarber::ConfigurationError,
-        message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got #{user_model_name.inspect}"
+        message: "Invalid configuration `user_model_name`, expected an ActiveRecord model name, got `#{user_model_name.inspect}`"
       ).process
     end
 

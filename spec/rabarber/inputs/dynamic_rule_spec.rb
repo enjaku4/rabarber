@@ -37,5 +37,13 @@ RSpec.describe Rabarber::Inputs::DynamicRule do
         end
       end
     end
+
+    context "when no error and message are given" do
+      subject { described_class.new(1).process }
+
+      it "raises the default error with the default message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol, a string, or a proc, got `1`")
+      end
+    end
   end
 end

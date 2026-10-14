@@ -14,7 +14,7 @@ RSpec.describe Rabarber::Roleable do
     it "raises an error when the given roles are invalid" do
       expect { subject }.to raise_error(
         Rabarber::InvalidArgumentError,
-        "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got [:Admin, \"junior developer\"]"
+        "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:Admin, \"junior developer\"]`"
       )
     end
   end
@@ -59,7 +59,7 @@ RSpec.describe Rabarber::Roleable do
       let(:role) { :"Invalid-Name" }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got [:\"Invalid-Name\"]")
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:\"Invalid-Name\"]`")
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Rabarber::Roleable do
       let(:context) { 123 }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end
@@ -135,7 +135,7 @@ RSpec.describe Rabarber::Roleable do
       let(:context) { 123 }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end
@@ -201,7 +201,7 @@ RSpec.describe Rabarber::Roleable do
         before { Rabarber::Role.find_by(context_type: "User").update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class `Foo` may have been renamed or deleted")
         end
       end
 
@@ -209,7 +209,7 @@ RSpec.describe Rabarber::Roleable do
         before { Rabarber::Role.find_by(context: project).update!(context_type: "Foo") }
 
         it "raises an error" do
-          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class Foo may have been renamed or deleted")
+          expect { subject }.to raise_error(Rabarber::Error, "Context not found: class `Foo` may have been renamed or deleted")
         end
       end
     end
@@ -260,7 +260,7 @@ RSpec.describe Rabarber::Roleable do
       let(:roles) { [:admin] }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end
@@ -463,7 +463,7 @@ RSpec.describe Rabarber::Roleable do
       let(:create_new) { true }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end
@@ -529,7 +529,7 @@ RSpec.describe Rabarber::Roleable do
       let(:context) { 123 }
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end
@@ -601,7 +601,7 @@ RSpec.describe Rabarber::Roleable do
       end
 
       it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got 123")
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end

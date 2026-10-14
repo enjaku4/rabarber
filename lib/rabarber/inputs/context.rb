@@ -19,6 +19,9 @@ module Rabarber
 
       private
 
+      def default_error = Rabarber::InvalidContextError
+      def default_message = "Expected an instance of ActiveRecord model, a Class, or nil, got `#{@value.inspect}`"
+
       def validate_and_normalize
         return @value if @value.nil?
         return @value if @value.is_a?(Class)

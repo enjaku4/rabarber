@@ -8,7 +8,7 @@ module Rabarber
 
     class << self
       def list(context: nil)
-        where(process_context(context)).pluck(:name).map(&:to_sym)
+        where(Rabarber::Inputs::Context.new(context).resolve).pluck(:name).map(&:to_sym)
       end
 
       def list_all
@@ -20,12 +20,12 @@ module Rabarber
           next
         end
       rescue NameError => e
-        raise Rabarber::NotFoundError, "Context not found: class #{e.name} may have been renamed or deleted"
+        raise Rabarber::NotFoundError, "Context not found: class `#{e.name}` may have been renamed or deleted"
       end
 
       def register(name, context: nil)
-        name = process_role_name(name)
-        processed_context = process_context(context)
+        name = Rabarber::Inputs::Role.new(name).process
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
 
         return false if exists?(name:, **processed_context)
 
@@ -35,12 +35,12 @@ module Rabarber
       end
 
       def amend(old_name, new_name, context: nil, force: false)
-        processed_context = process_context(context)
-        role = find_by(name: process_role_name(old_name), **processed_context)
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+        role = find_by(name: Rabarber::Inputs::Role.new(old_name).process, **processed_context)
 
         raise Rabarber::NotFoundError, "Role not found" unless role
 
-        name = process_role_name(new_name)
+        name = Rabarber::Inputs::Role.new(new_name).process
 
         return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
 
@@ -54,8 +54,8 @@ module Rabarber
       end
 
       def drop(name, context: nil, force: false)
-        processed_context = process_context(context)
-        role = find_by(name: process_role_name(name), **processed_context)
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+        role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
 
         raise Rabarber::NotFoundError, "Role not found" unless role
 
@@ -95,21 +95,6 @@ module Rabarber
 
       def delete_roleables_cache(roleable_ids, context:)
         Rabarber::Core::Cache.delete(*roleable_ids.flat_map { [[_1, context], [_1, :all]] })
-      end
-
-      def process_role_name(name)
-        Rabarber::Inputs::Role.new(
-          name,
-          message: "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got #{name.inspect}"
-        ).process
-      end
-
-      def process_context(context)
-        Rabarber::Inputs::Context.new(
-          context,
-          error: Rabarber::InvalidContextError,
-          message: "Expected an instance of ActiveRecord model, a Class, or nil, got #{context.inspect}"
-        ).resolve
       end
     end
 

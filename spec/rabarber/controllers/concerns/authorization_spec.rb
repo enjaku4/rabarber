@@ -51,31 +51,31 @@ RSpec.describe Rabarber::Authorization do
     context "when action is invalid" do
       let(:args) { { action: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol or a string, got 1"
+      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol or a string, got `1`"
     end
 
     context "when roles are invalid" do
       let(:args) { { roles: "junior developer" } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got \"junior developer\""
+      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `\"junior developer\"`"
     end
 
     context "when context is invalid" do
       let(:args) { { context: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidContextError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got 1"
+      it_behaves_like "raises an error", Rabarber::InvalidContextError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got `1`"
     end
 
     context "when dynamic rule is invalid" do
       let(:args) { { if: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol, a string, or a proc, got 1"
+      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol, a string, or a proc, got `1`"
     end
 
     context "when negated dynamic rule is invalid" do
       let(:args) { { unless: 1 } }
 
-      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol, a string, or a proc, got 1"
+      it_behaves_like "raises an error", Rabarber::InvalidArgumentError, "Expected a symbol, a string, or a proc, got `1`"
     end
 
     context "when everything is valid" do

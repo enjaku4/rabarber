@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Rabarber::Helpers do
-  let(:dummy_helper) { DummyHelper.new(nil, {}, nil) }
+  let(:dummy_helper) { DummyView.new(nil, {}, nil) }
 
   before { allow(dummy_helper).to receive(:current_user).and_return(user) }
 

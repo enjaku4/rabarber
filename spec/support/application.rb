@@ -2,6 +2,9 @@
 
 class DummyApplication < Rails::Application
   config.eager_load = true
+  config.eager_load_paths << File.expand_path("models", __dir__)
+  config.autoload_paths << File.expand_path("controllers", __dir__)
+  config.autoload_paths << File.expand_path("views", __dir__)
   config.cache_store = :null_store
 end
 

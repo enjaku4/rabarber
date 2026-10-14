@@ -12,7 +12,9 @@ module Rabarber
       end
 
       def list_all
-        includes(:context).each_with_object({}) do |role, hash|
+        roles = where(context_id: nil).to_a + where.not(context_id: nil).includes(:context).to_a
+
+        roles.each_with_object({}) do |role, hash|
           (hash[role.context] ||= []) << role.name.to_sym
         rescue ActiveRecord::RecordNotFound
           next

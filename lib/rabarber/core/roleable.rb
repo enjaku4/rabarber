@@ -3,6 +3,8 @@
 module Rabarber
   module Core
     module Roleable
+      private
+
       def roleable
         current_roleable = send(Rabarber::Configuration.current_user_method)
 
@@ -14,10 +16,6 @@ module Rabarber
         end
 
         current_roleable
-      end
-
-      def roleable_roles(context: nil)
-        roleable.roles(context:)
       end
     end
   end

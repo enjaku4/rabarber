@@ -49,6 +49,14 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to eq({}) }
     end
 
+    context "when a role is in a plain class context" do
+      let(:plain_context) { stub_const("PlainContext", Class.new) }
+
+      before { described_class.register(:auditor, context: plain_context) }
+
+      it { is_expected.to eq(plain_context => [:auditor]) }
+    end
+
     context "when there are some roles" do
       let(:project1) { Project.create! }
       let(:project2) { Project.create! }

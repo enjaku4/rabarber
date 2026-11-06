@@ -141,7 +141,10 @@ User.with_role(:admin, :manager)
 You can also directly manage roles available in the application:
 
 ```rb
-# Create a new role
+# Create new roles
+Rabarber.create_roles(:admin, :manager)
+
+# Create a new role (deprecated, use create_roles instead)
 Rabarber.create_role(:admin)
 # => true if created, false if already exists
 
@@ -152,11 +155,17 @@ Rabarber.rename_role(:admin, :administrator)
 # Force rename even if role is assigned
 Rabarber.rename_role(:admin, :administrator, force: true)
 
-# Remove a role
+# Delete roles, keeping the ones that are assigned to users
+Rabarber.delete_roles(:admin, :manager)
+
+# Force deletion even if roles are assigned
+Rabarber.delete_roles(:admin, :manager, force: true)
+
+# Delete a role (deprecated, use delete_roles instead)
 Rabarber.delete_role(:admin)
 # => true if deleted, false if role is assigned
 
-# Force deletion even if role is assigned
+# Force deletion even if role is assigned (deprecated, use delete_roles instead)
 Rabarber.delete_role(:admin, force: true)
 
 # List available roles in the global context
@@ -366,13 +375,19 @@ User.with_role(:member, context: project)
 ### Contextual Role Management
 
 ```rb
-# Create a new role within a context
+# Create new roles within a context
+Rabarber.create_roles(:admin, :member, context: Project)
+
+# Create a new role within a context (deprecated, use create_roles instead)
 Rabarber.create_role(:admin, context: Project)
 
 # Rename a role within a context
 Rabarber.rename_role(:admin, :owner, context: project)
 
-# Remove a contextual role
+# Delete contextual roles
+Rabarber.delete_roles(:admin, context: project)
+
+# Delete a contextual role (deprecated, use delete_roles instead)
 Rabarber.delete_role(:admin, context: project)
 
 # List available roles within a specific context
@@ -411,7 +426,14 @@ end
 
 When a context object is deleted from your database, its associated roles become orphaned and ignored by Rabarber.
 
-Ideally, the application should be designed so that this doesn't happen: whenever a context object is deleted, its roles are revoked and deleted as part of the same operation. However, if that wasn't done, you can clean up the orphaned roles as a fallback:
+Delete the roles of a context object as part of the same operation that deletes it:
+
+```rb
+Rabarber.delete_roles(*Rabarber.roles(context: project), context: project, force: true)
+project.destroy!
+```
+
+If that wasn't done, clean up the orphaned roles as a fallback:
 
 ```rb
 Rabarber.prune

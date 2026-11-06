@@ -75,10 +75,9 @@ module Rabarber
       end
 
       def prune
-        orphaned_roles = where.not(context_id: nil).includes(:context).filter_map do |role|
-          !role.context
-        rescue ActiveRecord::RecordNotFound
-          role.id
+        orphaned_roles = where.not(context_id: nil).distinct.pluck(:context_type).flat_map do |context_type|
+          context_class = context_type.constantize
+          where(context_type:).where.not(context_id: context_class.select(context_class.primary_key)).pluck(:id)
         end
 
         return if orphaned_roles.empty?

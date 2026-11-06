@@ -553,6 +553,26 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to change(described_class, :count).from(2).to(1)
       end
 
+      context "when contexts of different classes are missing" do
+        let(:user) { User.create! }
+        let!(:user_role) { described_class.create!(name: "manager", context_type: "User", context_id: user.id) }
+
+        before do
+          described_class.create!(name: "manager", context_type: "User", context_id: User.create!.id)
+          described_class.create!(name: "manager", context_type: "Project")
+          user.destroy!
+        end
+
+        it "deletes the roles with missing context of every class" do
+          subject
+          expect(described_class.where(id: [role.id, user_role.id])).to be_empty
+        end
+
+        it "does not delete the other roles" do
+          expect { subject }.to change(described_class, :count).from(5).to(3)
+        end
+      end
+
       it "clears the cache" do
         expect(Rabarber::Core::Cache).to receive(:clear)
         subject

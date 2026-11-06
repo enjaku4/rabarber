@@ -1,4 +1,21 @@
-<!--TODO: v6.1-->
+## v6.1.0
+
+### Features:
+
+- Added `Rabarber.create_roles` and `Rabarber.delete_roles` to create and delete several roles at once
+
+### Bugs:
+
+- Fixed context migration helpers raising when no roles exist in the context, which broke migrations on fresh databases
+- Fixed the generated migration failing when the user table's primary key is not `id`
+- Fixed renaming and deleting roles not clearing the role cache of their users when the user model's primary key is not `id`
+
+### Misc:
+
+- Deprecated calling `assign_roles`, `revoke_roles` and `revoke_all_roles` on unsaved users
+- Deprecated the following role management methods in favor of new counterparts:
+  - `Rabarber.create_role` -> `Rabarber.create_roles`
+  - `Rabarber.delete_role` -> `Rabarber.delete_roles`
 
 ## v6.0.3
 

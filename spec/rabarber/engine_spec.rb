@@ -56,6 +56,12 @@ RSpec.describe Rabarber::Engine do
     end
   end
 
+  describe "deprecations" do
+    it "registers Rabarber's deprecator with the app" do
+      expect(Rails.application.deprecators[:rabarber]).to be(Rabarber.deprecator)
+    end
+  end
+
   describe "migrations" do
     it "can use the migration helpers" do
       expect(ActiveRecord::Migration.new).to respond_to(:migrate_authorization_context!, :delete_authorization_context!)

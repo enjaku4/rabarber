@@ -27,6 +27,11 @@ module Rabarber
 
   delegate :configure, to: Rabarber::Configuration
   module_function :configure
+
+  DEPRECATOR = ActiveSupport::Deprecation.new("7.0", "Rabarber")
+  private_constant :DEPRECATOR
+
+  def self.deprecator = DEPRECATOR
 end
 
 require_relative "rabarber/core/cache"

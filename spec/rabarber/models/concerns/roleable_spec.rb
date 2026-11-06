@@ -277,6 +277,27 @@ RSpec.describe Rabarber::Roleable do
 
     let(:user) { User.create! }
 
+    context "when the user is not saved" do
+      let(:user) { User.new }
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { true }
+
+      it "warns that this is deprecated" do
+        expect { subject }.to output(/Calling `assign_roles` on an unsaved user is deprecated and will raise an error in the next major version, save the user first/).to_stderr
+      end
+    end
+
+    context "when the user is saved" do
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { true }
+
+      it "does not warn" do
+        expect { subject }.not_to output.to_stderr
+      end
+    end
+
     context "when create_new is true" do
       let(:create_new) { true }
       let(:roles) { [:admin, :manager] }
@@ -486,6 +507,14 @@ RSpec.describe Rabarber::Roleable do
     let(:roles) { [:admin, :manager] }
     let(:context) { nil }
 
+    context "when the user is not saved" do
+      let(:user) { User.new }
+
+      it "warns that this is deprecated" do
+        expect { subject }.to output(/Calling `revoke_roles` on an unsaved user is deprecated and will raise an error in the next major version, save the user first/).to_stderr
+      end
+    end
+
     it_behaves_like "role names are validated"
 
     context "when the user has the given roles" do
@@ -549,6 +578,14 @@ RSpec.describe Rabarber::Roleable do
     subject { user.revoke_all_roles }
 
     let(:user) { User.create! }
+
+    context "when the user is not saved" do
+      let(:user) { User.new }
+
+      it "warns that this is deprecated" do
+        expect { subject }.to output(/Calling `revoke_all_roles` on an unsaved user is deprecated and will raise an error in the next major version, save the user first/).to_stderr
+      end
+    end
 
     context "when the user has no roles" do
       it "does not change the user's roles" do

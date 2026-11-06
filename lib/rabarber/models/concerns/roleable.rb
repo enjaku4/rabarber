@@ -36,6 +36,8 @@ module Rabarber
     end
 
     def assign_roles(*role_names, context: nil, create_new: true)
+      unsaved_user_deprecation_warning("assign_roles")
+
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
       processed_create_new = Rabarber::Inputs::Boolean.new(create_new).process
@@ -59,6 +61,8 @@ module Rabarber
     end
 
     def revoke_roles(*role_names, context: nil)
+      unsaved_user_deprecation_warning("revoke_roles")
+
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
 
@@ -75,6 +79,8 @@ module Rabarber
     end
 
     def revoke_all_roles
+      unsaved_user_deprecation_warning("revoke_all_roles")
+
       return [] if rabarber_roles.none?
 
       contexts = all_roles.keys.map { Rabarber::Inputs::Context.new(_1).resolve }
@@ -95,6 +101,12 @@ module Rabarber
 
     def delete_roleable_cache(contexts:)
       Rabarber::Core::Cache.delete(*contexts.map { [id, _1] }, [id, :all])
+    end
+
+    def unsaved_user_deprecation_warning(method)
+      return if persisted?
+
+      Rabarber.deprecator.warn("Calling `#{method}` on an unsaved user is deprecated and will raise an error in the next major version, save the user first", caller_locations(2))
     end
   end
 end

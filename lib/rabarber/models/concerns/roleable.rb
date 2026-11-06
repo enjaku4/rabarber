@@ -42,7 +42,7 @@ module Rabarber
       processed_context = Rabarber::Inputs::Context.new(context).resolve
       processed_create_new = Rabarber::Inputs::Boolean.new(create_new).process
 
-      create_new_roles(processed_role_names, context: processed_context) if processed_create_new
+      Rabarber::Role.register(processed_role_names, context: processed_context) if processed_create_new
 
       roles_to_assign = Rabarber::Role.where(
         name: (processed_role_names - rabarber_roles.list(context: processed_context)), **processed_context
@@ -93,11 +93,6 @@ module Rabarber
     end
 
     private
-
-    def create_new_roles(role_names, context:)
-      new_roles = role_names - Rabarber.roles(context:)
-      new_roles.each { |role_name| Rabarber::Role.register(role_name, context:) }
-    end
 
     def delete_roleable_cache(contexts:)
       Rabarber::Core::Cache.delete(*contexts.map { [id, _1] }, [id, :all])

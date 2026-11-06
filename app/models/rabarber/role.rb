@@ -27,15 +27,17 @@ module Rabarber
         raise Rabarber::NotFoundError, "Context not found: class `#{e.name}` may have been renamed or deleted"
       end
 
-      def register(name, context: nil)
-        name = Rabarber::Inputs::Role.new(name).process
+      def register(names, context: nil)
+        processed_names = Rabarber::Inputs::Roles.new(names).process
         processed_context = Rabarber::Inputs::Context.new(context).resolve
 
-        return false if exists?(name:, **processed_context)
+        (processed_names.uniq - list(context: processed_context)).each do |name|
+          create!(name:, **processed_context)
+        rescue ActiveRecord::RecordNotUnique
+          next
+        end
 
-        !!create!(name:, **processed_context)
-      rescue ActiveRecord::RecordNotUnique
-        false
+        list(context: processed_context)
       end
 
       def amend(old_name, new_name, context: nil, force: false)
@@ -58,22 +60,24 @@ module Rabarber
         false
       end
 
-      def drop(name, context: nil, force: false)
+      def drop(names, context: nil, force: false)
+        processed_names = Rabarber::Inputs::Roles.new(names).process
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         processed_force = Rabarber::Inputs::Boolean.new(force).process
-        role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
 
-        raise Rabarber::NotFoundError, "Role not found" unless role
+        transaction do
+          where(name: processed_names, **processed_context).find_each do |role|
+            next if role.roleables.exists? && !processed_force
 
-        return false if role.roleables.exists? && !processed_force
+            roleable_ids = role.roleables.ids
 
-        roleable_ids = role.roleables.ids
+            role.destroy!
 
-        role.destroy!
+            delete_roleables_cache(roleable_ids, context: processed_context)
+          end
+        end
 
-        delete_roleables_cache(roleable_ids, context: processed_context)
-
-        true
+        list(context: processed_context)
       end
 
       def prune
@@ -94,6 +98,35 @@ module Rabarber
         end
 
         Rabarber::Core::Cache.clear
+      end
+
+      def deprecated_register(name, context: nil)
+        name = Rabarber::Inputs::Role.new(name).process
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+
+        return false if exists?(name:, **processed_context)
+
+        !!create!(name:, **processed_context)
+      rescue ActiveRecord::RecordNotUnique
+        false
+      end
+
+      def deprecated_drop(name, context: nil, force: false)
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+        processed_force = Rabarber::Inputs::Boolean.new(force).process
+        role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
+
+        raise Rabarber::NotFoundError, "Role not found" unless role
+
+        return false if role.roleables.exists? && !processed_force
+
+        roleable_ids = role.roleables.ids
+
+        role.destroy!
+
+        delete_roleables_cache(roleable_ids, context: processed_context)
+
+        true
       end
 
       private

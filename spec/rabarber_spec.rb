@@ -83,10 +83,17 @@ RSpec.describe Rabarber do
     end
   end
 
-  describe ".create_role" do
+  describe ".create_roles" do
     it "delegates to Rabarber::Role.register" do
-      expect(Rabarber::Role).to receive(:register).with(:editor, context: Project)
-      described_class.create_role(:editor, context: Project)
+      expect(Rabarber::Role).to receive(:register).with([:editor, :viewer], context: Project)
+      described_class.create_roles(:editor, :viewer, context: Project)
+    end
+  end
+
+  describe ".create_role" do
+    it "warns that it is deprecated and delegates to Rabarber::Role.deprecated_register" do
+      expect(Rabarber::Role).to receive(:deprecated_register).with(:editor, context: Project)
+      expect { described_class.create_role(:editor, context: Project) }.to output(/`Rabarber.create_role` method is deprecated and will be removed in the next major version, use `Rabarber.create_roles` instead/).to_stderr
     end
   end
 
@@ -97,10 +104,17 @@ RSpec.describe Rabarber do
     end
   end
 
-  describe ".delete_role" do
+  describe ".delete_roles" do
     it "delegates to Rabarber::Role.drop" do
-      expect(Rabarber::Role).to receive(:drop).with(:editor, context: Project, force: true)
-      described_class.delete_role(:editor, context: Project, force: true)
+      expect(Rabarber::Role).to receive(:drop).with([:editor, :viewer], context: Project, force: true)
+      described_class.delete_roles(:editor, :viewer, context: Project, force: true)
+    end
+  end
+
+  describe ".delete_role" do
+    it "warns that it is deprecated and delegates to Rabarber::Role.deprecated_drop" do
+      expect(Rabarber::Role).to receive(:deprecated_drop).with(:editor, context: Project, force: true)
+      expect { described_class.delete_role(:editor, context: Project, force: true) }.to output(/`Rabarber.delete_role` method is deprecated and will be removed in the next major version, use `Rabarber.delete_roles` instead/).to_stderr
     end
   end
 

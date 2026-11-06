@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "rails/railtie"
+require "rails/engine"
 
 module Rabarber
-  class Railtie < Rails::Railtie
+  class Engine < Rails::Engine
     initializer "rabarber.include_roleable" do
       Rails.autoloaders.each do |autoloader|
         autoloader.on_load do |cpath, klass, _abspath|
@@ -15,11 +15,6 @@ module Rabarber
     initializer "rabarber.to_prepare" do |app|
       app.config.to_prepare do
         Rabarber::Core::Permissions.reset! unless app.config.eager_load
-
-        Rabarber::Role.send(:remove_const, :HABTM_Roleables) if Rabarber::Role.const_defined?(:HABTM_Roleables, false)
-        Rabarber::Role.has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.user_model_name,
-                                                           association_foreign_key: "roleable_id",
-                                                           join_table: "rabarber_roles_roleables"
       end
     end
 

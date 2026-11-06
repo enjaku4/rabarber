@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Railtie do
+RSpec.describe Rabarber::Engine do
   context "to_prepare initializer" do
     subject { DummyApplication.config.to_prepare_blocks.each(&:call) }
 
@@ -42,20 +42,6 @@ RSpec.describe Rabarber::Railtie do
           subject
           expect(Rabarber::Core::Permissions).to have_received(:reset!)
         end
-      end
-    end
-
-    describe "roleables association declaration" do
-      before { Rabarber::Configuration.user_model_name = "Client" }
-
-      it "declares the association with the user model configured in the initializer" do
-        subject
-        expect(Rabarber::Role.reflect_on_association(:roleables).klass).to eq(Client)
-      end
-
-      it "re-declares the association on each run without errors or stale classes" do
-        expect { 2.times { DummyApplication.config.to_prepare_blocks.each(&:call) } }.not_to raise_error
-        expect(Rabarber::Role.reflect_on_association(:roleables).klass).to eq(Client)
       end
     end
   end

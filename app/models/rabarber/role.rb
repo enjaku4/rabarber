@@ -6,6 +6,10 @@ module Rabarber
 
     belongs_to :context, polymorphic: true, optional: true
 
+    has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.user_model_name, # rubocop:disable Rails/HasAndBelongsToMany
+                                        association_foreign_key: "roleable_id",
+                                        join_table: "rabarber_roles_roleables"
+
     class << self
       def list(context: nil)
         where(Rabarber::Inputs::Context.new(context).resolve).pluck(:name).map(&:to_sym)

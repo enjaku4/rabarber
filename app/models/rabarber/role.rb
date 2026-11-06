@@ -65,17 +65,15 @@ module Rabarber
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         processed_force = Rabarber::Inputs::Boolean.new(force).process
 
-        transaction do
-          where(name: processed_names, **processed_context).find_each do |role|
-            next if role.roleables.exists? && !processed_force
+        roles = where(name: processed_names, **processed_context)
+        roles = roles.where.missing(:roleables) unless processed_force
 
-            roleable_ids = role.roleables.ids
+        role_ids = roles.ids
+        roleable_ids = Rabarber::Configuration.user_model.joins(:rabarber_roles).where(rabarber_roles: { id: role_ids }).distinct.ids
 
-            role.destroy!
+        delete_with_assignments(role_ids)
 
-            delete_roleables_cache(roleable_ids, context: processed_context)
-          end
-        end
+        delete_roleables_cache(roleable_ids, context: processed_context)
 
         list(context: processed_context)
       end
@@ -88,14 +86,7 @@ module Rabarber
 
         return if orphaned_roles.empty?
 
-        ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute(
-            ActiveRecord::Base.sanitize_sql(
-              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", orphaned_roles]
-            )
-          )
-          where(id: orphaned_roles).delete_all
-        end
+        delete_with_assignments(orphaned_roles)
 
         Rabarber::Core::Cache.clear
       end
@@ -130,6 +121,17 @@ module Rabarber
       end
 
       private
+
+      def delete_with_assignments(role_ids)
+        ActiveRecord::Base.transaction do
+          ActiveRecord::Base.connection.execute(
+            ActiveRecord::Base.sanitize_sql(
+              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", role_ids]
+            )
+          )
+          where(id: role_ids).delete_all
+        end
+      end
 
       def delete_roleables_cache(roleable_ids, context:)
         Rabarber::Core::Cache.delete(*roleable_ids.flat_map { [[_1, context], [_1, :all]] })

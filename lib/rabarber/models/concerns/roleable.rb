@@ -38,8 +38,9 @@ module Rabarber
     def assign_roles(*role_names, context: nil, create_new: true)
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
+      processed_create_new = Rabarber::Inputs::Boolean.new(create_new).process
 
-      create_new_roles(processed_role_names, context: processed_context) if create_new
+      create_new_roles(processed_role_names, context: processed_context) if processed_create_new
 
       roles_to_assign = Rabarber::Role.where(
         name: (processed_role_names - rabarber_roles.list(context: processed_context)), **processed_context

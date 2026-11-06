@@ -40,13 +40,14 @@ module Rabarber
 
       def amend(old_name, new_name, context: nil, force: false)
         processed_context = Rabarber::Inputs::Context.new(context).resolve
+        processed_force = Rabarber::Inputs::Boolean.new(force).process
         role = find_by(name: Rabarber::Inputs::Role.new(old_name).process, **processed_context)
 
         raise Rabarber::NotFoundError, "Role not found" unless role
 
         name = Rabarber::Inputs::Role.new(new_name).process
 
-        return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
+        return false if exists?(name:, **processed_context) || role.roleables.exists? && !processed_force
 
         role.update!(name:)
 
@@ -59,11 +60,12 @@ module Rabarber
 
       def drop(name, context: nil, force: false)
         processed_context = Rabarber::Inputs::Context.new(context).resolve
+        processed_force = Rabarber::Inputs::Boolean.new(force).process
         role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
 
         raise Rabarber::NotFoundError, "Role not found" unless role
 
-        return false if role.roleables.exists? && !force
+        return false if role.roleables.exists? && !processed_force
 
         roleable_ids = role.roleables.ids
 

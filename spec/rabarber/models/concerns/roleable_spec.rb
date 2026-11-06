@@ -466,6 +466,17 @@ RSpec.describe Rabarber::Roleable do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when given an invalid create_new" do
+      let(:user) { User.create! }
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { nil }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected true or false, got `nil`")
+      end
+    end
   end
 
   describe "#revoke_roles" do

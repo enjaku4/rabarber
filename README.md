@@ -427,6 +427,8 @@ migrate_authorization_context!("Ticket", "Task")
 delete_authorization_context!("Ticket")
 ```
 
+These migrations don't clear the role cache. If caching is enabled, clear it with `Rabarber::Cache.clear` after running them.
+
 ## View Helpers
 
 Include view helpers in your application:

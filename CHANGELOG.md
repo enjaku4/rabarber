@@ -9,6 +9,7 @@
 - Fixed context migration helpers raising when no roles exist in the context, which broke migrations on fresh databases
 - Fixed the generated migration failing when the user table's primary key is not `id`
 - Fixed renaming and deleting roles not clearing the role cache of their users when the user model's primary key is not `id`
+- Fixed `Rabarber::Cache.clear` and `Rabarber.prune` leaving outdated roles cached when called inside a transaction
 
 ### Misc:
 

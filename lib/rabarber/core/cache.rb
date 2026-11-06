@@ -24,7 +24,8 @@ module Rabarber
       end
 
       def clear
-        Rails.cache.write(VERSION_KEY, SecureRandom.alphanumeric(8))
+        rotate_version
+        ActiveRecord.after_all_transactions_commit { rotate_version } if ActiveRecord::Base.connection.transaction_open?
       end
 
       private
@@ -42,9 +43,13 @@ module Rabarber
 
         return version if version
 
-        clear
+        rotate_version
 
         Rails.cache.read(VERSION_KEY)
+      end
+
+      def rotate_version
+        Rails.cache.write(VERSION_KEY, SecureRandom.alphanumeric(8))
       end
 
       VERSION_KEY = "rabarber"

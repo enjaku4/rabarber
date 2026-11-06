@@ -50,7 +50,7 @@ module Rabarber
 
         role.update!(name:)
 
-        delete_roleables_cache(role.roleables.pluck(:id), context: processed_context)
+        delete_roleables_cache(role.roleables.ids, context: processed_context)
 
         true
       rescue ActiveRecord::RecordNotUnique
@@ -65,7 +65,7 @@ module Rabarber
 
         return false if role.roleables.exists? && !force
 
-        roleable_ids = role.roleables.pluck(:id)
+        roleable_ids = role.roleables.ids
 
         role.destroy!
 

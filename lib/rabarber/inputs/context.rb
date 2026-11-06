@@ -11,7 +11,7 @@ module Rabarber
           { context_type: context.to_s, context_id: nil }
         when ActiveRecord::Base
           raise_error unless context.persisted?
-          { context_type: context.class.to_s, context_id: context.public_send(context.class.primary_key) }
+          { context_type: context.class.to_s, context_id: context.id }
         else
           context
         end

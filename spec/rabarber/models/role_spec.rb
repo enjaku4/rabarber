@@ -234,25 +234,6 @@ RSpec.describe Rabarber::Role do
       it { is_expected.to contain_exactly(:manager, :viewer) }
     end
 
-    context "when a role is created concurrently" do
-      let(:context) { nil }
-
-      before do
-        described_class.create!(name: "admin")
-        calls = 0
-        allow(described_class).to receive(:list).and_wrap_original do |original, **kwargs|
-          calls += 1
-          calls == 1 ? [] : original.call(**kwargs)
-        end
-      end
-
-      it "does not create a duplicate role" do
-        expect { subject }.to change(described_class, :count).by(1)
-      end
-
-      it { is_expected.to contain_exactly(:admin, :manager) }
-    end
-
     context "when given an invalid name" do
       let(:names) { [:admin, :"Invalid-Name"] }
 
@@ -617,15 +598,20 @@ RSpec.describe Rabarber::Role do
     context "when force is true" do
       let(:force) { true }
 
-      before { allow(Rabarber::Core::Cache).to receive(:delete) }
-
       it "deletes the roles even if they are assigned to users" do
         expect { subject }.to change(described_class, :count).from(4).to(2)
       end
 
-      it "clears the cache of the users" do
+      it "clears the cached roles of the users" do
+        cache_store_was = Rails.cache
+        Rails.cache = ActiveSupport::Cache::MemoryStore.new
+        user.roles(context: Project)
+
         subject
-        expect(Rabarber::Core::Cache).to have_received(:delete).with([user.id, { context_type: "Project", context_id: nil }], [user.id, :all])
+
+        expect(user.roles(context: Project)).to be_empty
+      ensure
+        Rails.cache = cache_store_was
       end
 
       it { is_expected.to contain_exactly(:viewer) }

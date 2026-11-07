@@ -1,3 +1,9 @@
+## v6.1.0
+
+### Bugs:
+
+- Fixed a race condition where assigning several roles at once could assign none of them
+
 ## v6.0.3
 
 ### Bugs:

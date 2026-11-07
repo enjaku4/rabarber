@@ -5,6 +5,7 @@
 - Fixed a race condition where assigning several roles at once could assign none of them
 - Fixed context migration helpers raising when no roles exist in the context, which broke migrations on fresh databases
 - Fixed the generated migration creating a broken foreign key when the user table's primary key is not `id`
+- Fixed roles assigned or revoked inside a rolled back transaction staying cached
 
 ## v6.0.3
 

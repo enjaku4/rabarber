@@ -9,7 +9,7 @@ module Rabarber
       extend self
 
       def fetch(roleable_id, scope, &)
-        return yield unless enabled?
+        return yield if !enabled? || ActiveRecord::Base.with_connection(&:transaction_open?)
 
         Rails.cache.fetch(prepare_key(roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
@@ -17,15 +17,13 @@ module Rabarber
       def delete(*pairs)
         return unless enabled? && pairs.any?
 
-        keys = pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) }
-
-        Rails.cache.delete_multi(keys)
-        ActiveRecord.after_all_transactions_commit { Rails.cache.delete_multi(keys) } if ActiveRecord::Base.with_connection(&:transaction_open?)
+        ActiveRecord.after_all_transactions_commit do
+          Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) })
+        end
       end
 
       def clear
-        rotate_version
-        ActiveRecord.after_all_transactions_commit { rotate_version } if ActiveRecord::Base.with_connection(&:transaction_open?)
+        ActiveRecord.after_all_transactions_commit { rotate_version }
       end
 
       private

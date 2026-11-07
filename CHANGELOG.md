@@ -10,6 +10,7 @@
 - Fixed the generated migration failing when the user table's primary key is not `id`
 - Fixed renaming and deleting roles not clearing the role cache of their users when the user model's primary key is not `id`
 - Fixed `Rabarber::Cache.clear` and `Rabarber.prune` leaving outdated roles cached when called inside a transaction
+- Fixed roles assigned or revoked inside a rolled back transaction staying cached
 
 ### Misc:
 

@@ -37,6 +37,7 @@ The specs run against a dummy Rails app in `spec/support` that really boots, so 
 - Access is denied unless a rule grants it. Rules only add access: any matching rule is enough, and controller-wide rules also apply to subclasses.
 - Authorization always needs a user. When there is none, Rabarber raises an error instead of denying access.
 - A role exists in exactly one context: global, a model class, or a model record. The same name in different contexts is a different role.
+- The role cache only holds committed roles. Inside an app's transaction Rabarber skips the cache and reads roles from the database, because the transaction can still be rolled back and other requests must not see its changes yet; cached roles are cleared once it commits. Role checks inside transactions are rare, so the extra query there is accepted.
 
 ## Boundaries
 

@@ -120,8 +120,6 @@ module Rabarber
         true
       end
 
-      private
-
       def delete_with_assignments(role_ids)
         ActiveRecord::Base.transaction do
           ActiveRecord::Base.connection.execute(
@@ -132,6 +130,8 @@ module Rabarber
           where(id: role_ids).delete_all
         end
       end
+
+      private
 
       def delete_roleables_cache(roleable_ids, context:)
         Rabarber::Core::Cache.delete(*roleable_ids.flat_map { [[_1, context], [_1, :all]] })

@@ -10,16 +10,9 @@ module Rabarber
     end
 
     def delete_authorization_context!(context)
-      roles = Rabarber::Role.where(context_type: Rabarber::Inputs::NonEmptyString.new(context).process)
+      context_type = Rabarber::Inputs::NonEmptyString.new(context).process
 
-      ActiveRecord::Base.transaction do
-        ActiveRecord::Base.connection.execute(
-          ActiveRecord::Base.sanitize_sql(
-            ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", roles.pluck(:id)]
-          )
-        )
-        roles.delete_all
-      end
+      Rabarber::Role.delete_with_assignments(Rabarber::Role.where(context_type:).ids)
     end
   end
 end

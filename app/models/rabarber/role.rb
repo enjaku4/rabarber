@@ -129,6 +129,16 @@ module Rabarber
         end
       end
 
+      def insert_assignments(roleable_id, role_ids)
+        ActiveRecord::Base.connection.execute(
+          ActiveRecord::Base.sanitize_sql(
+            ["INSERT INTO rabarber_roles_roleables (role_id, roleable_id) SELECT id, ? FROM rabarber_roles WHERE id IN (?)", roleable_id, role_ids]
+          )
+        )
+      rescue ActiveRecord::RecordNotUnique
+        nil
+      end
+
       private
 
       def delete_roleables_cache(roleable_ids, context:)

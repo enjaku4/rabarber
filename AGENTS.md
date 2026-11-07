@@ -20,7 +20,7 @@ A high-level picture of the gem for anyone working on it, including AI agents. W
 - `Rabarber::Configuration`: the app's settings.
 - `Rabarber::Engine`: connects Rabarber to the app. It adds `Rabarber::Roleable` to the configured user model when that model loads, clears the authorization rules when the app reloads its code, makes the migration helpers available, and registers Rabarber's deprecation warnings with the app, so the app's deprecation settings apply to them.
 - `Rabarber::Roleable`: what the user model gets: assigning, revoking and checking the user's roles.
-- `Rabarber::Role`: an Active Record model, one record per role in a context. It lives in the engine's `app/models`, so Rails reloads it together with the app's models. Managing the roles themselves lives here; `Rabarber::RoleManagement` exposes it on the `Rabarber` module.
+- `Rabarber::Role`: an Active Record model, one record per role in a context. It lives in the engine's `app/models`, so Rails reloads it together with the app's models. Managing the roles themselves lives here; `Rabarber::RoleManagement` exposes it on the `Rabarber` module. It also holds the SQL for the table that assigns roles to users.
 - `Rabarber::Authorization`: the controller concern: declaring rules with `grant_access`, the check before each action, and what happens when access is denied.
 - `Rabarber::Core::Permissions`: all the rules declared by the app's controllers, per controller and per action. `Rabarber::Core::Rule` is one rule: roles, context and dynamic conditions.
 - `Rabarber::Core::Cache`: caches each user's roles per context.

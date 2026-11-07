@@ -49,7 +49,13 @@ module Rabarber
       ).ids
 
       if role_ids.any?
-        persisted? ? insert_assignments(role_ids) : rabarber_roles << Rabarber::Role.where(id: role_ids)
+        if persisted?
+          Rabarber::Role.insert_assignments(id, role_ids)
+          rabarber_roles.reset
+        else
+          rabarber_roles << Rabarber::Role.where(id: role_ids)
+        end
+
         delete_roleable_cache(contexts: [processed_context])
       end
 
@@ -89,18 +95,6 @@ module Rabarber
     end
 
     private
-
-    def insert_assignments(role_ids)
-      ActiveRecord::Base.connection.execute(
-        ActiveRecord::Base.sanitize_sql(
-          ["INSERT INTO rabarber_roles_roleables (role_id, roleable_id) SELECT id, ? FROM rabarber_roles WHERE id IN (?)", id, role_ids]
-        )
-      )
-    rescue ActiveRecord::RecordNotUnique
-      nil
-    ensure
-      rabarber_roles.reset
-    end
 
     def delete_roleable_cache(contexts:)
       Rabarber::Core::Cache.delete(*contexts.map { [id, _1] }, [id, :all])

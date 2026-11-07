@@ -33,7 +33,7 @@ module Rabarber
       end
 
       def prepare_key(roleable_id, scope)
-        Digest::MD5.base64digest(Marshal.dump([current_version, roleable_id, scope]))
+        Digest::MD5.base64digest(ActiveSupport::Cache.expand_cache_key([current_version, roleable_id, scope]))
       end
 
       def current_version

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "digest/md5"
+require "json"
 require "securerandom"
 
 module Rabarber
@@ -33,7 +34,7 @@ module Rabarber
       end
 
       def prepare_key(roleable_id, scope)
-        Digest::MD5.base64digest(Marshal.dump([current_version, roleable_id, scope]))
+        Digest::MD5.base64digest(JSON.generate([current_version, roleable_id, scope]))
       end
 
       def current_version

@@ -633,14 +633,14 @@ RSpec.describe Rabarber::Roleable do
         expect { subject }.not_to change(Rabarber::Role, :count).from(4)
       end
 
-      it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(
-          [user.id, { context_type: nil, context_id: nil }],
-          [user.id, { context_type: "Project", context_id: nil }],
-          [user.id, { context_type: "Project", context_id: project.id }],
-          [user.id, :all]
-        )
+      it "clears the cached roles", :memory_cache do
+        [nil, Project, project].each { user.roles(context: _1) }
+        user.all_roles
+
         subject
+
+        expect([nil, Project, project].map { User.find(user.id).roles(context: _1) }).to all(be_empty)
+        expect(User.find(user.id).all_roles).to eq({})
       end
 
       it { is_expected.to eq([]) }

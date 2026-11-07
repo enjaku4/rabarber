@@ -50,7 +50,7 @@ module Rabarber
 
       if role_ids.any?
         if persisted?
-          Rabarber::Role.insert_assignments(id, role_ids)
+          Rabarber::RoleAssignment.insert_all(role_ids.map { { role_id: _1, roleable_id: id } })
           rabarber_roles.reset
         else
           rabarber_roles << Rabarber::Role.where(id: role_ids)
@@ -70,7 +70,7 @@ module Rabarber
 
       role_ids = Rabarber::Role.where(name: processed_role_names, **processed_context).ids
 
-      if Rabarber::Role.delete_assignments(id, role_ids).positive?
+      if Rabarber::RoleAssignment.where(roleable_id: id, role_id: role_ids).delete_all.positive?
         rabarber_roles.reset
         delete_roleable_cache(contexts: [processed_context])
       end

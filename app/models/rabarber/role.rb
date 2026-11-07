@@ -119,22 +119,18 @@ module Rabarber
       end
 
       def delete_with_assignments(role_ids)
-        ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute(
-            ActiveRecord::Base.sanitize_sql(
-              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", role_ids]
-            )
-          )
+        transaction do
+          with_connection do |connection|
+            connection.execute(sanitize_sql(["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", role_ids]))
+          end
           where(id: role_ids).delete_all
         end
       end
 
       def insert_assignments(roleable_id, role_ids)
-        ActiveRecord::Base.connection.execute(
-          ActiveRecord::Base.sanitize_sql(
-            ["INSERT INTO rabarber_roles_roleables (role_id, roleable_id) SELECT id, ? FROM rabarber_roles WHERE id IN (?)", roleable_id, role_ids]
-          )
-        )
+        with_connection do |connection|
+          connection.execute(sanitize_sql(["INSERT INTO rabarber_roles_roleables (role_id, roleable_id) SELECT id, ? FROM rabarber_roles WHERE id IN (?)", roleable_id, role_ids]))
+        end
       rescue ActiveRecord::RecordNotUnique
         nil
       end

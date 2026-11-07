@@ -20,12 +20,12 @@ module Rabarber
         keys = pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) }
 
         Rails.cache.delete_multi(keys)
-        ActiveRecord.after_all_transactions_commit { Rails.cache.delete_multi(keys) } if ActiveRecord::Base.connection.transaction_open?
+        ActiveRecord.after_all_transactions_commit { Rails.cache.delete_multi(keys) } if ActiveRecord::Base.with_connection(&:transaction_open?)
       end
 
       def clear
         rotate_version
-        ActiveRecord.after_all_transactions_commit { rotate_version } if ActiveRecord::Base.connection.transaction_open?
+        ActiveRecord.after_all_transactions_commit { rotate_version } if ActiveRecord::Base.with_connection(&:transaction_open?)
       end
 
       private

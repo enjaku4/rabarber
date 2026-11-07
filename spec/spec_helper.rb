@@ -43,7 +43,7 @@ if ENV["UUID_TESTS"]
   require "securerandom"
 
   ActiveSupport.on_load(:active_record) do
-    [Rabarber::Role, User, Client, Project].each do |model_class|
+    [User, Client, Project].each do |model_class|
       model_class.before_create do
         self.id = SecureRandom.uuid if id.blank?
       end

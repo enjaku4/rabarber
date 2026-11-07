@@ -31,11 +31,9 @@ module Rabarber
         processed_names = Rabarber::Inputs::Roles.new(names).process
         processed_context = Rabarber::Inputs::Context.new(context).resolve
 
-        (processed_names.uniq - list(context: processed_context)).each do |name|
-          create!(name:, **processed_context)
-        rescue ActiveRecord::RecordNotUnique
-          next
-        end
+        new_names = processed_names.uniq - list(context: processed_context)
+
+        insert_all(new_names.map { { name: _1, **processed_context } }) if new_names.any?
 
         list(context: processed_context)
       end

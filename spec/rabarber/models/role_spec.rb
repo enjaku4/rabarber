@@ -733,6 +733,14 @@ RSpec.describe Rabarber::Role do
       end
     end
 
+    context "when the class of a context no longer exists" do
+      before { role.update!(context_type: "Foo") }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::NotFoundError, "Context not found: class `Foo` may have been renamed or deleted")
+      end
+    end
+
     context "when context is not missing" do
       it "does not delete any roles" do
         expect { subject }.not_to change(described_class, :count)

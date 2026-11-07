@@ -16,14 +16,7 @@ module Rabarber
 
       raise Rabarber::InvalidArgumentError, "No roles exist in context `#{context.inspect}`" unless roles.exists?
 
-      ActiveRecord::Base.transaction do
-        ActiveRecord::Base.connection.execute(
-          ActiveRecord::Base.sanitize_sql(
-            ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", roles.pluck(:id)]
-          )
-        )
-        roles.delete_all
-      end
+      Rabarber::Role.delete_with_assignments(roles)
     end
   end
 end

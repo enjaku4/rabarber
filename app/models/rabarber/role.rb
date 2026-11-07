@@ -6,9 +6,7 @@ module Rabarber
 
     belongs_to :context, polymorphic: true, optional: true
 
-    has_and_belongs_to_many :roleables, class_name: Rabarber::Configuration.user_model_name, # rubocop:disable Rails/HasAndBelongsToMany
-                                        association_foreign_key: "roleable_id",
-                                        join_table: "rabarber_roles_roleables"
+    has_many :role_assignments, class_name: "Rabarber::RoleAssignment", inverse_of: :role, dependent: :delete_all
 
     class << self
       def list(context: nil)
@@ -46,11 +44,11 @@ module Rabarber
 
         name = Rabarber::Inputs::Role.new(new_name).process
 
-        return false if exists?(name:, **processed_context) || role.roleables.exists? && !force
+        return false if exists?(name:, **processed_context) || role.role_assignments.exists? && !force
 
         role.update!(name:)
 
-        delete_roleables_cache(role.roleables.pluck(:id), context: processed_context)
+        delete_roleables_cache(role.role_assignments.pluck(:roleable_id), context: processed_context)
 
         true
       rescue ActiveRecord::RecordNotUnique
@@ -63,9 +61,9 @@ module Rabarber
 
         raise Rabarber::NotFoundError, "Role not found" unless role
 
-        return false if role.roleables.exists? && !force
+        return false if role.role_assignments.exists? && !force
 
-        roleable_ids = role.roleables.pluck(:id)
+        roleable_ids = role.role_assignments.pluck(:roleable_id)
 
         role.destroy!
 
@@ -83,16 +81,16 @@ module Rabarber
 
         return if orphaned_roles.empty?
 
-        ActiveRecord::Base.transaction do
-          ActiveRecord::Base.connection.execute(
-            ActiveRecord::Base.sanitize_sql(
-              ["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", orphaned_roles]
-            )
-          )
-          where(id: orphaned_roles).delete_all
-        end
+        delete_with_assignments(where(id: orphaned_roles))
 
         Rabarber::Core::Cache.clear
+      end
+
+      def delete_with_assignments(roles)
+        transaction do
+          Rabarber::RoleAssignment.where(role: roles).delete_all
+          roles.delete_all
+        end
       end
 
       private

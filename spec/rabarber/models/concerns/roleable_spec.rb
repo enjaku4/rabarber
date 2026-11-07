@@ -466,6 +466,35 @@ RSpec.describe Rabarber::Roleable do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when one of the roles is assigned to the user concurrently" do
+      let(:roles) { [:admin, :manager] }
+      let(:context) { nil }
+      let(:create_new) { true }
+
+      before do
+        User.find(user.id).assign_roles(:admin)
+        allow(user.rabarber_roles).to receive(:list).and_return([])
+      end
+
+      it "assigns the other roles" do
+        subject
+        expect(User.find(user.id).roles).to contain_exactly(:admin, :manager)
+      end
+    end
+
+    context "when the user is not saved" do
+      let(:user) { User.new }
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { true }
+
+      it "assigns the roles when the user is saved" do
+        subject
+        user.save!
+        expect(User.find(user.id).roles).to eq([:admin])
+      end
+    end
   end
 
   describe "#revoke_roles" do
@@ -594,14 +623,27 @@ RSpec.describe Rabarber::Roleable do
       end
     end
 
-    context "when the user has roles with an invalid context key" do
+    context "when the class of one of the user's role contexts no longer exists" do
       before do
         user.assign_roles(:admin)
-        allow(user).to receive(:all_roles).and_return({ 123 => [:admin] })
+        user.assign_roles(:viewer, context: Project)
+        Rabarber::Role.find_by(name: "viewer").update!(context_type: "Foo")
       end
 
-      it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      it "revokes all roles from the user" do
+        expect { subject }.to change { user.rabarber_roles.count }.from(2).to(0)
+      end
+    end
+
+    context "when the user is not saved" do
+      let(:user) { User.new }
+
+      before { user.assign_roles(:admin) }
+
+      it "does not assign the revoked roles when the user is saved" do
+        subject
+        user.save!
+        expect(User.find(user.id).roles).to be_empty
       end
     end
   end

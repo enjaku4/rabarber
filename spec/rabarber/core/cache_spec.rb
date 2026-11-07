@@ -95,6 +95,26 @@ RSpec.describe Rabarber::Core::Cache do
       roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "new-#{id}" }).to eq("new-#{id}") }
     end
 
+    context "when called within a transaction" do
+      it "invalidates all cached entries only after commit" do
+        ActiveRecord::Base.transaction do
+          described_class.clear
+          roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "stale-#{id}" }).to eq("old-#{id}") }
+        end
+
+        roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "new-#{id}" }).to eq("new-#{id}") }
+      end
+
+      it "keeps all cached entries when the transaction is rolled back" do
+        ActiveRecord::Base.transaction do
+          described_class.clear
+          raise ActiveRecord::Rollback
+        end
+
+        roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "new-#{id}" }).to eq("old-#{id}") }
+      end
+    end
+
     it "can be called from Rabarber::Cache" do
       allow(described_class).to receive(:clear)
       Rabarber::Cache.clear

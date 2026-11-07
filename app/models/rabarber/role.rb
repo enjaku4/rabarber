@@ -121,7 +121,7 @@ module Rabarber
       def delete_with_assignments(role_ids)
         transaction do
           with_connection do |connection|
-            connection.execute(sanitize_sql(["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", role_ids]))
+            connection.delete(sanitize_sql(["DELETE FROM rabarber_roles_roleables WHERE role_id IN (?)", role_ids]))
           end
           where(id: role_ids).delete_all
         end

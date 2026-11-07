@@ -19,7 +19,7 @@ module Rabarber
       end
 
       def roles_permitted?(roleable, controller_instance)
-        @roles.empty? || roleable.has_role?(*@roles, context: resolve_context(controller_instance))
+        @roles.empty? || roleable.has_role?(*@roles, context: context_for(controller_instance))
       end
 
       def dynamic_rules_followed?(controller_instance)
@@ -32,14 +32,12 @@ module Rabarber
         !!(rule.is_a?(Proc) ? controller_instance.instance_exec(&rule) : controller_instance.send(rule))
       end
 
-      def resolve_context(controller_instance)
-        context = case @context
-                  when Proc then controller_instance.instance_exec(&@context)
-                  when Symbol then controller_instance.send(@context)
-                  else @context
-                  end
-
-        Rabarber::Inputs::Context.new(context).resolve
+      def context_for(controller_instance)
+        case @context
+        when Proc then controller_instance.instance_exec(&@context)
+        when Symbol then controller_instance.send(@context)
+        else @context
+        end
       end
     end
   end

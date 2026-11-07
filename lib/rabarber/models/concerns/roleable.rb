@@ -21,8 +21,7 @@ module Rabarber
     end
 
     def roles(context: nil)
-      processed_context = Rabarber::Inputs::Context.new(context).resolve
-      Rabarber::Core::Cache.fetch(id, processed_context) { rabarber_roles.list(context: processed_context) }
+      cached_roles(Rabarber::Inputs::Context.new(context).resolve)
     end
 
     def all_roles
@@ -32,7 +31,7 @@ module Rabarber
     def has_role?(*role_names, context: nil)
       processed_context = Rabarber::Inputs::Context.new(context).resolve
       processed_roles = Rabarber::Inputs::Roles.new(role_names).process
-      roles(context: processed_context).intersect?(processed_roles)
+      cached_roles(processed_context).intersect?(processed_roles)
     end
 
     def assign_roles(*role_names, context: nil, create_new: true)
@@ -42,10 +41,10 @@ module Rabarber
       processed_context = Rabarber::Inputs::Context.new(context).resolve
       processed_create_new = Rabarber::Inputs::Boolean.new(create_new).process
 
-      Rabarber::Role.register(processed_role_names, context: processed_context) if processed_create_new
+      Rabarber::Role.insert_missing(processed_role_names, processed_context) if processed_create_new
 
       role_ids = Rabarber::Role.where(
-        name: (processed_role_names - rabarber_roles.list(context: processed_context)), **processed_context
+        name: (processed_role_names - rabarber_roles.names_in(processed_context)), **processed_context
       ).ids
 
       if role_ids.any?
@@ -59,7 +58,7 @@ module Rabarber
         delete_roleable_cache(contexts: [processed_context])
       end
 
-      roles(context: processed_context)
+      cached_roles(processed_context)
     end
 
     def revoke_roles(*role_names, context: nil)
@@ -75,7 +74,7 @@ module Rabarber
         delete_roleable_cache(contexts: [processed_context])
       end
 
-      roles(context: processed_context)
+      cached_roles(processed_context)
     end
 
     def revoke_all_roles
@@ -93,6 +92,10 @@ module Rabarber
     end
 
     private
+
+    def cached_roles(processed_context)
+      Rabarber::Core::Cache.fetch(id, processed_context) { rabarber_roles.names_in(processed_context) }
+    end
 
     def delete_roleable_cache(contexts:)
       Rabarber::Core::Cache.delete(*contexts.map { [id, _1] }, [id, :all])

@@ -12,7 +12,7 @@ module Rabarber
 
     class << self
       def list(context: nil)
-        where(Rabarber::Inputs::Context.new(context).resolve).pluck(:name).map(&:to_sym)
+        names_in(Rabarber::Inputs::Context.new(context).resolve)
       end
 
       def list_all
@@ -31,11 +31,9 @@ module Rabarber
         processed_names = Rabarber::Inputs::Roles.new(names).process
         processed_context = Rabarber::Inputs::Context.new(context).resolve
 
-        new_names = processed_names.uniq - list(context: processed_context)
+        insert_missing(processed_names, processed_context)
 
-        insert_all(new_names.map { { name: _1, **processed_context } }) if new_names.any?
-
-        list(context: processed_context)
+        names_in(processed_context)
       end
 
       def amend(old_name, new_name, context: nil, force: false)
@@ -76,7 +74,7 @@ module Rabarber
           delete_roleables_cache(roleable_ids, context: processed_context)
         end
 
-        list(context: processed_context)
+        names_in(processed_context)
       end
 
       def prune
@@ -122,6 +120,16 @@ module Rabarber
 
           true
         end
+      end
+
+      def names_in(processed_context)
+        where(processed_context).pluck(:name).map(&:to_sym)
+      end
+
+      def insert_missing(names, processed_context)
+        new_names = names.uniq - names_in(processed_context)
+
+        insert_all(new_names.map { { name: _1, **processed_context } }) if new_names.any?
       end
 
       def delete_with_assignments(role_ids)

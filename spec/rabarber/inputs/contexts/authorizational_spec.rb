@@ -3,26 +3,26 @@
 require "spec_helper"
 
 RSpec.describe Rabarber::Inputs::Contexts::Authorizational do
-  describe "#resolve" do
-    subject { described_class.new(context, error: Rabarber::InvalidArgumentError, message: "Error").resolve }
+  describe "#process" do
+    subject { described_class.new(context, error: Rabarber::InvalidArgumentError, message: "Error").process }
 
     context "when the given context is valid" do
       context "when a class is given" do
         let(:context) { Project }
 
-        it { is_expected.to eq(context_type: "Project", context_id: nil) }
+        it { is_expected.to eq(Project) }
       end
 
       context "when an instance of ActiveRecord::Base is given" do
         let(:context) { Project.create! }
 
-        it { is_expected.to eq(context_type: "Project", context_id: context.id) }
+        it { is_expected.to eq(context) }
       end
 
       context "when nil is given" do
         let(:context) { nil }
 
-        it { is_expected.to eq(context_type: nil, context_id: nil) }
+        it { is_expected.to be_nil }
       end
 
       context "when a string is given" do
@@ -65,7 +65,7 @@ RSpec.describe Rabarber::Inputs::Contexts::Authorizational do
     end
 
     context "when no error and message are given" do
-      subject { described_class.new(1).resolve }
+      subject { described_class.new(1).process }
 
       it "raises the default error with the default message" do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got `1`")

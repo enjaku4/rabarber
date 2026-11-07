@@ -495,6 +495,23 @@ RSpec.describe Rabarber::Roleable do
         expect(User.find(user.id).roles).to eq([:admin])
       end
     end
+
+    context "when called within a transaction that is rolled back", :memory_cache do
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { true }
+
+      before { user.roles }
+
+      it "does not keep the roles assigned inside the transaction" do
+        ActiveRecord::Base.transaction do
+          subject
+          raise ActiveRecord::Rollback
+        end
+
+        expect(User.find(user.id).has_role?(:admin)).to be false
+      end
+    end
   end
 
   describe "#revoke_roles" do
@@ -559,6 +576,22 @@ RSpec.describe Rabarber::Roleable do
 
       it "raises with correct message" do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+
+    context "when called within a transaction that is rolled back", :memory_cache do
+      before do
+        user.assign_roles(*roles)
+        user.roles
+      end
+
+      it "keeps the roles revoked inside the transaction" do
+        ActiveRecord::Base.transaction do
+          subject
+          raise ActiveRecord::Rollback
+        end
+
+        expect(User.find(user.id).has_role?(*roles)).to be true
       end
     end
   end

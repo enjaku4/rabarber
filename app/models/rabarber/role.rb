@@ -41,19 +41,22 @@ module Rabarber
       def amend(old_name, new_name, context: nil, force: false)
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         processed_force = Rabarber::Inputs::Boolean.new(force).process
-        role = find_by(name: Rabarber::Inputs::Role.new(old_name).process, **processed_context)
 
-        raise Rabarber::NotFoundError, "Role not found" unless role
+        transaction do
+          role = lock.find_by(name: Rabarber::Inputs::Role.new(old_name).process, **processed_context)
 
-        name = Rabarber::Inputs::Role.new(new_name).process
+          raise Rabarber::NotFoundError, "Role not found" unless role
 
-        return false if exists?(name:, **processed_context) || role.roleables.exists? && !processed_force
+          name = Rabarber::Inputs::Role.new(new_name).process
 
-        role.update!(name:)
+          next false if exists?(name:, **processed_context) || role.roleables.exists? && !processed_force
 
-        delete_roleables_cache(role.roleables.ids, context: processed_context)
+          role.update!(name:)
 
-        true
+          delete_roleables_cache(role.roleables.ids, context: processed_context)
+
+          true
+        end
       rescue ActiveRecord::RecordNotUnique
         false
       end
@@ -63,15 +66,15 @@ module Rabarber
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         processed_force = Rabarber::Inputs::Boolean.new(force).process
 
-        roles = where(name: processed_names, **processed_context)
-        roles = roles.where.missing(:roleables) unless processed_force
+        transaction do
+          role_ids = where(name: processed_names, **processed_context).lock.ids
+          role_ids = where(id: role_ids).where.missing(:roleables).ids unless processed_force
+          roleable_ids = Rabarber::Configuration.user_model.joins(:rabarber_roles).where(rabarber_roles: { id: role_ids }).distinct.ids
 
-        role_ids = roles.ids
-        roleable_ids = Rabarber::Configuration.user_model.joins(:rabarber_roles).where(rabarber_roles: { id: role_ids }).distinct.ids
+          delete_with_assignments(role_ids)
 
-        delete_with_assignments(role_ids)
-
-        delete_roleables_cache(roleable_ids, context: processed_context)
+          delete_roleables_cache(roleable_ids, context: processed_context)
+        end
 
         list(context: processed_context)
       end
@@ -103,19 +106,22 @@ module Rabarber
       def deprecated_drop(name, context: nil, force: false)
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         processed_force = Rabarber::Inputs::Boolean.new(force).process
-        role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
 
-        raise Rabarber::NotFoundError, "Role not found" unless role
+        transaction do
+          role = lock.find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
 
-        return false if role.roleables.exists? && !processed_force
+          raise Rabarber::NotFoundError, "Role not found" unless role
 
-        roleable_ids = role.roleables.ids
+          next false if role.roleables.exists? && !processed_force
 
-        role.destroy!
+          roleable_ids = role.roleables.ids
 
-        delete_roleables_cache(roleable_ids, context: processed_context)
+          role.destroy!
 
-        true
+          delete_roleables_cache(roleable_ids, context: processed_context)
+
+          true
+        end
       end
 
       def delete_with_assignments(role_ids)

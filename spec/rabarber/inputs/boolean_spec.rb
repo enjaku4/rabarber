@@ -26,6 +26,11 @@ RSpec.describe Rabarber::Inputs::Boolean do
           end
         end
       end
+
+      it "raises an argument error with the default message" do
+        expect { described_class.new("true").process }
+          .to raise_error(Rabarber::InvalidArgumentError, 'Expected a boolean, got `"true"`')
+      end
     end
   end
 end

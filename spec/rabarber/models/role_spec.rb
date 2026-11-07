@@ -381,6 +381,14 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when force is not a boolean" do
+      let(:force) { "false" }
+
+      it "raises with the expected message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected a boolean, got `"false"`')
+      end
+    end
   end
 
   describe ".drop" do
@@ -491,6 +499,14 @@ RSpec.describe Rabarber::Role do
 
       it "raises with correct message" do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+
+    context "when force is not a boolean" do
+      let(:force) { 1 }
+
+      it "raises with the expected message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a boolean, got `1`")
       end
     end
   end

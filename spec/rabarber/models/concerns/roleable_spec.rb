@@ -482,6 +482,17 @@ RSpec.describe Rabarber::Roleable do
       end
     end
 
+    context "when create_new is not a boolean" do
+      let(:user) { User.create! }
+      let(:roles) { [:admin] }
+      let(:context) { nil }
+      let(:create_new) { 1 }
+
+      it "raises with the expected message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a boolean, got `1`")
+      end
+    end
+
     context "when one of the roles is assigned to the user concurrently" do
       let(:roles) { [:admin, :manager] }
       let(:context) { nil }

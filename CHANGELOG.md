@@ -7,6 +7,10 @@
 - Fixed the generated migration creating a broken foreign key when the user table's primary key is not `id`
 - Fixed roles assigned or revoked inside a rolled back transaction staying cached
 
+### Misc:
+
+- Deprecated calling `assign_roles`, `revoke_roles`, or `revoke_all_roles` on an unsaved record
+
 ## v6.0.3
 
 ### Bugs:

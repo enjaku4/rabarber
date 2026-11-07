@@ -3,20 +3,16 @@
 module Rabarber
   module MigrationHelpers
     def migrate_authorization_context!(old_context, new_context)
-      roles = Rabarber::Role.where(context_type: old_context.to_s)
+      old_context_type = Rabarber::Inputs::NonEmptyString.new(old_context).process
+      new_context_type = Rabarber::Inputs::NonEmptyString.new(new_context).process
 
-      raise Rabarber::InvalidArgumentError, "No roles exist in context `#{old_context.inspect}`" unless roles.exists?
-      raise Rabarber::InvalidArgumentError, "Cannot migrate context to `#{new_context.inspect}`: class does not exist" unless new_context.to_s.safe_constantize
-
-      roles.update_all(context_type: new_context.to_s)
+      Rabarber::Role.where(context_type: old_context_type).update_all(context_type: new_context_type)
     end
 
     def delete_authorization_context!(context)
-      roles = Rabarber::Role.where(context_type: context.to_s)
+      context_type = Rabarber::Inputs::NonEmptyString.new(context).process
 
-      raise Rabarber::InvalidArgumentError, "No roles exist in context `#{context.inspect}`" unless roles.exists?
-
-      Rabarber::Role.delete_with_assignments(roles)
+      Rabarber::Role.delete_with_assignments(Rabarber::Role.where(context_type:))
     end
   end
 end

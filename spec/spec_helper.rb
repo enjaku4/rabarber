@@ -22,6 +22,14 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
+  config.around(:each, :memory_cache) do |example|
+    cache_store_was = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    example.run
+  ensure
+    Rails.cache = cache_store_was
+  end
+
   config.around do |example|
     Rabarber::Configuration.reset_to_defaults!
 

@@ -602,16 +602,12 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to change(described_class, :count).from(4).to(2)
       end
 
-      it "clears the cached roles of the users" do
-        cache_store_was = Rails.cache
-        Rails.cache = ActiveSupport::Cache::MemoryStore.new
+      it "clears the cached roles of the users", :memory_cache do
         user.roles(context: Project)
 
         subject
 
         expect(user.roles(context: Project)).to be_empty
-      ensure
-        Rails.cache = cache_store_was
       end
 
       it { is_expected.to contain_exactly(:viewer) }

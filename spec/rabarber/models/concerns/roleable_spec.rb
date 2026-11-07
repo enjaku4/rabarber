@@ -619,9 +619,7 @@ RSpec.describe Rabarber::Roleable do
         expect { subject }.not_to change(Rabarber::Role, :count).from(4)
       end
 
-      it "clears the cached roles" do
-        cache_store_was = Rails.cache
-        Rails.cache = ActiveSupport::Cache::MemoryStore.new
+      it "clears the cached roles", :memory_cache do
         [nil, Project, project].each { user.roles(context: _1) }
         user.all_roles
 
@@ -629,8 +627,6 @@ RSpec.describe Rabarber::Roleable do
 
         expect([nil, Project, project].map { user.roles(context: _1) }).to all(be_empty)
         expect(user.all_roles).to eq({})
-      ensure
-        Rails.cache = cache_store_was
       end
 
       it { is_expected.to eq([]) }

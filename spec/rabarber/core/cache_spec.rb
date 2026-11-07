@@ -1,20 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Core::Cache do
+RSpec.describe Rabarber::Core::Cache, :memory_cache do
   include ActiveSupport::Testing::TimeHelpers
-
-  around do |example|
-    cache_store_was = Rails.cache
-    cache_store_setting_was = Rails.application.config.cache_store
-
-    Rails.cache = ActiveSupport::Cache::MemoryStore.new
-    Rails.application.config.cache_store = :memory_store
-
-    example.run
-
-    Rails.cache = cache_store_was
-    Rails.application.config.cache_store = cache_store_setting_was
-  end
 
   describe ".fetch" do
     subject { described_class.fetch(roleable_id, scope) { "old" } }

@@ -73,15 +73,13 @@ module Rabarber
       end
 
       def prune
-        orphaned_roles = where.not(context_id: nil).includes(:context).filter_map do |role|
-          !role.context
-        rescue ActiveRecord::RecordNotFound
-          role.id
+        where.not(context_id: nil).distinct.pluck(:context_type).each do |context_type|
+          context_class = context_type.safe_constantize
+
+          raise Rabarber::NotFoundError, "Context not found: class `#{context_type}` may have been renamed or deleted" unless context_class
+
+          delete_with_assignments(where(context_type:).where.not(context_id: context_class.select(context_class.primary_key)))
         end
-
-        return if orphaned_roles.empty?
-
-        delete_with_assignments(where(id: orphaned_roles))
 
         Rabarber::Core::Cache.clear
       end

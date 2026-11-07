@@ -557,16 +557,41 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:clear)
         subject
       end
+
+      context "when contexts of different classes are missing" do
+        let(:client) { Client.create! }
+        let!(:client_role) { described_class.create!(name: "manager", context_type: "Client", context_id: client.id) }
+
+        before do
+          described_class.create!(name: "manager", context_type: "Client", context_id: Client.create!.id)
+          client.destroy!
+        end
+
+        it "deletes the roles with missing context of every class" do
+          subject
+          expect(described_class.where(id: [role.id, client_role.id])).to be_empty
+        end
+
+        it "does not delete the other roles" do
+          expect { subject }.to change(described_class, :count).from(4).to(2)
+        end
+      end
+    end
+
+    context "when the class of a context no longer exists" do
+      before do
+        project.destroy!
+        described_class.create!(name: "manager", context_type: "Gone", context_id: 1)
+      end
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::NotFoundError, "Context not found: class `Gone` may have been renamed or deleted")
+      end
     end
 
     context "when context is not missing" do
       it "does not delete any roles" do
         expect { subject }.not_to change(described_class, :count)
-      end
-
-      it "does not clear the cache" do
-        expect(Rabarber::Core::Cache).not_to receive(:clear)
-        subject
       end
     end
   end

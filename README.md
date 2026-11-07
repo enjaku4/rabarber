@@ -1,5 +1,3 @@
-<!--TODO: v6.1-->
-
 # Rabarber: Simple Authorization for Rails
 
 [![Gem Version](https://badge.fury.io/rb/rabarber.svg)](http://badge.fury.io/rb/rabarber)

@@ -82,7 +82,7 @@ module Rabarber
 
       return [] if rabarber_roles.none?
 
-      contexts = all_roles.keys.map { Rabarber::Inputs::Context.new(_1).resolve }
+      contexts = rabarber_roles.distinct.pluck(:context_type, :context_id).map { |context_type, context_id| { context_type:, context_id: } }
 
       rabarber_roles.clear
 

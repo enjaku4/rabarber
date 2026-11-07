@@ -619,17 +619,30 @@ RSpec.describe Rabarber::Roleable do
         expect { subject }.not_to change(Rabarber::Role, :count).from(4)
       end
 
-      it "clears the cache" do
-        expect(Rabarber::Core::Cache).to receive(:delete).with(
-          [user.id, { context_type: nil, context_id: nil }],
-          [user.id, { context_type: "Project", context_id: nil }],
-          [user.id, { context_type: "Project", context_id: project.id }],
-          [user.id, :all]
-        )
+      it "clears the cached roles" do
+        cache_store_was = Rails.cache
+        Rails.cache = ActiveSupport::Cache::MemoryStore.new
+        [nil, Project, project].each { user.roles(context: _1) }
+        user.all_roles
+
         subject
+
+        expect([nil, Project, project].map { user.roles(context: _1) }).to all(be_empty)
+        expect(user.all_roles).to eq({})
+      ensure
+        Rails.cache = cache_store_was
       end
 
       it { is_expected.to eq([]) }
+
+      context "when the class of a role's context no longer exists" do
+        before { Rabarber::Role.find_by(context_type: "Project", context_id: nil).update!(context_type: "Foo") }
+
+        it "revokes all roles from the user" do
+          subject
+          expect([nil, project].map { user.roles(context: _1) }).to all(be_empty)
+        end
+      end
     end
 
     context "when the user has a role in a plain class context" do
@@ -639,17 +652,6 @@ RSpec.describe Rabarber::Roleable do
 
       it "revokes it" do
         expect { subject }.to change(user, :all_roles).from(plain_context => [:auditor]).to({})
-      end
-    end
-
-    context "when the user has roles with an invalid context key" do
-      before do
-        user.assign_roles(:admin)
-        allow(user).to receive(:all_roles).and_return({ 123 => [:admin] })
-      end
-
-      it "raises with correct message" do
-        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
   end

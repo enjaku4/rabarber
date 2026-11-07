@@ -98,10 +98,10 @@ module Rabarber
       Rabarber::Core::Cache.delete(*contexts.map { [id, _1] }, [id, :all])
     end
 
-    def unsaved_user_deprecation_warning(method)
+    def unsaved_user_deprecation_warning(method_name)
       return if persisted?
 
-      Rabarber.deprecator.warn("Calling `#{method}` on an unsaved user is deprecated and will raise an error in the next major version, save the user first", caller_locations(2))
+      Rabarber.deprecator.warn("Calling `#{method_name}` on an unsaved user is deprecated and will raise an error in the next major version, save the user first", caller_locations(2))
     end
   end
 end

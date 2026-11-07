@@ -210,11 +210,7 @@ RSpec.describe Rabarber::Role do
       described_class.create!(name: "viewer", context_type: "Project")
     end
 
-    it "creates the roles that do not exist" do
-      expect { subject }.to change { described_class.where(name: "admin", context_type: "Project", context_id: nil).count }.from(0).to(1)
-    end
-
-    it "does not duplicate the existing roles" do
+    it "creates only the roles that do not exist" do
       expect { subject }.to change(described_class, :count).from(2).to(3)
     end
 

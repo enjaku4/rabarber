@@ -40,7 +40,7 @@ RSpec.describe Rabarber::Core::Rule do
   describe "#roles_permitted?" do
     subject { rule.roles_permitted?(roleable, DummyController.new) }
 
-    let(:rule) { described_class.new(roles, { context_type: "Project", context_id: nil }, nil, nil) }
+    let(:rule) { described_class.new(roles, Project, nil, nil) }
 
     context "when roleable is a User" do
       let(:roleable) { User.create! }

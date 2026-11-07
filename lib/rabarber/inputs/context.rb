@@ -10,10 +10,7 @@ module Rabarber
         when Class
           { context_type: context.to_s, context_id: nil }
         when ActiveRecord::Base
-          raise_error unless context.persisted?
-          { context_type: context.class.to_s, context_id: context.public_send(context.class.primary_key) }
-        else
-          context
+          { context_type: context.class.to_s, context_id: context.id }
         end
       end
 
@@ -25,8 +22,7 @@ module Rabarber
       def validate_and_normalize
         return @value if @value.nil?
         return @value if @value.is_a?(Class)
-        return @value if @value.is_a?(ActiveRecord::Base)
-        return @value if @value in { context_type: String | nil, context_id: String | Integer | nil }
+        return @value if @value.is_a?(ActiveRecord::Base) && @value.persisted?
 
         raise_error
       end

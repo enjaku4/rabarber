@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Railtie do
+RSpec.describe Rabarber::Engine do
   context "to_prepare initializer" do
     subject { DummyApplication.config.to_prepare_blocks.each(&:call) }
 
@@ -44,23 +44,9 @@ RSpec.describe Rabarber::Railtie do
         end
       end
     end
-
-    describe "roleables association declaration" do
-      before { Rabarber::Configuration.user_model_name = "Client" }
-
-      it "declares the association with the user model configured in the initializer" do
-        subject
-        expect(Rabarber::Role.reflect_on_association(:roleables).klass).to eq(Client)
-      end
-
-      it "re-declares the association on each run without errors or stale classes" do
-        expect { 2.times { DummyApplication.config.to_prepare_blocks.each(&:call) } }.not_to raise_error
-        expect(Rabarber::Role.reflect_on_association(:roleables).klass).to eq(Client)
-      end
-    end
   end
 
-  context "include_roleable initializer" do
+  describe "user model" do
     it "includes Rabarber::Roleable in the configured user model when it is autoloaded" do
       expect(User.ancestors).to include(Rabarber::Roleable)
     end
@@ -68,29 +54,17 @@ RSpec.describe Rabarber::Railtie do
     it "does not include Rabarber::Roleable in other autoloaded models" do
       expect(Project.ancestors).not_to include(Rabarber::Roleable)
     end
+  end
 
-    it "registers the hook with every Rails autoloader" do
-      Rails.autoloaders.each { allow(_1).to receive(:on_load) }
-
-      described_class.initializers.detect { _1.name == "rabarber.include_roleable" }.run(DummyApplication)
-
-      expect(Rails.autoloaders.to_a).to all(have_received(:on_load))
+  describe "deprecations" do
+    it "registers Rabarber's deprecator with the app" do
+      expect(Rails.application.deprecators[:rabarber]).to be(Rabarber.deprecator)
     end
   end
 
-  context "extend_migration_helpers initializer" do
-    subject { initializer.run(DummyApplication) }
-
-    let(:initializer) { described_class.initializers.detect { |i| i.name == "rabarber.extend_migration_helpers" } }
-
-    before do
-      allow(ActiveSupport).to receive(:on_load).with(:active_record).and_yield
-      allow(ActiveRecord::Migration).to receive(:include).with(Rabarber::MigrationHelpers)
-    end
-
-    it "includes Rabarber::MigrationHelpers in ActiveRecord::Migration" do
-      subject
-      expect(ActiveRecord::Migration).to have_received(:include).with(Rabarber::MigrationHelpers)
+  describe "migrations" do
+    it "can use the migration helpers" do
+      expect(ActiveRecord::Migration.new).to respond_to(:migrate_authorization_context!, :delete_authorization_context!)
     end
   end
 end

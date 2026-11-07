@@ -4,7 +4,7 @@ ActiveRecord::Schema.define do
   self.verbose = false
 
   create_table "rabarber_roles", id: false, force: :cascade do |t|
-    t.string "id", primary_key: true, null: false, limit: 36
+    t.string "id", primary_key: true, null: false, limit: 36, default: -> { "lower(hex(randomblob(16)))" }
     t.string "name", null: false
     t.string "context_type"
     t.string "context_id", limit: 36

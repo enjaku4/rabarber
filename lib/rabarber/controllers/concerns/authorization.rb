@@ -26,7 +26,7 @@ module Rabarber
           self,
           Rabarber::Inputs::NonEmptySymbol.new(action, optional: true).process,
           Rabarber::Inputs::Roles.new(roles).process,
-          Rabarber::Inputs::Contexts::Authorizational.new(context).resolve,
+          Rabarber::Inputs::Contexts::Authorizational.new(context).process,
           Rabarber::Inputs::DynamicRule.new(if_rule, optional: true).process,
           Rabarber::Inputs::DynamicRule.new(unless_rule, optional: true).process
         )

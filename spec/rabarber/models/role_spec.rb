@@ -99,8 +99,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".register" do
-    subject { described_class.register(name, context:) }
+  describe ".deprecated_register" do
+    subject { described_class.deprecated_register(name, context:) }
 
     let(:name) { :admin }
 
@@ -187,6 +187,58 @@ RSpec.describe Rabarber::Role do
 
       it "raises with correct message" do
         expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got `:\"Invalid-Name\"`")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+  end
+
+  describe ".register" do
+    subject { described_class.register(names, context:) }
+
+    let(:names) { [:admin, :manager] }
+    let(:context) { Project }
+
+    before do
+      described_class.create!(name: "manager", context_type: "Project")
+      described_class.create!(name: "viewer", context_type: "Project")
+    end
+
+    it "creates only the roles that do not exist" do
+      expect { subject }.to change(described_class, :count).from(2).to(3)
+    end
+
+    it { is_expected.to contain_exactly(:admin, :manager, :viewer) }
+
+    context "when the same name is given more than once" do
+      let(:names) { [:admin, "admin"] }
+
+      it "creates the role once" do
+        expect { subject }.to change(described_class, :count).by(1)
+      end
+    end
+
+    context "when no names are given" do
+      let(:names) { [] }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+
+      it { is_expected.to contain_exactly(:manager, :viewer) }
+    end
+
+    context "when given an invalid name" do
+      let(:names) { [:admin, :"Invalid-Name"] }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:admin, :\"Invalid-Name\"]`")
       end
     end
 
@@ -381,10 +433,18 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when given an invalid force" do
+      let(:force) { "yes" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected true or false, got `"yes"`')
+      end
+    end
   end
 
-  describe ".drop" do
-    subject { described_class.drop(name, context:, force:) }
+  describe ".deprecated_drop" do
+    subject { described_class.deprecated_drop(name, context:, force:) }
 
     let(:name) { :admin }
     let(:context) { Project.create! }
@@ -493,6 +553,100 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when given an invalid force" do
+      let(:force) { "yes" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected true or false, got `"yes"`')
+      end
+    end
+  end
+
+  describe ".drop" do
+    subject { described_class.drop(names, context:, force:) }
+
+    let(:names) { [:admin, :manager, :missing] }
+    let(:context) { Project }
+    let(:force) { false }
+    let(:user) { User.create! }
+
+    before do
+      described_class.create!(name: "admin", context_type: "Project")
+      described_class.create!(name: "viewer", context_type: "Project")
+      described_class.create!(name: "admin")
+      user.assign_roles(:manager, context: Project)
+    end
+
+    context "when force is false" do
+      it "deletes the roles that are not assigned to any user" do
+        expect { subject }.to change { described_class.exists?(name: "admin", context_type: "Project") }.from(true).to(false)
+      end
+
+      it "keeps the roles that are assigned to users" do
+        subject
+        expect(user.roles(context: Project)).to eq([:manager])
+      end
+
+      it "keeps the roles with the same names in other contexts" do
+        expect { subject }.not_to change { described_class.exists?(name: "admin", context_type: nil) }.from(true)
+      end
+
+      it { is_expected.to contain_exactly(:manager, :viewer) }
+    end
+
+    context "when force is true" do
+      let(:force) { true }
+
+      it "deletes the roles even if they are assigned to users" do
+        expect { subject }.to change(described_class, :count).from(4).to(2)
+      end
+
+      it "clears the cached roles of the users", :memory_cache do
+        user.roles(context: Project)
+
+        subject
+
+        expect(user.roles(context: Project)).to be_empty
+      end
+
+      it { is_expected.to contain_exactly(:viewer) }
+    end
+
+    context "when no names are given" do
+      let(:names) { [] }
+      let(:force) { true }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+
+      it { is_expected.to contain_exactly(:admin, :manager, :viewer) }
+    end
+
+    context "when given an invalid name" do
+      let(:names) { [:admin, :"Invalid-Name"] }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:admin, :\"Invalid-Name\"]`")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+
+    context "when given an invalid force" do
+      let(:force) { "yes" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected true or false, got `"yes"`')
+      end
+    end
   end
 
   describe "#context" do
@@ -551,6 +705,26 @@ RSpec.describe Rabarber::Role do
 
       it "does not delete the roles with existing context" do
         expect { subject }.to change(described_class, :count).from(2).to(1)
+      end
+
+      context "when contexts of different classes are missing" do
+        let(:user) { User.create! }
+        let!(:user_role) { described_class.create!(name: "manager", context_type: "User", context_id: user.id) }
+
+        before do
+          described_class.create!(name: "manager", context_type: "User", context_id: User.create!.id)
+          described_class.create!(name: "manager", context_type: "Project")
+          user.destroy!
+        end
+
+        it "deletes the roles with missing context of every class" do
+          subject
+          expect(described_class.where(id: [role.id, user_role.id])).to be_empty
+        end
+
+        it "does not delete the other roles" do
+          expect { subject }.to change(described_class, :count).from(5).to(3)
+        end
       end
 
       it "clears the cache" do

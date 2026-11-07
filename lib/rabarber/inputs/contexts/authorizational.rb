@@ -4,13 +4,6 @@ module Rabarber
   module Inputs
     module Contexts
       class Authorizational < Rabarber::Inputs::Context
-        def resolve
-          result = process
-          return result if result.is_a?(Symbol) || result.is_a?(Proc)
-
-          super
-        end
-
         private
 
         def default_message = "Expected a Class, an instance of ActiveRecord model, a symbol, a string, or a proc, got `#{@value.inspect}`"

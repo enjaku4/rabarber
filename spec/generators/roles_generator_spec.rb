@@ -28,7 +28,7 @@ RSpec.describe Rabarber::RolesGenerator do
 
           create_table :rabarber_roles_roleables, id: false do |t|
             t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }#{", type: :uuid" if args.include?("--uuid")}
-            t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: :my_users }#{", type: :uuid" if args.include?("--uuid")}
+            t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: :my_users, primary_key: primary_key(:my_users) }#{", type: :uuid" if args.include?("--uuid")}
           end
 
           add_index :rabarber_roles_roleables, [:role_id, :roleable_id], unique: true

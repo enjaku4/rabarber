@@ -1,20 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe Rabarber::Core::Cache do
+RSpec.describe Rabarber::Core::Cache, :memory_cache do
   include ActiveSupport::Testing::TimeHelpers
-
-  around do |example|
-    cache_store_was = Rails.cache
-    cache_store_setting_was = Rails.application.config.cache_store
-
-    Rails.cache = ActiveSupport::Cache::MemoryStore.new
-    Rails.application.config.cache_store = :memory_store
-
-    example.run
-
-    Rails.cache = cache_store_was
-    Rails.application.config.cache_store = cache_store_setting_was
-  end
 
   describe ".fetch" do
     subject { described_class.fetch(roleable_id, scope) { "old" } }
@@ -35,6 +22,26 @@ RSpec.describe Rabarber::Core::Cache do
         expect(described_class.fetch(roleable_id, scope) { "new" }).to eq("old")
         travel_to(2.hours.from_now)
         expect(described_class.fetch(roleable_id, scope) { "new" }).to eq("new")
+      end
+
+      context "when called within a transaction other code can't join, like the one Rails opens around each test" do
+        it "caches the result" do
+          ActiveRecord::Base.transaction(joinable: false) { subject }
+          expect(described_class.fetch(roleable_id, scope) { "new" }).to eq("old")
+        end
+      end
+
+      context "when called within a transaction that is rolled back" do
+        it "does not keep the roles read inside the transaction" do
+          user = User.create!
+
+          ActiveRecord::Base.transaction do
+            user.assign_roles(:admin)
+            raise ActiveRecord::Rollback
+          end
+
+          expect(User.find(user.id).has_role?(:admin)).to be false
+        end
       end
     end
 
@@ -68,10 +75,10 @@ RSpec.describe Rabarber::Core::Cache do
       end
 
       context "when called within a transaction" do
-        it "deletes the value cached during the transaction after commit" do
+        it "deletes the value another process cached during the transaction after commit" do
           ActiveRecord::Base.transaction do
             subject
-            described_class.fetch(42, scope) { "stale" }
+            Thread.new { described_class.fetch(42, scope) { "stale" } }.join # rubocop:disable ThreadSafety/NewThread
           end
 
           expect(described_class.fetch(42, scope)).to be_nil
@@ -93,6 +100,17 @@ RSpec.describe Rabarber::Core::Cache do
       roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "new-#{id}" }).to eq("old-#{id}") }
       described_class.clear
       roleable_ids.each { |id| expect(described_class.fetch(id, scope) { "new-#{id}" }).to eq("new-#{id}") }
+    end
+
+    context "when called within a transaction" do
+      it "invalidates the entries another process cached during the transaction after commit" do
+        ActiveRecord::Base.transaction do
+          described_class.clear
+          Thread.new { described_class.fetch(42, scope) { "stale" } }.join # rubocop:disable ThreadSafety/NewThread
+        end
+
+        expect(described_class.fetch(42, scope) { "new" }).to eq("new")
+      end
     end
 
     it "can be called from Rabarber::Cache" do

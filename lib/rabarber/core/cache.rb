@@ -9,7 +9,7 @@ module Rabarber
       extend self
 
       def fetch(roleable_id, scope, &)
-        return yield unless enabled?
+        return yield if !enabled? || ActiveRecord::Base.current_transaction.open?
 
         Rails.cache.fetch(prepare_key(roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
@@ -17,14 +17,13 @@ module Rabarber
       def delete(*pairs)
         return unless enabled? && pairs.any?
 
-        keys = pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) }
-
-        Rails.cache.delete_multi(keys)
-        ActiveRecord.after_all_transactions_commit { Rails.cache.delete_multi(keys) } if ActiveRecord::Base.connection.transaction_open?
+        ActiveRecord.after_all_transactions_commit do
+          Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) })
+        end
       end
 
       def clear
-        Rails.cache.write(VERSION_KEY, SecureRandom.alphanumeric(8))
+        ActiveRecord.after_all_transactions_commit { rotate_version }
       end
 
       private
@@ -34,7 +33,7 @@ module Rabarber
       end
 
       def prepare_key(roleable_id, scope)
-        Digest::MD5.base64digest(Marshal.dump([current_version, roleable_id, scope]))
+        Digest::MD5.base64digest(ActiveSupport::Cache.expand_cache_key([current_version, roleable_id, scope]))
       end
 
       def current_version
@@ -42,9 +41,13 @@ module Rabarber
 
         return version if version
 
-        clear
+        rotate_version
 
         Rails.cache.read(VERSION_KEY)
+      end
+
+      def rotate_version
+        Rails.cache.write(VERSION_KEY, SecureRandom.alphanumeric(8))
       end
 
       VERSION_KEY = "rabarber"

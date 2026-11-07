@@ -24,6 +24,13 @@ RSpec.describe Rabarber::Core::Cache, :memory_cache do
         expect(described_class.fetch(roleable_id, scope) { "new" }).to eq("new")
       end
 
+      context "when called within a transaction other code can't join, like the one Rails opens around each test" do
+        it "caches the result" do
+          ActiveRecord::Base.transaction(joinable: false) { subject }
+          expect(described_class.fetch(roleable_id, scope) { "new" }).to eq("old")
+        end
+      end
+
       context "when called within a transaction that is rolled back" do
         it "does not keep the roles read inside the transaction" do
           user = User.create!

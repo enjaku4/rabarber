@@ -9,7 +9,7 @@ module Rabarber
       extend self
 
       def fetch(roleable_id, scope, &)
-        return yield if !enabled? || ActiveRecord::Base.with_connection(&:transaction_open?)
+        return yield if !enabled? || ActiveRecord::Base.current_transaction.open?
 
         Rails.cache.fetch(prepare_key(roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end

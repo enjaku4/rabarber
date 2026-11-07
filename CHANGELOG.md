@@ -3,6 +3,7 @@
 ### Bugs:
 
 - Fixed a race condition where assigning several roles at once could assign none of them
+- Fixed context migration helpers raising when no roles exist in the context, which broke migrations on fresh databases
 
 ## v6.0.3
 

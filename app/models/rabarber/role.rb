@@ -135,6 +135,12 @@ module Rabarber
         nil
       end
 
+      def delete_assignments(roleable_id, role_ids)
+        with_connection do |connection|
+          connection.delete(sanitize_sql(["DELETE FROM rabarber_roles_roleables WHERE roleable_id = ? AND role_id IN (?)", roleable_id, role_ids]))
+        end
+      end
+
       private
 
       def delete_roleables_cache(roleable_ids, context:)

@@ -68,12 +68,10 @@ module Rabarber
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
 
-      roles_to_revoke = Rabarber::Role.where(
-        name: processed_role_names.intersection(rabarber_roles.list(context: processed_context)), **processed_context
-      )
+      role_ids = Rabarber::Role.where(name: processed_role_names, **processed_context).ids
 
-      if roles_to_revoke.any?
-        self.rabarber_roles -= roles_to_revoke
+      if Rabarber::Role.delete_assignments(id, role_ids).positive?
+        rabarber_roles.reset
         delete_roleable_cache(contexts: [processed_context])
       end
 

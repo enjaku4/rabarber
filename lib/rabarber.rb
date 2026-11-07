@@ -25,6 +25,12 @@ module Rabarber
   class InvalidContextError < Rabarber::InvalidArgumentError; end
   class NotFoundError < Rabarber::Error; end
 
+  DEPRECATOR = ActiveSupport::Deprecation.new("7.0", "Rabarber")
+
+  def self.deprecator
+    DEPRECATOR
+  end
+
   delegate :configure, to: Rabarber::Configuration
   module_function :configure
 end

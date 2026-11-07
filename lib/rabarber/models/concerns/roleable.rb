@@ -35,6 +35,8 @@ module Rabarber
     end
 
     def assign_roles(*role_names, context: nil, create_new: true)
+      warn_if_unsaved_roleable(:assign_roles)
+
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
 
@@ -58,6 +60,8 @@ module Rabarber
     end
 
     def revoke_roles(*role_names, context: nil)
+      warn_if_unsaved_roleable(:revoke_roles)
+
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
 
@@ -70,6 +74,8 @@ module Rabarber
     end
 
     def revoke_all_roles
+      warn_if_unsaved_roleable(:revoke_all_roles)
+
       contexts = rabarber_roles.distinct.pluck(:context_type, :context_id).map { |context_type, context_id| { context_type:, context_id: } }
 
       rabarber_role_assignments.delete_all
@@ -81,6 +87,14 @@ module Rabarber
     end
 
     private
+
+    def warn_if_unsaved_roleable(method_name)
+      return unless new_record?
+
+      Rabarber.deprecator.warn(
+        "Calling ##{method_name} on an unsaved record is deprecated. Save the record before managing roles."
+      )
+    end
 
     def create_new_roles(role_names, context:)
       new_roles = role_names - Rabarber.roles(context:)

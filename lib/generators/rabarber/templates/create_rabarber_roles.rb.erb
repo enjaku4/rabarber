@@ -17,7 +17,7 @@ class CreateRabarberRoles < ActiveRecord::Migration[<%= ActiveRecord::Migration.
 
     create_table :rabarber_roles_roleables, id: false do |t|
       t.belongs_to :role, null: false, index: true, foreign_key: { to_table: :rabarber_roles }<%= ", type: :uuid" if options[:uuid] %>
-      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: <%= table_name.to_sym.inspect %> }<%= ", type: :uuid" if options[:uuid] %>
+      t.belongs_to :roleable, null: false, index: true, foreign_key: { to_table: <%= table_name.to_sym.inspect %>, primary_key: primary_key(<%= table_name.to_sym.inspect %>) }<%= ", type: :uuid" if options[:uuid] %>
     end
 
     add_index :rabarber_roles_roleables, [:role_id, :roleable_id], unique: true

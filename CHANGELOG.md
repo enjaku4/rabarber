@@ -10,6 +10,7 @@
 ### Misc:
 
 - Deprecated calling `assign_roles`, `revoke_roles`, or `revoke_all_roles` on an unsaved record
+- Deprecated `Rabarber.create_role` and `Rabarber.delete_role`
 
 ## v6.0.3
 

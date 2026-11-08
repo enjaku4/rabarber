@@ -24,16 +24,10 @@ RSpec.describe Rabarber::Inputs::Context do
 
         it { is_expected.to eq(context_type: nil, context_id: nil) }
       end
-
-      context "when the context is already processed" do
-        let(:context) { { context_type: "Project", context_id: 1 } }
-
-        it { is_expected.to eq(context_type: "Project", context_id: 1) }
-      end
     end
 
     context "when the given context is invalid" do
-      [1, ["context"], "context", "", :context, {}, :""].each do |invalid_context|
+      [1, ["context"], "context", "", :context, {}, :"", { context_type: "Project", context_id: 1 }].each do |invalid_context|
         context "when '#{invalid_context}' is given" do
           let(:context) { invalid_context }
 

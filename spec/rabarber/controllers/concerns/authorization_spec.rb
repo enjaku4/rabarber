@@ -83,7 +83,7 @@ RSpec.describe Rabarber::Authorization do
 
       it "adds the permission" do
         expect(Rabarber::Core::Permissions).to receive(:add)
-          .with(DummyAuthController, :index, [:admin], { context_id: nil, context_type: nil }, :foo, :bar).and_call_original
+          .with(DummyAuthController, :index, [:admin], nil, :foo, :bar).and_call_original
         subject
       end
     end

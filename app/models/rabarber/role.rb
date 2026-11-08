@@ -10,7 +10,7 @@ module Rabarber
 
     class << self
       def list(context: nil)
-        where(Rabarber::Inputs::Context.new(context).resolve).pluck(:name).map(&:to_sym)
+        names_in(Rabarber::Inputs::Context.new(context).resolve)
       end
 
       def list_all
@@ -26,14 +26,7 @@ module Rabarber
       end
 
       def register(name, context: nil)
-        name = Rabarber::Inputs::Role.new(name).process
-        processed_context = Rabarber::Inputs::Context.new(context).resolve
-
-        return false if exists?(name:, **processed_context)
-
-        !!create!(name:, **processed_context)
-      rescue ActiveRecord::RecordNotUnique
-        false
+        register_in(Rabarber::Inputs::Role.new(name).process, Rabarber::Inputs::Context.new(context).resolve)
       end
 
       def amend(old_name, new_name, context: nil, force: false)
@@ -84,6 +77,18 @@ module Rabarber
         end
 
         Rabarber::Core::Cache.clear
+      end
+
+      def names_in(processed_context)
+        where(processed_context).pluck(:name).map(&:to_sym)
+      end
+
+      def register_in(name, processed_context)
+        return false if exists?(name:, **processed_context)
+
+        !!create!(name:, **processed_context)
+      rescue ActiveRecord::RecordNotUnique
+        false
       end
 
       def delete_with_assignments(roles)

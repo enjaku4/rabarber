@@ -99,8 +99,8 @@ RSpec.describe Rabarber::Role do
     end
   end
 
-  describe ".register" do
-    subject { described_class.register(name, context:) }
+  describe ".deprecated_register" do
+    subject { described_class.deprecated_register(name, context:) }
 
     let(:name) { :admin }
 
@@ -187,6 +187,59 @@ RSpec.describe Rabarber::Role do
 
       it "raises with correct message" do
         expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a symbol or a string containing only lowercase letters, numbers, and underscores, got `:\"Invalid-Name\"`")
+      end
+    end
+
+    context "when given an invalid context" do
+      let(:context) { 123 }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+  end
+
+  describe ".register" do
+    subject { described_class.register(names, context:) }
+
+    let(:names) { [:admin, :manager, :admin] }
+    let(:context) { Project }
+
+    before do
+      described_class.create!(name: "manager", context_type: "Project")
+      described_class.create!(name: "viewer", context_type: "Project")
+      described_class.create!(name: "admin")
+    end
+
+    it "creates the missing roles once" do
+      expect { subject }.to change { described_class.where(name: "admin", context_type: "Project").count }.from(0).to(1)
+    end
+
+    it "does not create the existing roles again" do
+      expect { subject }.to change(described_class, :count).from(3).to(4)
+    end
+
+    it "returns all role names in the context" do
+      expect(subject).to contain_exactly(:admin, :manager, :viewer)
+    end
+
+    context "when no names are given" do
+      let(:names) { [] }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+
+      it "returns all role names in the context" do
+        expect(subject).to contain_exactly(:manager, :viewer)
+      end
+    end
+
+    context "when given an invalid name" do
+      let(:names) { [:admin, "Invalid"] }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `[:admin, "Invalid"]`')
       end
     end
 
@@ -381,10 +434,18 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when force is not a boolean" do
+      let(:force) { "false" }
+
+      it "raises with the expected message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected a boolean, got `"false"`')
+      end
+    end
   end
 
-  describe ".drop" do
-    subject { described_class.drop(name, context:, force:) }
+  describe ".deprecated_drop" do
+    subject { described_class.deprecated_drop(name, context:, force:) }
 
     let(:name) { :admin }
     let(:context) { Project.create! }
@@ -493,6 +554,105 @@ RSpec.describe Rabarber::Role do
         expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
       end
     end
+
+    context "when force is not a boolean" do
+      let(:force) { 1 }
+
+      it "raises with the expected message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, "Expected a boolean, got `1`")
+      end
+    end
+  end
+
+  describe ".drop" do
+    subject { described_class.drop(names, context: project, force:) }
+
+    let(:project) { Project.create! }
+    let(:names) { [:admin, :manager, :unknown] }
+    let(:user) { User.create! }
+
+    before do
+      [:admin, :manager, :viewer].each { described_class.create!(name: _1, context_type: "Project", context_id: project.id) }
+      described_class.create!(name: "admin", context_type: "Project")
+      user.assign_roles(:manager, context: project)
+    end
+
+    context "when force is false" do
+      let(:force) { false }
+
+      it "deletes the given roles that are not assigned to anyone" do
+        expect { subject }.to change { described_class.exists?(name: "admin", context_type: "Project", context_id: project.id) }.from(true).to(false)
+      end
+
+      it "keeps the given roles that are assigned to users" do
+        subject
+        expect(user.roles(context: project)).to eq([:manager])
+      end
+
+      it "keeps the roles with the same names in other contexts" do
+        expect { subject }.not_to(change { described_class.exists?(name: "admin", context_type: "Project", context_id: nil) })
+      end
+
+      it "returns the role names that remain in the context" do
+        expect(subject).to contain_exactly(:manager, :viewer)
+      end
+    end
+
+    context "when force is true" do
+      let(:force) { true }
+
+      it "deletes the given roles even if they are assigned to users" do
+        expect { subject }.to change { described_class.where(context_id: project.id).count }.from(3).to(1)
+      end
+
+      it "clears the cached roles of their users", :memory_cache do
+        user.roles(context: project)
+        subject
+        expect(User.find(user.id).roles(context: project)).to be_empty
+      end
+
+      it "returns the role names that remain in the context" do
+        expect(subject).to eq([:viewer])
+      end
+    end
+
+    context "when no names are given" do
+      let(:names) { [] }
+      let(:force) { true }
+
+      it "does nothing" do
+        expect { subject }.not_to change(described_class, :count)
+      end
+
+      it "returns all role names in the context" do
+        expect(subject).to contain_exactly(:admin, :manager, :viewer)
+      end
+    end
+
+    context "when given an invalid name" do
+      let(:names) { ["Invalid"] }
+      let(:force) { false }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected an array of symbols or strings containing only lowercase letters, numbers, and underscores, got `["Invalid"]`')
+      end
+    end
+
+    context "when given an invalid context" do
+      subject { described_class.drop(names, context: 123, force: false) }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidContextError, "Expected an instance of ActiveRecord model, a Class, or nil, got `123`")
+      end
+    end
+
+    context "when given an invalid force" do
+      let(:force) { "true" }
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::InvalidArgumentError, 'Expected a boolean, got `"true"`')
+      end
+    end
   end
 
   describe "#context" do
@@ -557,16 +717,41 @@ RSpec.describe Rabarber::Role do
         expect(Rabarber::Core::Cache).to receive(:clear)
         subject
       end
+
+      context "when contexts of different classes are missing" do
+        let(:client) { Client.create! }
+        let!(:client_role) { described_class.create!(name: "manager", context_type: "Client", context_id: client.id) }
+
+        before do
+          described_class.create!(name: "manager", context_type: "Client", context_id: Client.create!.id)
+          client.destroy!
+        end
+
+        it "deletes the roles with missing context of every class" do
+          subject
+          expect(described_class.where(id: [role.id, client_role.id])).to be_empty
+        end
+
+        it "does not delete the other roles" do
+          expect { subject }.to change(described_class, :count).from(4).to(2)
+        end
+      end
+    end
+
+    context "when the class of a context no longer exists" do
+      before do
+        project.destroy!
+        described_class.create!(name: "manager", context_type: "Gone", context_id: 1)
+      end
+
+      it "raises with correct message" do
+        expect { subject }.to raise_error(Rabarber::NotFoundError, "Context not found: class `Gone` may have been renamed or deleted")
+      end
     end
 
     context "when context is not missing" do
       it "does not delete any roles" do
         expect { subject }.not_to change(described_class, :count)
-      end
-
-      it "does not clear the cache" do
-        expect(Rabarber::Core::Cache).not_to receive(:clear)
-        subject
       end
     end
   end

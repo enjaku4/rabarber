@@ -25,6 +25,12 @@ module Rabarber
   class InvalidContextError < Rabarber::InvalidArgumentError; end
   class NotFoundError < Rabarber::Error; end
 
+  DEPRECATOR = ActiveSupport::Deprecation.new("7.0", "Rabarber")
+
+  def self.deprecator
+    DEPRECATOR
+  end
+
   delegate :configure, to: Rabarber::Configuration
   module_function :configure
 end
@@ -37,11 +43,10 @@ require_relative "rabarber/controllers/concerns/authorization"
 require_relative "rabarber/helpers/helpers"
 require_relative "rabarber/helpers/migration_helpers"
 require_relative "rabarber/models/concerns/roleable"
-require_relative "rabarber/models/role"
 require_relative "rabarber/models/role_management"
 
 Rabarber.extend Rabarber::RoleManagement
 
 require_relative "rabarber/core/permissions"
 
-require_relative "rabarber/railtie"
+require_relative "rabarber/engine"

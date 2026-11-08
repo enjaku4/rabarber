@@ -1,3 +1,22 @@
+## v6.1.0
+
+### Features:
+
+- Added `Rabarber.create_roles` and `Rabarber.delete_roles` to create and delete several roles at once
+
+### Bugs:
+
+- Fixed a race condition where assigning several roles at once could assign none of them
+- Fixed context migration helpers raising when no roles exist in the context
+- Fixed the generated migration creating a broken foreign key when the user table's primary key is not `id`
+- Fixed roles assigned or revoked inside a rolled back transaction staying cached
+- Fixed concurrent role creation or renaming discarding the surrounding transaction
+
+### Misc:
+
+- Deprecated calling `assign_roles`, `revoke_roles`, or `revoke_all_roles` on an unsaved record
+- Deprecated `Rabarber.create_role` and `Rabarber.delete_role`
+
 ## v6.0.3
 
 ### Bugs:

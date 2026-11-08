@@ -285,7 +285,8 @@ RSpec.describe Rabarber::Roleable do
 
       it "warns that assigning roles is deprecated" do
         expect(Rabarber.deprecator).to receive(:warn).with(
-          "Calling #assign_roles on an unsaved record is deprecated. Save the record before managing roles."
+          "Calling #assign_roles on an unsaved record is deprecated. Save the record before managing roles.",
+          satisfy { |callstack| callstack.first.path == __FILE__ }
         )
 
         subject
@@ -554,7 +555,8 @@ RSpec.describe Rabarber::Roleable do
 
       it "warns that revoking roles is deprecated" do
         expect(Rabarber.deprecator).to receive(:warn).with(
-          "Calling #revoke_roles on an unsaved record is deprecated. Save the record before managing roles."
+          "Calling #revoke_roles on an unsaved record is deprecated. Save the record before managing roles.",
+          satisfy { |callstack| callstack.first.path == __FILE__ }
         )
 
         subject
@@ -713,7 +715,8 @@ RSpec.describe Rabarber::Roleable do
 
       it "warns that revoking all roles is deprecated" do
         expect(Rabarber.deprecator).to receive(:warn).with(
-          "Calling #revoke_all_roles on an unsaved record is deprecated. Save the record before managing roles."
+          "Calling #revoke_all_roles on an unsaved record is deprecated. Save the record before managing roles.",
+          satisfy { |callstack| callstack.first.path == __FILE__ }
         )
 
         subject

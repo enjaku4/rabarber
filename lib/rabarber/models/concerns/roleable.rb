@@ -93,7 +93,8 @@ module Rabarber
       return unless new_record?
 
       Rabarber.deprecator.warn(
-        "Calling ##{method_name} on an unsaved record is deprecated. Save the record before managing roles."
+        "Calling ##{method_name} on an unsaved record is deprecated. Save the record before managing roles.",
+        caller_locations(2)
       )
     end
 

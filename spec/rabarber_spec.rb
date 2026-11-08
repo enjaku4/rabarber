@@ -86,6 +86,15 @@ RSpec.describe Rabarber do
   describe ".create_role" do
     it "delegates to Rabarber::Role.register" do
       expect(Rabarber::Role).to receive(:register).with(:editor, context: Project)
+      described_class.deprecator.silence { described_class.create_role(:editor, context: Project) }
+    end
+
+    it "warns that it is deprecated" do
+      allow(Rabarber::Role).to receive(:register)
+      expect(described_class.deprecator).to receive(:warn).with(
+        "create_role is deprecated and will be removed from Rabarber 7.0 (use create_roles instead)",
+        satisfy { |callstack| callstack.first.path == __FILE__ }
+      )
       described_class.create_role(:editor, context: Project)
     end
   end
@@ -100,6 +109,15 @@ RSpec.describe Rabarber do
   describe ".delete_role" do
     it "delegates to Rabarber::Role.drop" do
       expect(Rabarber::Role).to receive(:drop).with(:editor, context: Project, force: true)
+      described_class.deprecator.silence { described_class.delete_role(:editor, context: Project, force: true) }
+    end
+
+    it "warns that it is deprecated" do
+      allow(Rabarber::Role).to receive(:drop)
+      expect(described_class.deprecator).to receive(:warn).with(
+        "delete_role is deprecated and will be removed from Rabarber 7.0 (use delete_roles instead)",
+        satisfy { |callstack| callstack.first.path == __FILE__ }
+      )
       described_class.delete_role(:editor, context: Project, force: true)
     end
   end

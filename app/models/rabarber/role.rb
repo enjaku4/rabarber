@@ -45,7 +45,7 @@ module Rabarber
 
         return false if exists?(name:, **processed_context) || role.role_assignments.exists? && !processed_force
 
-        role.update!(name:)
+        transaction(requires_new: true) { role.update!(name:) }
 
         delete_roleables_cache(role.role_assignments.pluck(:roleable_id), context: processed_context)
 
@@ -88,7 +88,7 @@ module Rabarber
 
         return false if exists?(name:, **processed_context)
 
-        !!create!(name:, **processed_context)
+        !!transaction(requires_new: true) { create!(name:, **processed_context) }
       rescue ActiveRecord::RecordNotUnique
         false
       end
@@ -117,7 +117,7 @@ module Rabarber
 
       def register_missing(names, processed_context)
         (names.uniq - names_in(processed_context)).each do |name|
-          create!(name:, **processed_context)
+          transaction(requires_new: true) { create!(name:, **processed_context) }
         rescue ActiveRecord::RecordNotUnique
           next
         end

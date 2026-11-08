@@ -75,6 +75,13 @@ RSpec.describe Rabarber::Core::Cache, :memory_cache do
         expect(described_class.fetch(13, scope)).to be_nil
       end
 
+      it "reads the cache version once for all entries" do
+        described_class.fetch(42, scope) { "foo" }
+        allow(Rails.cache).to receive(:read).and_call_original
+        subject
+        expect(Rails.cache).to have_received(:read).once
+      end
+
       context "when called within a transaction" do
         before { described_class.fetch(42, scope) { "foo" } }
 

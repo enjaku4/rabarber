@@ -12,14 +12,15 @@ module Rabarber
       def fetch(roleable_id, scope, &)
         return yield if !enabled? || ActiveRecord::Base.current_transaction.open?
 
-        Rails.cache.fetch(prepare_key(roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
+        Rails.cache.fetch(prepare_key(current_version, roleable_id, scope), expires_in: 1.hour, race_condition_ttl: 5.seconds, &)
       end
 
       def delete(*pairs)
         return unless enabled? && pairs.any?
 
         ActiveRecord.after_all_transactions_commit do
-          Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(roleable_id, scope) })
+          version = current_version
+          Rails.cache.delete_multi(pairs.map { |roleable_id, scope| prepare_key(version, roleable_id, scope) })
         end
       end
 
@@ -33,8 +34,8 @@ module Rabarber
         Rabarber::Configuration.cache_enabled
       end
 
-      def prepare_key(roleable_id, scope)
-        Digest::MD5.base64digest(JSON.generate([current_version, roleable_id, scope]))
+      def prepare_key(version, roleable_id, scope)
+        Digest::MD5.base64digest(JSON.generate([version, roleable_id, scope]))
       end
 
       def current_version

@@ -1,5 +1,9 @@
 ## v6.1.0
 
+### Features:
+
+- Added `Rabarber.create_roles` and `Rabarber.delete_roles` to create and delete several roles at once
+
 ### Bugs:
 
 - Fixed a race condition where assigning several roles at once could assign none of them

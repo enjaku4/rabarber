@@ -10,6 +10,7 @@
 - Fixed context migration helpers raising when no roles exist in the context, which broke migrations on fresh databases
 - Fixed the generated migration creating a broken foreign key when the user table's primary key is not `id`
 - Fixed roles assigned or revoked inside a rolled back transaction staying cached
+- Fixed concurrent role creation or renaming inside a transaction discarding the rest of that transaction
 
 ### Misc:
 

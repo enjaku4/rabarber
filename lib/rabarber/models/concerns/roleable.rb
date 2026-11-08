@@ -40,7 +40,7 @@ module Rabarber
       processed_role_names = Rabarber::Inputs::Roles.new(role_names).process
       processed_context = Rabarber::Inputs::Context.new(context).resolve
 
-      create_new_roles(processed_role_names, processed_context) if processed_create_new
+      Rabarber::Role.register_missing(processed_role_names, processed_context) if processed_create_new
 
       role_ids = Rabarber::Role.where(
         name: (processed_role_names - rabarber_roles.names_in(processed_context)), **processed_context
@@ -99,10 +99,6 @@ module Rabarber
 
     def cached_roles(processed_context)
       Rabarber::Core::Cache.fetch(id, processed_context) { rabarber_roles.names_in(processed_context) }
-    end
-
-    def create_new_roles(role_names, processed_context)
-      (role_names - Rabarber::Role.names_in(processed_context)).each { Rabarber::Role.register_in(_1, processed_context) }
     end
 
     def delete_roleable_cache(contexts:)

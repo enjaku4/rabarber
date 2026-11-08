@@ -25,8 +25,13 @@ module Rabarber
         raise Rabarber::NotFoundError, "Context not found: class `#{e.name}` may have been renamed or deleted"
       end
 
-      def register(name, context: nil)
-        register_in(Rabarber::Inputs::Role.new(name).process, Rabarber::Inputs::Context.new(context).resolve)
+      def register(names, context: nil)
+        processed_names = Rabarber::Inputs::Roles.new(names).process
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+
+        register_missing(processed_names, processed_context)
+
+        names_in(processed_context)
       end
 
       def amend(old_name, new_name, context: nil, force: false)
@@ -49,7 +54,46 @@ module Rabarber
         false
       end
 
-      def drop(name, context: nil, force: false)
+      def drop(names, context: nil, force: false)
+        processed_names = Rabarber::Inputs::Roles.new(names).process
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+        processed_force = Rabarber::Inputs::Boolean.new(force).process
+
+        role_ids = where(name: processed_names, **processed_context).ids
+        role_ids -= Rabarber::RoleAssignment.where(role_id: role_ids).distinct.pluck(:role_id) unless processed_force
+        roleable_ids = Rabarber::RoleAssignment.where(role_id: role_ids).distinct.pluck(:roleable_id)
+
+        delete_with_assignments(where(id: role_ids))
+
+        delete_roleables_cache(roleable_ids, context: processed_context)
+
+        names_in(processed_context)
+      end
+
+      def prune
+        where.not(context_id: nil).distinct.pluck(:context_type).each do |context_type|
+          context_class = context_type.safe_constantize
+
+          raise Rabarber::NotFoundError, "Context not found: class `#{context_type}` may have been renamed or deleted" unless context_class
+
+          delete_with_assignments(where(context_type:).where.not(context_id: context_class.select(context_class.primary_key)))
+        end
+
+        Rabarber::Core::Cache.clear
+      end
+
+      def deprecated_register(name, context: nil)
+        name = Rabarber::Inputs::Role.new(name).process
+        processed_context = Rabarber::Inputs::Context.new(context).resolve
+
+        return false if exists?(name:, **processed_context)
+
+        !!create!(name:, **processed_context)
+      rescue ActiveRecord::RecordNotUnique
+        false
+      end
+
+      def deprecated_drop(name, context: nil, force: false)
         processed_force = Rabarber::Inputs::Boolean.new(force).process
         processed_context = Rabarber::Inputs::Context.new(context).resolve
         role = find_by(name: Rabarber::Inputs::Role.new(name).process, **processed_context)
@@ -67,28 +111,16 @@ module Rabarber
         true
       end
 
-      def prune
-        where.not(context_id: nil).distinct.pluck(:context_type).each do |context_type|
-          context_class = context_type.safe_constantize
-
-          raise Rabarber::NotFoundError, "Context not found: class `#{context_type}` may have been renamed or deleted" unless context_class
-
-          delete_with_assignments(where(context_type:).where.not(context_id: context_class.select(context_class.primary_key)))
-        end
-
-        Rabarber::Core::Cache.clear
-      end
-
       def names_in(processed_context)
         where(processed_context).pluck(:name).map(&:to_sym)
       end
 
-      def register_in(name, processed_context)
-        return false if exists?(name:, **processed_context)
-
-        !!create!(name:, **processed_context)
-      rescue ActiveRecord::RecordNotUnique
-        false
+      def register_missing(names, processed_context)
+        (names.uniq - names_in(processed_context)).each do |name|
+          create!(name:, **processed_context)
+        rescue ActiveRecord::RecordNotUnique
+          next
+        end
       end
 
       def delete_with_assignments(roles)
